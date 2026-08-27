@@ -14,7 +14,7 @@ export function TrackRecord() {
 
       <ol className={styles.roles}>
         {ROLES.map((role) => (
-          <li className={styles.role} key={`${role.client}-${role.dates}`}>
+          <li className={styles.role} key={`${role.company}-${role.dates}`}>
             <div className={styles.when}>
               <span className={`mono ${styles.dates}`}>{role.dates}</span>
               <span className={`mono ${styles.place}`}>{role.place}</span>
@@ -23,7 +23,7 @@ export function TrackRecord() {
             <div className={styles.what}>
               <h3 className={styles.title}>
                 {role.title}
-                <span className={styles.client}> · {role.client}</span>
+                <span className={styles.client}> · {role.company}</span>
               </h3>
               <p className={styles.summary}>{role.summary}</p>
             </div>

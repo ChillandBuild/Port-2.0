@@ -1,5 +1,7 @@
 import { Footer } from "@/components/chrome/Footer";
 import { TopNav } from "@/components/chrome/TopNav";
+import { Education } from "@/components/education/Education";
+import { Estimator } from "@/components/estimator/Estimator";
 import { History } from "@/components/history/History";
 import { PointerFX } from "@/components/motion/PointerFX";
 import { Proof } from "@/components/proof/Proof";
@@ -23,7 +25,9 @@ export default function HomePage() {
         <WorldStage />
         <Proof />
         <History />
+        <Education />
         <Range />
+        <Estimator />
         <Terms />
         <Reply />
       </main>

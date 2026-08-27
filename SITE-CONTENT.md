@@ -67,15 +67,15 @@ used accurately or dropped.
 
 | Figure | What it measures | Source |
 | --- | --- | --- |
-| 200M+ | Private-company records mapped into a sourcing database | Built at Client A for mid-market M&A origination |
-| +35% | Lift in lead-to-meeting conversion rate | Client A, attributed to thesis-matched messaging |
-| Under 1.2% | Email bounce rate ceiling held | Client A, via multi-stage list verification |
-| Under 1.5% | Email bounce rate held | Client C |
-| 18–25 | Qualified pipeline meetings per client seat, per month | Client B, across 6 North American tech verticals |
-| 300+ | Enterprise MQLs generated per year | Client D |
-| Under 60 min | Lead routing turnaround time | Client D |
-| +30% | Increase in deal velocity | Client E |
-| $5M–$50M | EBITDA band of target companies sourced | Client A, buyer criteria |
+| 200M+ | Private-company records mapped into a sourcing database | Built at Finquest for mid-market M&A origination |
+| +35% | Lift in lead-to-meeting conversion rate | Finquest, attributed to thesis-matched messaging |
+| Under 1.2% | Email bounce rate ceiling held | Finquest, via multi-stage list verification |
+| Under 1.5% | Email bounce rate held | Uplers & Mavlers |
+| 18–25 | Qualified pipeline meetings per client seat, per month | The Sales Group, across 6 North American tech verticals |
+| 300+ | Enterprise MQLs generated per year | Ecosmob Technologies |
+| Under 60 min | Lead routing turnaround time | Ecosmob Technologies |
+| +30% | Increase in deal velocity | Zinnov & Draup |
+| $5M–$50M | EBITDA band of target companies sourced | Finquest, buyer criteria |
 | 2.6M+ | LinkedIn impressions | LinkedIn Creator Analytics |
 | 10,000+ | LinkedIn followers | LinkedIn |
 
@@ -83,48 +83,60 @@ used accurately or dropped.
 
 ## 4. Work history
 
-Employers are anonymised as Client A–F. **The letters are not chronological** — Client E
-predates Client F. Ordered below most recent first.
+Employers are named, sourced from the LinkedIn profile (`Portfolio/linkedin-profile.md`).
+Ordered below most recent first.
 
-**Client A** — Senior Lead Generation Manager
+**Finquest** — Senior Lead Generation Manager
 Jul 2024 – Sep 2025 · Bengaluru, India
 Outbound lead generation for proprietary mid-market M&A deal origination across North
 America, Europe and APAC, supplying private-equity and corporate buyers with datasets of
-unquoted target companies. Built custom database workflows combining a proprietary AI
-sourcing engine, Clay, and Salesforce. Ran multi-touch cold email and LinkedIn cadences
+unquoted target companies. Built custom database workflows combining Finquest's AI
+sourcing platform, Clay, and Salesforce. Ran multi-touch cold email and LinkedIn cadences
 against founder-led private companies inside a strict EBITDA band. Ran discovery calls
 with PE deal leads to translate investment thesis criteria into outbound target filters.
-Implemented list hygiene protocols.
+Managed a cross-functional team of researchers and outreach specialists; implemented list
+hygiene protocols.
 
-**Client B** — Lead Generation Manager
+**The Sales Group** — Lead Generation Manager
 Jan 2024 – Jun 2024 · Toronto, Canada (remote)
-Fractional SDR leadership for North American B2B tech clients needing accelerated
-pipeline, targeting VPs of Sales and C-suite buyers. Used Apollo.io, LinkedIn Sales
-Navigator, Lemlist, multi-domain inbox warming, and A/B tested message variants.
+Fractional SDR leadership for North American business owners buying part-time BD support,
+fractional sales leadership and permanent sales-team placement, targeting VPs of Sales
+and C-suite buyers. Built a custom outbound strategy per client against their ICP. Used
+Apollo.io, LinkedIn Sales Navigator, Lemlist, multi-domain inbox warming, and A/B tested
+message variants.
 
-**Client C** — Business Development Manager
+**Uplers & Mavlers** — Business Development Manager
 May 2023 – Dec 2023 · Ahmedabad, India
-Cross-border outreach for digital talent and technology agencies across the US, UK,
-Africa and APAC, under strict CRM data integrity requirements. Salesforce, Sales
-Navigator, automated list deduplication, cross-time-zone lead routing.
+Cross-border outreach for two sister digital-talent and technology agency brands across
+the US, UK, Africa and Asia, under strict CRM data integrity requirements. QA of
+team-generated data lists and verified Salesforce uploads, segmented investor and
+partner databases, daily performance reporting to the senior marketing director, plus
+prospect, company and competitive analysis. Salesforce, Sales Navigator, automated list
+deduplication, cross-time-zone lead routing.
 
-**Client D** — Lead Generation Manager
+**Ecosmob Technologies** — Lead Generation Manager
 Jun 2022 – Apr 2023 · Ahmedabad, India
-Managed global team operations and territory allocation for enterprise VoIP and telecom
-SaaS platforms across the US, UK, MENA and APAC. HubSpot, Sales Navigator, campaign
+Led a lead-generation team and managed territory allocation for enterprise VoIP and
+telecom SaaS platforms across the US, UK, MENA and APAC. Ran automated inbound and
+outbound email campaigns, designed the outreach templates, and built the monthly
+conversion and engagement analytics. LinkedIn Sales Navigator, CRM tooling, campaign
 tracking dashboards, SDR performance monitoring.
 
-**Client F** — Lead Generation Specialist
+**Alore (Growth OS)** — Lead Generation Specialist
 Apr 2021 – May 2022 · Bengaluru, India
-Prospect research, lead validation and targeted outbound email campaigns across North
-America, the UK and Australia. Research, QA and reporting.
+In-depth prospect research, qualification, lead validation and targeted outbound email
+campaigns across North America, the UK and Australia. Client communication and
+appointment setting; oversaw lead assignment and QA workflows across research, outreach
+and sales, with daily and monthly bounce and lead reporting.
 
-**Client E** — Lead Generation Specialist / Pre-Sales Lead
+**Zinnov & Draup** — Lead Generation Specialist / Pre-Sales Lead
 Jul 2020 – Mar 2021 · Coimbatore, India
-His first sales role. Enterprise solution consulting, technical product demos and
-proposal handoffs for HR tech, workforce intelligence and digital transformation
-clients. Discovery calls, commercial RFP responses, platform demonstrations, ROI models
-for C-suite buyers.
+His first sales role. Solution consulting across IT and non-IT domains in the Digital &
+Analytics portfolio, with product depth in core HR, workforce management, talent
+acquisition, reskilling and diversity. Lead generation and validation through targeted
+research and cold calling, product demos, commercial and technical proposals, project
+scoping with time and resource estimates, and ROI models for C-suite buyers. (Draup is a
+Zinnov company; the role was concurrent.)
 
 ---
 
@@ -379,7 +391,7 @@ Resolved. Do not re-open these.
 | Client satisfaction scores | **Both dropped.** Neither 9.2/10 nor 8.6/10 is used. |
 | Current status | Most recent listed role ran to Sep 2025. He is currently working with clients. |
 | LinkedIn analytics | **Cannot be connected.** No live data source exists. |
-| Employer names | **Stay anonymous.** Client A–F. |
+| Employer names | **Named**, from the LinkedIn profile: Finquest, The Sales Group, Uplers & Mavlers, Ecosmob Technologies, Alore (Growth OS), Zinnov & Draup. The earlier "Client A–F" anonymisation is retired. |
 | Photograph | A placeholder stands in until he supplies the real one. |
 | Priority | Hired full-time > USD 350 session > performance model. |
 

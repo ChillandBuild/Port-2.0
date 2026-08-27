@@ -21,7 +21,10 @@
   --surface-world-wide: #f4f5f1;
   --surface-world-lane: #f9faf6;
   --on-world: #0b1b2a;
-  --on-world-soft: #5a6570;
+  /* Near the heading ink, not a mid-grey. The traveling copy sits in the dark
+     lobe of the world's atmosphere (.scrim), so a true soft grey lands at ~2.5:1
+     there. Hierarchy on the world comes from scale and weight, as on the panels. */
+  --on-world-soft: #1e2a35;
 
   /* The dossier's primary ground: proof, terms. */
   --surface-page: #e9ebe6;
@@ -58,6 +61,12 @@
   --on-chrome: #0b1b2a;
   --on-chrome-soft: #5a6570;
 
+  /* A hard card behind the wordmark while the nav floats over the hero
+     photograph, so the name holds whatever pixel is under it. Gone once the bar
+     takes its own ground. */
+  --wordmark-box: #ffffff;
+  --wordmark-box-ink: #0b1b2a;
+
   /* One accent hue, one lightness per theme. */
   --accent: #7c2434;
   --accent-strong: #96303f;
@@ -79,11 +88,12 @@
      it lightens on this theme and darkens on the other. */
   --hero-scrim: rgba(252, 252, 250, 0.5);
 
-  /* The world's atmosphere. Kept dark on the light theme by choice: it reads as
-     weather over the record field rather than as a scrim, and the murk is the
-     point. It is doing an aesthetic job here, not a contrast one. */
-  --world-scrim-lead: rgba(3, 10, 18, 0.82);
-  --world-scrim-trail: rgba(3, 10, 18, 0.6);
+  /* The world's atmosphere: weather over the record field. Pulled back from
+     0.82/0.6 so the ground under the traveling copy stays pale enough for the
+     body ink to hold 4.5:1 — the murk was landing on exactly the bottom-left
+     corner the gates and the field paragraph sit in. */
+  --world-scrim-lead: rgba(3, 10, 18, 0.5);
+  --world-scrim-trail: rgba(3, 10, 18, 0.38);
   --world-grain: 0.05;
 }
 
@@ -123,6 +133,11 @@
   --surface-chrome: #070d13;
   --on-chrome: #eef0ea;
   --on-chrome-soft: #97a4ae;
+
+  /* The hero photograph is the same bright frame on both themes, so the card
+     stays near-white and the name stays dark on it. */
+  --wordmark-box: #f4f5f1;
+  --wordmark-box-ink: #0b1b2a;
 
   /* Same hue, one step lighter: an accent tuned for paper goes muddy on a dark
      ground and cannot clear 4.5:1 there. */

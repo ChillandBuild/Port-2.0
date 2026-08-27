@@ -26,6 +26,20 @@
 
 .home {
   text-decoration: none;
+  /* A hard white card while the bar floats over the photograph. Sharp corners,
+     tight to the wordmark. It fades to nothing once the bar has its own ground,
+     on the same trigger the bar uses. */
+  display: inline-flex;
+  padding: 6px 10px;
+  background: var(--wordmark-box);
+  color: var(--wordmark-box-ink);
+  transition:
+    background-color 320ms var(--ease-out-expo),
+    color 320ms var(--ease-out-expo);
+}
+
+.nav[data-grounded="true"] .home {
+  background: transparent;
   color: inherit;
 }
 

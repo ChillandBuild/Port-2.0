@@ -34,18 +34,19 @@
   letter-spacing: -0.01em;
 }
 
-/* Tracks, not content-width boxes. On flex each column was as wide as whatever
-   it happened to hold — "240" against "3", "VERIFIED" against "SENT" — so the
-   five gaps came out at four different widths and the row read as mis-set. A
-   fixed track is the same width for every column, which is what makes the
-   labels and the figures line up as a rhythm. Capped rather than 1fr: five
-   equal fractions of a 72rem container spread the row so far apart it stops
-   reading as one receipt. */
+/* Five equal columns, not content-width boxes. On flex each column was as wide
+   as whatever it happened to hold — "240" against "3", "VERIFIED" against
+   "SENT" — so the four gaps came out at four different widths and the row read
+   as mis-set. Equal fractions keep every column the same width, which is what
+   lets the labels and the figures line up as a rhythm. The whole block is
+   capped short so the columns fill it edge to edge and the top rule spans the
+   same width the figures do — a fixed 8.5rem track inside the 72rem container
+   left the rule stretching far past a row of numbers bunched at the left. */
 .receipt {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 8.5rem));
-  justify-content: start;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1.5rem clamp(1.25rem, 4vw, 3rem);
+  max-width: 44rem;
   margin: clamp(2.5rem, 6vh, 4rem) 0 0;
   padding-top: 1.5rem;
   border-top: 1px solid var(--rule-strong);

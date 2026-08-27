@@ -361,7 +361,7 @@ export function WorldStage() {
               </span>
             </p>
             <p className={styles.body}>
-              Private companies, mapped into a sourcing database at Client A for mid-market
+              Private companies, mapped into a sourcing database at Finquest for mid-market
               M&amp;A origination. Every one of them is a company somebody could sell to.
               Almost none of them are worth your Tuesday.
             </p>

@@ -69,30 +69,30 @@ export const LEDGER: LedgerRow[] = [
   {
     value: "+35%",
     label: "Lift in lead-to-meeting conversion, from thesis-matched messaging.",
-    source: "Mid-market M&A · Client A",
+    source: "Mid-market M&A · Finquest",
     count: { to: 35, prefix: "+", suffix: "%" },
   },
   {
     value: "300+",
     label: "Enterprise marketing qualified leads generated per year.",
-    source: "Telecom SaaS · Client D",
+    source: "Telecom SaaS · Ecosmob Technologies",
     count: { to: 300, suffix: "+" },
   },
   {
     value: "18–25",
     label: "Qualified pipeline meetings per client seat, per month.",
-    source: "6 tech verticals · Client B",
+    source: "6 tech verticals · The Sales Group",
   },
   {
     value: "1.2%",
     label: "Email bounce ceiling held on every list, through multi-stage verification.",
-    source: "Deliverability · Client A",
+    source: "Deliverability · Finquest",
     count: { to: 1.2, suffix: "%", decimals: 1 },
   },
   {
     value: "+30%",
     label: "Increase in deal velocity on complex enterprise deals.",
-    source: "Pre-sales · Client E",
+    source: "Pre-sales · Zinnov & Draup",
     count: { to: 30, prefix: "+", suffix: "%" },
   },
 ];
@@ -181,7 +181,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
 ];
 
 export interface Role {
-  client: string;
+  company: string;
   title: string;
   dates: string;
   place: string;
@@ -191,60 +191,132 @@ export interface Role {
 
 export const ROLES: Role[] = [
   {
-    client: "Client A",
+    company: "Finquest",
     title: "Senior Lead Generation Manager",
     dates: "Jul 2024 – Sep 2025",
     place: "Bengaluru, India",
     summary:
-      "Led outbound strategy for proprietary mid-market M&A sourcing. Built 200M+ private-company databases across North America, Europe and APAC, targeting founder-led businesses inside strict EBITDA criteria.",
-    result: "+35% lead-to-meeting conversion",
+      "Led outbound strategy for sourcing proprietary mid-market M&A opportunities across North America, Europe and APAC. Built target lists on Finquest's AI platform using firmographic filters, trigger events and investment signals, and ran a cross-functional team of researchers and outreach specialists on email and LinkedIn. Owned CRM pipeline hygiene and the tracking behind lead quality and conversion stages.",
+    result: "+35% lead-to-meeting conversion · 200M+ private companies mapped",
   },
   {
-    client: "Client B",
+    company: "The Sales Group",
     title: "Lead Generation Manager",
     dates: "Jan 2024 – Jun 2024",
     place: "Toronto, Canada (remote)",
     summary:
-      "Fractional SDR leadership for North American B2B tech clients, targeting VPs of Sales and C-suite buyers through Apollo, Sales Navigator and multi-domain inbox warming.",
+      "Fractional SDR leadership for North American business owners buying part-time BD support, fractional sales leadership and permanent sales-team placement. Built a custom outbound strategy per client against their ICP and growth goals, managed part-time BDR resources, and launched and optimised email and LinkedIn campaigns by industry and vertical.",
     result: "18–25 meetings per seat, per month",
   },
   {
-    client: "Client C",
+    company: "Uplers & Mavlers",
     title: "Business Development Manager",
     dates: "May 2023 – Dec 2023",
     place: "Ahmedabad, India",
     summary:
-      "Cross-border B2B outreach across the US, UK, Africa and APAC, with Salesforce CRM integration, automated deduplication and cross-time-zone lead routing.",
+      "Cross-border outbound across the US, UK, Africa and Asia for two sister agency brands. Ran QA on team-generated data lists and verified uploads into Salesforce, built segmented databases of investors and strategic partners, and produced daily performance reporting for the senior marketing director alongside prospect, company and competitive analysis.",
     result: "Bounce rate held under 1.5%",
   },
   {
-    client: "Client D",
+    company: "Ecosmob Technologies",
     title: "Lead Generation Manager",
     dates: "Jun 2022 – Apr 2023",
     place: "Ahmedabad, India",
     summary:
-      "Ran global team operations and territory allocation for enterprise VoIP and telecom SaaS platforms across the US, UK, MENA and APAC.",
+      "Led a lead-generation team serving a diverse client portfolio for enterprise VoIP and telecom SaaS platforms, with territory-based allocation across the US, UK, MENA and APAC. Ran automated inbound and outbound email campaigns through Sales Navigator and CRM tooling, designed the outreach templates, and built the monthly conversion and engagement analytics.",
     result: "300+ enterprise MQLs a year",
   },
   {
-    client: "Client F",
+    company: "Alore (Growth OS)",
     title: "Lead Generation Specialist",
     dates: "Apr 2021 – May 2022",
     place: "Bengaluru, India",
     summary:
-      "Prospect research, lead validation and targeted outbound email campaigns across North America, the UK and Australia.",
+      "In-depth prospect research and qualification — domain expertise, product fit and system requirements — feeding targeted outbound email campaigns across the US, UK and Australia. Handled client communication and appointment setting, and oversaw lead assignment and QA workflows across research, outreach and sales, with daily and monthly bounce and lead reporting.",
     result: "Research, QA and reporting rigour",
   },
   {
-    client: "Client E",
+    company: "Zinnov & Draup",
     title: "Lead Generation Specialist (Pre-Sales Lead)",
     dates: "Jul 2020 – Mar 2021",
     place: "Coimbatore, India",
     summary:
-      "Pre-sales solution consulting across HR tech and workforce analytics — discovery calls, product demos, RFP responses and ROI models for C-suite buyers.",
+      "Solution consulting across IT and non-IT domains in the Digital & Analytics portfolio, with product depth in core HR, workforce management, talent acquisition, reskilling and diversity. Generated and validated leads through targeted research and cold calling, ran product demos, prepared commercial and technical proposals, and scoped projects with time and resource estimates.",
     result: "Deal velocity up 30%",
   },
 ];
+
+export interface Qualification {
+  degree: string;
+  institution: string;
+  dates: string;
+}
+
+/** Sourced from the LinkedIn profile and the résumé; both agree on these three. */
+export const EDUCATION: Qualification[] = [
+  {
+    degree: "MBA, Marketing Management",
+    institution: "Amrita Vishwa Vidyapeetham",
+    dates: "Apr 2024 – Apr 2026",
+  },
+  {
+    degree: "B.E., Mechanical Engineering",
+    institution: "Sri Krishna College of Technology",
+    dates: "2017 – 2020",
+  },
+  {
+    degree: "Diploma, Mechanical Engineering",
+    institution: "Sree Narayana Guru Polytechnic College",
+    dates: "2013 – 2016",
+  },
+];
+
+export interface EstimatorSector {
+  key: string;
+  label: string;
+  /** Share of monthly lead volume that becomes a booked meeting / MQL. */
+  meetingRate: number;
+  /** Fixed monthly tool spend before per-lead enrichment cost. */
+  baseToolCost: number;
+  /** Added tool cost per lead in the monthly volume. */
+  costPerLead: number;
+}
+
+export interface EstimatorTier {
+  /** Applies when monthly volume is at or below this number. */
+  upTo: number;
+  label: string;
+}
+
+/**
+ * A model, not a claim. The rates below are the same ones the earlier site
+ * shipped; they describe the method on this page, not a guaranteed outcome, and
+ * the component labels itself as an estimate wherever it renders.
+ */
+export const ESTIMATOR = {
+  eyebrow: "Interactive estimator",
+  heading: "Estimate pipeline outcomes for your target market.",
+  body:
+    "Set a market focus and a target monthly lead volume to model projected meeting conversions, the research cycle, and the tool spend behind them.",
+  volume: { min: 30, max: 400, step: 10, default: 120, unit: "leads / mo" },
+  researchCycle: "30 days, held constant",
+  note:
+    "A model, not a quote. The conversion rates track the method on this page; a real number comes out of a scoping call.",
+  toolsLink: { label: "See the stack behind the cost", href: "#range" },
+  sectors: [
+    { key: "saas", label: "B2B SaaS growth", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },
+    { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350, costPerLead: 4 },
+    { key: "midmarket", label: "Mid-market & digital marketing", meetingRate: 0.14, baseToolCost: 500, costPerLead: 6 },
+  ] as EstimatorSector[],
+  mqlTiers: [
+    { upTo: 30, label: "45–90 days to first MQL" },
+    { upTo: 70, label: "75–100 days to first MQL" },
+    { upTo: 120, label: "90–120 days to first MQL" },
+    { upTo: 180, label: "110–140 days to first MQL" },
+    { upTo: 250, label: "130–160 days to first MQL" },
+    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days to first MQL" },
+  ] as EstimatorTier[],
+};
 
 export const LINKEDIN = {
   eyebrow: "Live LinkedIn impact",

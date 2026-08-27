@@ -91,13 +91,49 @@
   color: var(--on-page-soft);
 }
 
-.summary {
+.summaryBlock {
   margin-top: 0.35rem;
+  display: grid;
+  gap: 0.5rem;
+  max-width: 62ch;
+}
+
+.summary {
   font-size: var(--text-base);
   line-height: 1.6;
-  max-width: 62ch;
   color: var(--on-page);
   text-wrap: pretty;
+}
+
+.clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.moreBtn {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 200ms var(--ease-out-expo);
+}
+
+.moreBtn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.moreBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .result {

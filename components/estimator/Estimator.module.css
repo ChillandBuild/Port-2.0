@@ -1,0 +1,302 @@
+.estimator {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+  padding: var(--space-section) var(--space-shell);
+}
+
+.head {
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.heading {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin-top: 1.25rem;
+  font-size: var(--text-base);
+  color: var(--on-page-soft);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+.panel {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-page);
+}
+
+.controls {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+}
+
+.group {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.label {
+  color: var(--on-page-soft);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.sectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.pill {
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--on-page);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo),
+    border-color var(--duration-fast) var(--ease-out-expo),
+    transform 320ms var(--ease-out-expo),
+    box-shadow 320ms var(--ease-out-expo);
+}
+
+.pill:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.pill:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.pill[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 8px 24px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sliderHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: var(--text-sm);
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  transition: transform 160ms var(--ease-out-expo);
+}
+
+.slider:hover::-webkit-slider-thumb,
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.35);
+}
+
+.toolsLink {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  padding-bottom: 2px;
+  transition: border-color var(--duration-fast) var(--ease-out-expo);
+  will-change: transform;
+}
+
+.toolsLink:hover {
+  border-color: var(--accent);
+}
+
+.toolsArrow {
+  transition: transform 320ms var(--ease-out-expo);
+}
+
+.toolsLink:hover .toolsArrow {
+  transform: translateY(4px);
+}
+
+/* The one filled surface in the section — the estimate reads as the payload.
+   It also leans toward the pointer (`data-tilt`), so it sits forward of the
+   controls as a physical object. */
+.results {
+  position: relative;
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid;
+  gap: 1.4rem;
+  align-content: start;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* A slow diagonal sheen across the panel, so the filled surface is never dead. */
+.results::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    115deg,
+    transparent 42%,
+    color-mix(in srgb, var(--accent-ink) 8%, transparent) 50%,
+    transparent 58%
+  );
+  transform: translateX(-30%);
+  animation: sheen 7s var(--ease-out-expo) infinite;
+  pointer-events: none;
+}
+
+@keyframes sheen {
+  0%,
+  100% {
+    transform: translateX(-35%);
+  }
+  50% {
+    transform: translateX(35%);
+  }
+}
+
+.result {
+  position: relative;
+  display: grid;
+  gap: 0.3rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-ink) 20%, transparent);
+  transition: transform 320ms var(--ease-out-expo);
+}
+
+.result:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.result:hover {
+  transform: translateX(6px);
+}
+
+.resultLabel {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.resultValue {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Each figure ticks up when it changes — the panel is aria-live already, this
+   is the visual half. */
+.resultValue {
+  animation: settle 420ms var(--ease-out-expo);
+}
+
+@keyframes settle {
+  from {
+    opacity: 0.4;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.note {
+  margin-top: 0.25rem;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+@media (min-width: 900px) {
+  .panel {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .toolsLink,
+  .toolsArrow,
+  .result,
+  .slider::-webkit-slider-thumb {
+    transition: none;
+  }
+
+  .results::before,
+  .resultValue {
+    animation: none;
+  }
+
+  .results::before {
+    display: none;
+  }
+
+  .pill:hover,
+  .result:hover,
+  .toolsLink:hover .toolsArrow {
+    transform: none;
+  }
+}
