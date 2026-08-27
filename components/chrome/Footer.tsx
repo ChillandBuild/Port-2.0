@@ -1,63 +1,81 @@
-import { FOOTER, IDENTITY } from "@/lib/content";
+import Link from "next/link";
+import { FOOTER } from "@/lib/content";
 import styles from "./Footer.module.css";
 
 /**
- * Deliberately thin. The page already resolves in the reply section above; a
- * footer that restates the pitch would overwrite the ending rather than follow
- * it, so this carries the legal links and nothing else.
+ * The colophon.
+ *
+ * Its own ground, deliberately: flat white against the themed page above, so
+ * the close reads as a signature block rather than one more panel. Identity
+ * rides left, links right, and the wordmark closes the page as a full-width
+ * banner that drifts with the scroll — the last thing on the page is the name,
+ * and pressing it returns you to the first.
  */
+
+function footerLink(link: { label: string; href: string }): React.ReactNode {
+  const { label, href } = link;
+  const external = href.startsWith("http");
+  if (external) {
+    return (
+      <a className={styles.link} href={href} target="_blank" rel="noreferrer noopener">
+        {label} <span className={styles.arrow} aria-hidden="true">↗</span>
+      </a>
+    );
+  }
+  if (href.startsWith("tel:") || href.endsWith(".pdf")) {
+    return (
+      <a className={styles.link} href={href}>
+        {label}
+      </a>
+    );
+  }
+  return (
+    <Link className={styles.link} href={href}>
+      {label}
+    </Link>
+  );
+}
+
 export function Footer() {
   return (
     <footer className={styles.footer}>
-      <nav className={styles.sections} aria-label="Sections">
-        <ul>
-          <li>
-            <a className={`mono ${styles.link}`} href="#run">
-              Method
-            </a>
-          </li>
-          <li>
-            <a className={`mono ${styles.link}`} href="#proof">
-              Results
-            </a>
-          </li>
-          <li>
-            <a className={`mono ${styles.link}`} href="#history">
-              Experience
-            </a>
-          </li>
-          <li>
-            <a className={`mono ${styles.link}`} href="#range">
-              Range
-            </a>
-          </li>
-          <li>
-            <a className={`mono ${styles.link}`} href={IDENTITY.resume}>
-              Résumé
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <div className={styles.body} data-reveal data-reveal-children>
+        <div className={styles.identity}>
+          <p className={styles.tagline}>{FOOTER.tagline}</p>
+        </div>
 
-      <div className={styles.top}>
-        <p className={styles.wordmark}>{FOOTER.wordmark}</p>
-        <ul className={styles.links}>
-          {FOOTER.links.map((link) => (
-            <li key={link.href}>
-              <a className={`mono ${styles.link}`} href={link.href}>
-                {link.label}
-              </a>
-            </li>
+        <nav className={styles.groups} aria-label="Footer">
+          {FOOTER.groups.map((group) => (
+            <div className={styles.group} key={group.title}>
+              <p className={`mono ${styles.groupTitle}`}>{group.title}</p>
+              <ul>
+                {group.links.map((link) => (
+                  <li key={link.label}>{footerLink(link)}</li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </nav>
       </div>
 
-      <div className={styles.bottom}>
+      <div className={styles.bottom} data-reveal>
         <p className={`mono ${styles.fine}`}>{FOOTER.fineprint}</p>
-        <a className={`mono ${styles.link}`} href={IDENTITY.phoneHref}>
-          {IDENTITY.phone}
+        {/* Same-page anchor, not a router link: it scrolls whichever page you
+            are on, and every page carries its own #top. */}
+        <a className={styles.back} href="#top">
+          {FOOTER.backToTop} <span aria-hidden="true">↑</span>
         </a>
       </div>
+
+      <Link
+        className={styles.wordmark}
+        href="/#top"
+        data-drift
+        aria-label="Sampath Kumar — back to top"
+      >
+        {FOOTER.wordmark}
+        <span className={styles.stop}>.</span>
+      </Link>
     </footer>
   );
 }

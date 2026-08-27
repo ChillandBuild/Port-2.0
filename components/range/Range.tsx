@@ -1,89 +1,52 @@
-import { POSTS, SECTORS, TOOL_GROUPS } from "@/lib/content";
+import { SECTORS } from "@/lib/content";
 import styles from "./Range.module.css";
 
 /**
- * Breadth, so it travels sideways: nine sectors as a rail, then the stack as a
- * dense index rather than a wall of logos. The heading rides in the rail as the
- * first item, which stops it competing with the fixed chrome and gives the
- * travel the width it needs to actually move.
+ * Breadth as an index, not a grid of cards. Each sector is one hairline row —
+ * number, title, description, tag — and the three core verticals are marked
+ * with the accent stop, the same punctuation as the wordmark. Flat white so
+ * the section reads as its own ledger against the themed page around it.
  */
 export function Range() {
   return (
-    <>
-      <section className={`spot ${styles.rail}`} id="range" data-pan data-spot aria-labelledby="range-heading">
-        <div className={styles.track} data-pan-track>
-          <div className={`${styles.item} ${styles.opener}`} data-pan-item>
-            <h2 className={styles.heading} id="range-heading">
-              Nine sectors.
-              <br />
-              Twenty-four markets.
-            </h2>
-            <p className={styles.openerBody}>
-              The method holds across all of them. The message never does, which is
-              the entire point.
-            </p>
+    <section className={`spot ${styles.range}`} id="range" data-spot aria-labelledby="range-heading">
+      <div className={styles.head} data-reveal>
+        <h2 className={styles.heading} id="range-heading">
+          Nine sectors.
+          <br />
+          Twenty-four markets.
+        </h2>
+        <p className={styles.headBody}>
+          The method holds across all of them. The message never does, which is
+          the entire point.
+        </p>
+      </div>
+
+      <div className={styles.rows} data-reveal data-reveal-children>
+        {SECTORS.map((sector, i) => (
+          <div
+            className={`${styles.row} ${sector.core ? styles.rowCore : ""}`}
+            key={sector.title}
+          >
+            <span className={`mono ${styles.idx}`}>{String(i + 1).padStart(2, "0")}</span>
+            <h3 className={styles.title}>
+              {sector.title}
+              {sector.core && <span className={styles.mark} aria-hidden="true" />}
+            </h3>
+            <p className={styles.body}>{sector.description}</p>
+            <span className={`mono ${styles.tag}`}>{sector.tag}</span>
           </div>
+        ))}
+      </div>
 
-          {SECTORS.map((sector) => (
-            <article className={styles.item} key={sector.title} data-pan-item>
-              <div className={styles.itemInner} data-tilt="4">
-                <p className={`mono ${styles.tag}`}>{sector.tag}</p>
-                <h3 className={styles.itemTitle}>{sector.title}</h3>
-                <p className={styles.itemBody}>{sector.description}</p>
-              </div>
-            </article>
-          ))}
+      <p className={`mono ${styles.legend}`} data-reveal>
+        <span className={styles.mark} aria-hidden="true" /> core focus
+      </p>
 
-          <div className={`${styles.item} ${styles.closer}`} data-pan-item>
-            <p className={styles.closerBody}>
-              Buyer norms change at every border. Cadence timing, proof style and how
-              direct the first line can be are set per market, not per campaign.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className={`spot ${styles.stack}`} data-spot aria-labelledby="stack-heading">
-        <div className={styles.stackHead} data-reveal data-reveal-children>
-          <h2 className={styles.stackHeading} id="stack-heading">
-            The stack, by what it is for.
-          </h2>
-        </div>
-
-        <div className={styles.groups}>
-          {TOOL_GROUPS.map((group) => (
-            <div className={styles.group} key={group.name} data-reveal>
-              <h3 className={styles.groupName}>{group.name}</h3>
-              <p className={styles.groupBody}>{group.description}</p>
-              <ul className={styles.tools}>
-                {group.tools.map((tool, i) => (
-                  /* The index drives a transition delay, so hovering a group
-                     brings its stack up left to right rather than all at once. */
-                  <li
-                    className={`mono ${styles.tool}`}
-                    key={tool}
-                    style={{ ["--i" as string]: i }}
-                  >
-                    {tool}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.writes} data-reveal data-reveal-children>
-          <h3 className={styles.writesHeading}>And writes about</h3>
-          <ul className={styles.writesList}>
-            {POSTS.map((post) => (
-              <li key={post.title}>
-                <span className={styles.writesTitle}>{post.title}</span>
-                <span className={styles.writesBody}>{post.summary}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    </>
+      <p className={styles.closerBody} data-reveal>
+        Buyer norms change at every border. Cadence timing, proof style and how
+        direct the first line can be are set per market, not per campaign.
+      </p>
+    </section>
   );
 }

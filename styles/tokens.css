@@ -16,27 +16,30 @@
 :root {
   color-scheme: light;
 
-  /* The world: the canvas the page travels through. Furthest from the dossier. */
-  --surface-world: #fcfcfa;
-  --surface-world-wide: #f4f5f1;
-  --surface-world-lane: #f9faf6;
+  /* The world: the canvas the page travels through. Furthest from the dossier.
+     Retinted violet-white — a whisper of the brand hue rather than the flat
+     warm paper the system opened with. */
+  --surface-world: #fdfcff;
+  --surface-world-wide: #f5f3ff;
+  --surface-world-lane: #faf8fe;
   --on-world: #0b1b2a;
   /* Near the heading ink, not a mid-grey. The traveling copy sits in the dark
      lobe of the world's atmosphere (.scrim), so a true soft grey lands at ~2.5:1
      there. Hierarchy on the world comes from scale and weight, as on the panels. */
   --on-world-soft: #1e2a35;
 
-  /* The dossier's primary ground: proof, terms. */
-  --surface-page: #e9ebe6;
+  /* The dossier's primary ground: proof, terms. Client brand tint, used as the
+     literal page background. */
+  --surface-page: #f5f3ff;
   --on-page: #0b1b2a;
   --on-page-soft: #59656f;
 
   /* Secondary ground, so two document sections never abut in the same tone. */
-  --surface-page-alt: #f1f2ed;
+  --surface-page-alt: #ede9fe;
 
   /* The inverted bands: the sector rail and the stack. */
-  --surface-panel: #d7dbd2;
-  --surface-panel-alt: #cdd2c8;
+  --surface-panel: #e1d8f4;
+  --surface-panel-alt: #d5c8ee;
   --on-panel: #0b1b2a;
   --on-panel-soft: #4b5761;
   /* Deliberately the same as soft. The panel grounds are mid-tone, so a third,
@@ -46,7 +49,7 @@
   --on-panel-mute: #4b5761;
 
   /* The close, and the chrome that sits over everything. */
-  --surface-close: #dcdfd6;
+  --surface-close: #ddd0ef;
   --on-close: #0b1b2a;
   --on-close-soft: #4b5761;
 
@@ -54,10 +57,10 @@
      shared ground the two read as one band and the footer has no edge at all.
      Darker here so the page ends on a base rather than trailing off, and the
      soft ink is stepped down with it to hold 4.5:1 on the heavier ground. */
-  --surface-footer: #c8cec2;
+  --surface-footer: #ccb9e2;
   --on-footer: #0b1b2a;
   --on-footer-soft: #414d57;
-  --surface-chrome: #e4e7e0;
+  --surface-chrome: #f1ebfb;
   --on-chrome: #0b1b2a;
   --on-chrome-soft: #5a6570;
 
@@ -67,11 +70,21 @@
   --wordmark-box: #ffffff;
   --wordmark-box-ink: #0b1b2a;
 
-  /* One accent hue, one lightness per theme. */
-  --accent: #7c2434;
-  --accent-strong: #96303f;
-  --accent-soft: #a8404f;
+  /* Brand violet, per the client's design-token spec. Five roles: the base
+     action colour, its dark gradient/hover partner, a lighter hover shift, and
+     two pale tints for backgrounds and badges. accent-soft stays a genuinely
+     visible mid-violet (not a pale tint) — it draws the theme-toggle ring and
+     the world canvas's booked-contact halo, both of which need to read as
+     colour, not as a wash. */
+  --accent: #5b21b6;
+  --accent-strong: #2e1065;
+  --accent-hover: #6d28d9;
+  --accent-tint: #f5f3ff;
+  --accent-muted: #ede9fe;
+  --accent-soft: #9061c9;
   --accent-ink: #f6f7f4;
+  /* For CTA buttons and avatar/icon circles, per spec: dark to base, 135deg. */
+  --accent-gradient: linear-gradient(135deg, var(--accent-strong), var(--accent));
 
   /* Hairlines, derived from the ink of the surface they sit on. */
   --rule: rgba(11, 27, 42, 0.14);
@@ -80,20 +93,32 @@
   --rule-chrome: rgba(11, 27, 42, 0.18);
 
   /* Pointer light, tinted to the accent and keyed to the ground. */
-  --spot-tint: rgba(124, 36, 52, 0.09);
+  --spot-tint: rgba(91, 33, 182, 0.09);
+
+  /* Form errors — the one functional colour the accent cannot carry. */
+  --danger: #b3261e;
 
   /* Density down the side the hero copy holds. A photograph is never a reliable
      ground for type, and a full-frame overlay throws the photograph away, so the
      density goes only where the words are. Pushes away from the ink, which means
      it lightens on this theme and darkens on the other. */
-  --hero-scrim: rgba(252, 252, 250, 0.5);
+  --hero-scrim: rgba(253, 252, 255, 0.5);
 
-  /* The world's atmosphere: weather over the record field. Pulled back from
-     0.82/0.6 so the ground under the traveling copy stays pale enough for the
-     body ink to hold 4.5:1 — the murk was landing on exactly the bottom-left
-     corner the gates and the field paragraph sit in. */
-  --world-scrim-lead: rgba(3, 10, 18, 0.5);
-  --world-scrim-trail: rgba(3, 10, 18, 0.38);
+  /* The world's atmosphere: weather over the record field.
+     Alpha pulled back from 0.82/0.6 so the ground under the traveling copy
+     stays pale enough for the body ink — the murk was landing on exactly the
+     bottom-left corner the gates and the field paragraph sit in.
+
+     The pigment is the brand's own deep violet, not the near-black navy the
+     dark theme uses. That navy is the dark world's *ground colour*, so over
+     there the atmosphere simply deepens what is already beneath it; laid over
+     this theme's violet-white paper the same value reads as a cold grey murk
+     and the whole hero comes out steel rather than violet. Same value on the
+     light theme also measured 4.36:1 under the body ink; the violet composites
+     lighter and lifts that to 5.03:1, so this is the more legible choice as
+     well as the more coherent one. */
+  --world-scrim-lead: rgba(46, 16, 101, 0.5);
+  --world-scrim-trail: rgba(46, 16, 101, 0.38);
   --world-grain: 0.05;
 }
 
@@ -139,19 +164,30 @@
   --wordmark-box: #f4f5f1;
   --wordmark-box-ink: #0b1b2a;
 
-  /* Same hue, one step lighter: an accent tuned for paper goes muddy on a dark
-     ground and cannot clear 4.5:1 there. */
-  --accent: #d86e7c;
-  --accent-strong: #de7381;
-  --accent-soft: #f0b9c1;
-  --accent-ink: #0a1119;
+  /* Same brand violet, lifted for a dark ground — not part of the client's
+     spec, which only covers the light surfaces below; this is a minimal,
+     un-tuned carry-over so the accent isn't broken here, not a considered dark
+     pass. Revisit when dark theme is actually in scope. */
+  --accent: #6d28d9;
+  --accent-strong: #8b5cf6;
+  --accent-hover: #8b5cf6;
+  --accent-tint: #241a3d;
+  --accent-muted: #2f2350;
+  --accent-soft: #a78bfa;
+  /* Flipped from the light theme's dark-on-fill: the dark-mode accent is a
+     mid-tone fill, so it needs light text on it, not the near-black ink the
+     old rose accent paired with. */
+  --accent-ink: #f6f7f4;
+  --accent-gradient: linear-gradient(135deg, var(--accent-strong), var(--accent));
 
   --rule: rgba(238, 240, 234, 0.16);
   --rule-strong: rgba(238, 240, 234, 0.3);
   --rule-panel: rgba(238, 240, 234, 0.18);
   --rule-chrome: rgba(238, 240, 234, 0.18);
 
-  --spot-tint: rgba(240, 185, 193, 0.1);
+  --spot-tint: rgba(139, 92, 246, 0.12);
+
+  --danger: #ffb4ab;
 
   --hero-scrim: rgba(3, 10, 18, 0.5);
   --world-scrim-lead: rgba(3, 10, 18, 0.82);

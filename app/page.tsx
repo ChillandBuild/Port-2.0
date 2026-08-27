@@ -1,9 +1,11 @@
 import { Footer } from "@/components/chrome/Footer";
 import { TopNav } from "@/components/chrome/TopNav";
+import { Positioning } from "@/components/about/Positioning";
 import { Education } from "@/components/education/Education";
 import { Estimator } from "@/components/estimator/Estimator";
 import { History } from "@/components/history/History";
 import { PointerFX } from "@/components/motion/PointerFX";
+import { FeaturedPosts } from "@/components/posts/FeaturedPosts";
 import { Proof } from "@/components/proof/Proof";
 import { Range } from "@/components/range/Range";
 import { Reply } from "@/components/reply/Reply";
@@ -24,9 +26,11 @@ export default function HomePage() {
       <main id="main">
         <WorldStage />
         <Proof />
+        <Positioning />
         <History />
         <Education />
         <Range />
+        <FeaturedPosts />
         <Estimator />
         <Terms />
         <Reply />

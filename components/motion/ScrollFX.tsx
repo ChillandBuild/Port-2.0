@@ -123,6 +123,30 @@ export function ScrollFX() {
               },
             );
           });
+
+          // The footer's wordmark is set wider than the viewport; the scroll
+          // through the footer carries it across the gap. Falls back to static
+          // when there is nothing to travel.
+          gsap.utils.toArray<HTMLElement>("[data-drift]").forEach((el) => {
+            const distance = () =>
+              Math.max(0, el.scrollWidth - (el.parentElement?.clientWidth ?? window.innerWidth));
+            if (!distance()) return;
+            gsap.fromTo(
+              el,
+              { x: 0 },
+              {
+                x: () => -distance(),
+                ease: "none",
+                scrollTrigger: {
+                  trigger: el.parentElement ?? el,
+                  start: "top 85%",
+                  end: "bottom bottom",
+                  scrub: 0.5,
+                  invalidateOnRefresh: true,
+                },
+              },
+            );
+          });
         }
       });
 
@@ -132,8 +156,35 @@ export function ScrollFX() {
       document.fonts?.ready.then(refresh);
       window.addEventListener("load", refresh);
 
+      // Safety net. A reveal that never fires is content lost: opacity 0 has
+      // no fallback. So anything the reveal system still holds hidden once it
+      // has entered the viewport is force-revealed here — the triggers stay
+      // in charge of the animation, this only catches what they drop.
+      let queued = false;
+      const revealStragglers = () => {
+        queued = false;
+        gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+          if (
+            el.getBoundingClientRect().top < window.innerHeight &&
+            getComputedStyle(el).opacity === "0"
+          ) {
+            gsap.set(el, { clearProps: "opacity,transform" });
+          }
+        });
+      };
+      const queueRevealCheck = () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(revealStragglers);
+        }
+      };
+      window.addEventListener("scroll", queueRevealCheck, { passive: true });
+      window.addEventListener("resize", queueRevealCheck, { passive: true });
+
       cleanup = () => {
         window.removeEventListener("load", refresh);
+        window.removeEventListener("scroll", queueRevealCheck);
+        window.removeEventListener("resize", queueRevealCheck);
         ctx.revert();
       };
     })();

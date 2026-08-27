@@ -1,7 +1,11 @@
+/* A band, not a page: About sits on the mid panel step so the "who runs this"
+   moment stays distinct from the light pages either side of it — Proof below
+   and History above run on --surface-page / --surface-page-alt. */
+
 .section {
+  background: var(--surface-panel);
+  color: var(--on-panel);
   padding: var(--space-section) var(--space-shell);
-  background: var(--color-ink);
-  color: var(--color-bone);
 }
 
 .rail {
@@ -9,12 +13,12 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1.35rem;
-  border-bottom: 1px solid var(--color-rule-inv);
-  color: var(--color-zinc-inv);
+  border-bottom: 1px solid var(--rule-panel);
+  color: var(--on-panel-soft);
 }
 
 .stamp {
-  color: var(--color-ox-soft);
+  color: var(--accent);
 }
 
 .grid {
@@ -29,31 +33,8 @@
   flex-direction: column;
 }
 
-.exchange {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  margin-top: auto;
-  padding-top: clamp(2.5rem, 5vw, 4rem);
-  max-width: 26ch;
-}
-
-.asked {
-  font-size: var(--text-base);
-  color: var(--color-zinc-inv);
-}
-
-/* The answer is the one line that earns a different voice on this ground. */
-.answered {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: var(--text-h3);
-  line-height: 1.25;
-  color: var(--color-ox-soft);
-}
-
 .eyebrow {
-  color: var(--color-ox-soft);
+  color: var(--accent);
   margin-bottom: 1.5rem;
 }
 
@@ -67,11 +48,34 @@
   text-wrap: balance;
 }
 
+.exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: auto;
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+  max-width: 26ch;
+}
+
+.asked {
+  font-size: var(--text-base);
+  color: var(--on-panel-soft);
+}
+
+/* The answer is the one line that earns a different voice on this ground. */
+.answered {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+  color: var(--accent);
+}
+
 .detail {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
-  color: rgba(233, 235, 230, 0.78);
+  color: var(--on-panel-soft);
   font-size: var(--text-base);
   line-height: 1.72;
   max-width: 56ch;
@@ -89,15 +93,15 @@
   gap: 1rem;
   align-items: baseline;
   padding-block: 0.85rem;
-  border-top: 1px solid var(--color-rule-inv);
+  border-top: 1px solid var(--rule-panel);
 }
 
 .fact dt {
-  color: var(--color-zinc-inv);
+  color: var(--on-panel-soft);
 }
 
 .factValue {
-  color: var(--color-bone);
+  color: var(--on-panel);
   font-size: var(--text-base);
 }
 

@@ -1,132 +1,174 @@
-/* Its own ground, one tonal step off the close above it, plus a hairline on the
-   seam. Sharing --surface-close with the reply section meant the two ran
-   together as a single band and the footer had no edge on either theme. */
+/* The colophon. Flat white against the themed page above: a hard cut on the
+   seam reads as a signature block rather than one more tonal panel, so the
+   footer carries its own ink colors instead of the theme tokens. */
+
 .footer {
-  background: var(--surface-footer);
-  color: var(--on-footer);
-  border-top: 1px solid var(--rule-strong);
-  padding: clamp(2.5rem, 5vw, 4rem) var(--space-shell) clamp(2rem, 4vw, 3rem);
+  background: #ffffff;
+  color: #101014;
+  border-top: 1px solid #e6e4ef;
+  padding: clamp(4rem, 10vh, 8rem) var(--space-shell) 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, 6vw, 4.5rem);
+  gap: clamp(3rem, 7vw, 5.5rem);
+  overflow: hidden;
 }
 
-/* Same four fields the page used to open with, now closing it. */
-.envelope {
+/* Identity on the left, the three link groups on the right. */
+.body {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--rule-strong);
-  border-bottom: 1px solid var(--rule-strong);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: start;
 }
 
-.field {
+.identity {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  padding-block: 1.15rem;
-  padding-right: 1.5rem;
-  color: var(--on-footer-soft);
-  border-right: 1px solid var(--rule-strong);
+  gap: 0.75rem;
 }
 
-.field:last-child {
-  border-right: 0;
-  padding-right: 0;
-  text-align: right;
-  align-items: flex-end;
-}
-
-.value {
-  color: var(--on-footer);
-  font-size: var(--text-sm);
+.tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
   line-height: 1.35;
+  color: #565664;
+  max-width: 24ch;
+  text-wrap: pretty;
 }
 
-/* The links the top bar drops below 900px. */
-.sections ul {
+.groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem clamp(1rem, 3vw, 2rem);
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.groupTitle {
+  color: #9a99a6;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #e6e4ef;
+}
+
+.group ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.top {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.wordmark {
-  font-family: var(--font-display);
-  font-weight: 800;
-  /* Quieter than the close above it. The last statement on the page is the
-     reply section's, and a 7rem wordmark under it would take that back. */
-  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  text-align: right;
-}
-
-.bottom {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding-top: 1.35rem;
-  border-top: 1px solid var(--rule-strong);
-}
-
-.fine {
-  color: var(--on-footer-soft);
-}
-
 .link {
-  color: var(--on-footer);
+  position: relative;
+  display: inline-block;
+  color: #101014;
+  font-size: var(--text-base);
   text-decoration: none;
+  width: fit-content;
   transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+/* Underline sweep: the rule draws in from the left edge on hover, rather than
+   fading in under the whole label at once. */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.15em;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms var(--ease-out-expo);
 }
 
 .link:hover {
   color: var(--accent);
 }
 
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+/* External arrows nudge on the same beat as the sweep. */
+.arrow {
+  display: inline-block;
+  transition: transform 300ms var(--ease-out-expo);
+}
+
+.link:hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e6e4ef;
+}
+
+.fine {
+  color: #9a99a6;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #9a99a6;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.back:hover {
+  color: var(--accent);
+}
+
+/* The sign-off. One line set wider than the viewport, drifted sideways by the
+   scroll engine, so the name leaves the page the way a pen leaves paper. It is
+   also the way home: pressing it returns to the hero. */
+.wordmark {
+  margin: 0 calc(var(--space-shell) * -1);
+  padding-bottom: 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(4.5rem, 16.5vw, 20rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: #101014;
+  text-decoration: none;
+  user-select: none;
+}
+
+.stop {
+  color: var(--accent);
+}
+
 @media (max-width: 900px) {
-  .envelope {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .field {
-    border-bottom: 1px solid var(--rule-strong);
-  }
-
-  .field:nth-child(even) {
-    border-right: 0;
-    padding-right: 0;
-  }
-
-  .field:nth-child(3),
-  .field:last-child {
-    border-bottom: 0;
-  }
-
-  .field:last-child {
-    text-align: left;
-    align-items: flex-start;
+  .body {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .links {
-    text-align: left;
+  .groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
   }
 }

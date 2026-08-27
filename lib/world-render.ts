@@ -8,9 +8,6 @@ import {
   cameraAt,
   contactState,
   GATES,
-  laneY,
-  LANE_END_X,
-  LANE_START_X,
   FIELD_DENSITY,
   TILE,
   type Cluster,
@@ -136,9 +133,6 @@ export function drawWorld({ ctx, width, height, t, field, clusters, cohort, budg
   drawField(ctx, field, project, cam, width, height, dim, t, budget);
 
   if (t > 0.4) {
-    const laneAlpha = clamp01((t - 0.4) / 0.08);
-    drawLane(ctx, project, cam.zoom, width, laneAlpha);
-    drawGates(ctx, project, cam.zoom, width, laneAlpha, t);
     drawCohort(ctx, cohort, project, cam.zoom, width, t);
     drawSendFlash(ctx, width, height, t);
   }
@@ -251,83 +245,6 @@ function drawField(
         ctx.fillStyle = ink(Math.min(0.95, alpha));
         ctx.fillRect(sx, sy, size, size);
       }
-    }
-  }
-}
-
-function drawLane(
-  ctx: CanvasRenderingContext2D,
-  project: Project,
-  zoom: number,
-  width: number,
-  alpha: number,
-) {
-  ctx.beginPath();
-  const step = 120;
-  let started = false;
-  for (let x = LANE_START_X; x <= LANE_END_X; x += step) {
-    const { sx, sy } = project(x, laneY(x), 1);
-    if (sx < -600 || sx > width + 600) {
-      started = false;
-      continue;
-    }
-    if (!started) {
-      ctx.moveTo(sx, sy);
-      started = true;
-    } else {
-      ctx.lineTo(sx, sy);
-    }
-  }
-  ctx.strokeStyle = ink(0.34 * alpha);
-  ctx.lineWidth = Math.max(1, zoom * 1.2);
-  ctx.stroke();
-}
-
-function drawGates(
-  ctx: CanvasRenderingContext2D,
-  project: Project,
-  zoom: number,
-  width: number,
-  alpha: number,
-  t: number,
-) {
-  const h = 320;
-  for (const g of GATES) {
-    const { sx, sy } = project(g.x, g.y, 1);
-    if (sx < -260 || sx > width + 260) continue;
-
-    const live = t >= g.at - 0.012;
-    const a = alpha * (live ? 1 : 0.42);
-    // A gate is a threshold, so it is drawn as one: a band the stream passes
-    // through, bracketed top and bottom, rather than a hairline.
-    if (live) {
-      const band = ctx.createLinearGradient(sx - 26 * zoom, 0, sx + 26 * zoom, 0);
-      band.addColorStop(0, withAlpha(P.accent, 0));
-      band.addColorStop(0.5, withAlpha(P.accent, 0.16 * alpha));
-      band.addColorStop(1, withAlpha(P.accent, 0));
-      ctx.fillStyle = band;
-      ctx.fillRect(sx - 26 * zoom, sy - h * zoom, 52 * zoom, h * 2 * zoom);
-    }
-
-    ctx.strokeStyle = live ? withAlpha(P.accent, a) : ink(a * 0.55);
-    ctx.lineWidth = Math.max(1.2, zoom * 1.8);
-    ctx.beginPath();
-    ctx.moveTo(sx, sy - h * zoom);
-    ctx.lineTo(sx, sy + h * zoom);
-    ctx.stroke();
-
-    const bracket = 30 * zoom;
-    ctx.beginPath();
-    ctx.moveTo(sx - bracket, sy - h * zoom);
-    ctx.lineTo(sx + bracket, sy - h * zoom);
-    ctx.moveTo(sx - bracket, sy + h * zoom);
-    ctx.lineTo(sx + bracket, sy + h * zoom);
-    ctx.stroke();
-
-    if (zoom > 0.5) {
-      ctx.fillStyle = ink(alpha * (live ? 0.72 : 0.3));
-      ctx.font = `${Math.round(11 * Math.min(1.6, zoom))}px ui-monospace, SFMono-Regular, monospace`;
-      ctx.fillText(g.index.toString().padStart(2, "0"), sx + 8 * zoom, sy - h * zoom - 6);
     }
   }
 }

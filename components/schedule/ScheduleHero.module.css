@@ -1,0 +1,129 @@
+.hero {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: calc(var(--nav-h) + var(--space-section)) var(--space-shell) var(--space-section);
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  color: var(--on-page-soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.back:hover {
+  color: var(--accent);
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.headline {
+  margin-top: 1.25rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.highlight {
+  display: inline-block;
+  padding: 0 0.28em;
+  border-radius: 10px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-style: italic;
+}
+
+.freeBadge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: clamp(1.75rem, 4vh, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.freeBadge li {
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-base);
+}
+
+.sub {
+  margin-top: 1.25rem;
+  max-width: 46ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+}
+
+.sub strong {
+  color: var(--on-page);
+  font-weight: 600;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  margin: clamp(2rem, 5vh, 3rem) 0 0;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.summaryItem {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.25rem 1.4rem;
+  background: var(--surface-page-alt);
+}
+
+.summaryItem dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--on-page);
+}
+
+.summaryItem dd {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--on-page-soft);
+}
+
+.summaryItemFree {
+  background: var(--accent-tint);
+}
+
+.summaryItemFree dt {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .headline {
+    font-size: clamp(2rem, 1.4rem + 5vw, 2.75rem);
+  }
+}

@@ -17,7 +17,19 @@ function mqlTimeline(leads: number): string {
   return (mqlTiers.find((tier) => leads <= tier.upTo) ?? mqlTiers[mqlTiers.length - 1]).label;
 }
 
-export function Estimator() {
+interface EstimatorProps {
+  /** Lets the schedule page re-pitch the same model against booking, rather
+   *  than duplicating the whole calculator. Defaults to the homepage copy. */
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+}
+
+export function Estimator({
+  eyebrow = ESTIMATOR.eyebrow,
+  heading = ESTIMATOR.heading,
+  body = ESTIMATOR.body,
+}: EstimatorProps = {}) {
   const [sectorKey, setSectorKey] = useState(sectors[0].key);
   const [leads, setLeads] = useState(volume.default);
   const sliderId = useId();
@@ -43,11 +55,11 @@ export function Estimator() {
       aria-labelledby="estimator-heading"
     >
       <div className={styles.head} data-reveal data-reveal-children>
-        <p className={`mono ${styles.eyebrow}`}>{ESTIMATOR.eyebrow}</p>
+        <p className={`mono ${styles.eyebrow}`}>{eyebrow}</p>
         <h2 className={styles.heading} id="estimator-heading">
-          {ESTIMATOR.heading}
+          {heading}
         </h2>
-        <p className={styles.standfirst}>{ESTIMATOR.body}</p>
+        <p className={styles.standfirst}>{body}</p>
       </div>
 
       <div className={styles.panel} data-reveal>

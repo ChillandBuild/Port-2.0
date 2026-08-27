@@ -32,21 +32,21 @@ export function Reply() {
           <span className={styles.say}>Say hello and it runs for you.</span>
         </h2>
 
-        <dl className={styles.receipt} data-reveal data-reveal-children>
-          {receipt.map((line) => (
-            <div key={line.label}>
-              <dt className="mono">{line.label}</dt>
-              <dd className="tabular">{line.value}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className={`mono ${styles.disclaimer}`}>
-          Totals from the run above. The verified figures are in the ledger.
-        </p>
+        <figure className={styles.totals} data-reveal>
+          <dl className={styles.receipt}>
+            {receipt.map((line) => (
+              <div key={line.label} className={styles.line}>
+                <dt className="mono">{line.label}</dt>
+                <dd className="tabular">{line.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <figcaption className={`mono ${styles.disclaimer}`}>
+            Totals from the run above. The verified figures are in the ledger.
+          </figcaption>
+        </figure>
 
         <div className={styles.actions}>
-          {/* The one magnetic element on the page. A page of them is unusable;
-              the primary action earns it. */}
           <a
             className={styles.primary}
             href={IDENTITY.linkedin}
@@ -55,12 +55,6 @@ export function Reply() {
             data-magnet="0.22"
           >
             Connect on LinkedIn
-          </a>
-          <a className={styles.ghost} href={IDENTITY.phoneHref}>
-            {IDENTITY.phone}
-          </a>
-          <a className={styles.ghost} href={IDENTITY.resume}>
-            Résumé
           </a>
         </div>
 

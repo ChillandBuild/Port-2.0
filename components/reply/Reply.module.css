@@ -34,40 +34,40 @@
   letter-spacing: -0.01em;
 }
 
-/* Five equal columns, not content-width boxes. On flex each column was as wide
-   as whatever it happened to hold — "240" against "3", "VERIFIED" against
-   "SENT" — so the four gaps came out at four different widths and the row read
-   as mis-set. Equal fractions keep every column the same width, which is what
-   lets the labels and the figures line up as a rhythm. The whole block is
-   capped short so the columns fill it edge to edge and the top rule spans the
-   same width the figures do — a fixed 8.5rem track inside the 72rem container
-   left the rule stretching far past a row of numbers bunched at the left. */
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+}
+
 .receipt {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1.5rem clamp(1.25rem, 4vw, 3rem);
-  max-width: 44rem;
-  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  align-items: end;
   padding-top: 1.5rem;
   border-top: 1px solid var(--rule-strong);
 }
 
-.receipt > div {
-  display: grid;
-  gap: 0.25rem;
-  transition: transform 320ms var(--ease-out-expo);
-}
-
-.receipt:hover > div {
-  opacity: 0.64;
+.line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+  text-align: start;
   transition:
     opacity 260ms var(--ease-out-expo),
-    transform 320ms var(--ease-out-expo);
+    translate 320ms var(--ease-out-expo);
 }
 
-.receipt > div:hover {
+.receipt:hover .line {
+  opacity: 0.64;
+}
+
+.receipt .line:hover {
   opacity: 1;
-  transform: translateY(-4px);
+  translate: 0 -4px;
 }
 
 .receipt dt {
@@ -76,23 +76,40 @@
 
 .receipt dd {
   margin: 0;
+  min-width: 3ch;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--text-h3);
+  line-height: 1;
   letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
 }
 
-.receipt > div:last-child dd {
+.receipt .line:last-child dd {
   color: var(--accent);
 }
 
-/* A footnote to the receipt, not a sixth row of it. Set hard against the
-   figures it read as part of the table, and running the full width it read as
-   another line of data. */
 .disclaimer {
   color: var(--on-close-soft);
-  margin-top: clamp(1.25rem, 2.5vh, 2rem);
-  max-width: 52ch;
+}
+
+@media (max-width: 700px) {
+  .receipt {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .line {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .receipt dd {
+    text-align: end;
+  }
 }
 
 .actions {
@@ -104,8 +121,7 @@
 
 /* The magnet writes transform every frame, so the hover state cannot also write
    one: the rAF loop would win and the press feedback would silently vanish. */
-.primary,
-.ghost {
+.primary {
   display: inline-flex;
   align-items: center;
   min-height: 3rem;
@@ -116,33 +132,17 @@
   text-transform: uppercase;
   text-decoration: none;
   border: 1px solid transparent;
-  transition:
-    transform 140ms var(--ease-out-quint),
-    background-color 140ms var(--ease-out-quint);
-}
-
-.primary {
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-ink);
+  transition: background 140ms var(--ease-out-quint);
 }
 
 .primary:hover {
-  background: var(--accent-strong);
+  background: var(--accent-hover);
 }
 
-.ghost {
-  border-color: var(--rule-strong);
-  color: var(--on-close);
-}
-
-.ghost:hover {
-  background: color-mix(in srgb, var(--on-close) 10%, transparent);
-  transform: translateY(-2px);
-}
-
-.primary:active,
-.ghost:active {
-  transform: translateY(1px);
+.primary:active {
+  filter: brightness(0.92);
 }
 
 .sign {

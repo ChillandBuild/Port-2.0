@@ -16,11 +16,11 @@
   border-bottom: 1px solid transparent;
 }
 
+/* No fill: the bar stays transparent at every scroll position, on every page.
+   Only the ink swaps once the hero is behind us, and on this token system
+   --on-world and --on-chrome are the same value in both themes, so even that
+   is here for the pairing's sake more than for a visible change. */
 .nav[data-grounded="true"] {
-  isolation: isolate;
-  background: color-mix(in srgb, var(--surface-chrome) 88%, transparent);
-  backdrop-filter: blur(14px);
-  border-bottom-color: var(--rule-chrome);
   color: var(--on-chrome);
 }
 

@@ -15,9 +15,10 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import heroImage from "@/public/assets/hero-image.png";
-import { PIPELINE } from "@/lib/content";
+import { HERO, PIPELINE } from "@/lib/content";
 import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/world";
 import { CLUSTERS, COHORT, FIELD } from "@/lib/world-instance";
+import { Greeting } from "./Greeting";
 import {
   drawWorld,
   landingProgress,
@@ -35,12 +36,7 @@ import styles from "./WorldStage.module.css";
  *  travel is a little longer than it was. */
 export const WORLD_VH = 7.4;
 
-/** Real figures, all three sourced in SITE-CONTENT.md. */
-const HERO_STATS = [
-  { value: "7+", label: "Years in pre-sales" },
-  { value: "24", label: "Markets worked" },
-  { value: "200M+", label: "Records mapped" },
-] as const;
+
 
 /** How much of the travel the photograph holds before the field takes over. */
 const HERO_DISSOLVE = 0.09;
@@ -55,8 +51,13 @@ interface Cue {
 const CUES: Record<string, Cue> = {
   hero: { from: 0, to: 0.165, rampIn: 0, rampOut: 0.3 },
   field: { from: 0.15, to: 0.355, rampIn: 0.24, rampOut: 0.26 },
-  cost: { from: 0.35, to: 0.455, rampIn: 0.22, rampOut: 0.28 },
-  runHead: { from: 0.5, to: 0.565, rampIn: 0.22, rampOut: 0.36 },
+  // Gate 1's window opens at GATE_FIRST_AT - GATE_STEP_AT / 2 = 0.4885 (see
+  // lib/world.ts), and the gates are a centred block now, same anchor as these
+  // two. cost has to be fully gone before runHead starts, and runHead has to be
+  // fully gone before that gate opens, or two headlines share one spot on
+  // screen. Both windows are sized to land exactly on that boundary.
+  cost: { from: 0.35, to: 0.44, rampIn: 0.22, rampOut: 0.28 },
+  runHead: { from: 0.44, to: 0.4885, rampIn: 0.25, rampOut: 0.25 },
 };
 
 /**
@@ -74,6 +75,20 @@ const GATE_SLIDE_PART = 0.22;
 
 function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
+}
+
+/**
+ * Where a block's *type* ends, not where its box ends.
+ *
+ * The gates are centring containers now: each one spans the whole frame, so its
+ * own box bottom is the bottom of the screen and measuring it would report the
+ * last stage as permanently astride the wipe. The last child is the last line of
+ * copy, which is the edge the landing actually has to clear.
+ */
+function typeBottom(node: HTMLElement): number {
+  const last = node.lastElementChild as HTMLElement | null;
+  if (!last) return node.offsetTop + node.offsetHeight;
+  return node.offsetTop + last.offsetTop + last.offsetHeight;
 }
 
 function cueAt(t: number, cue: Cue): number {
@@ -206,7 +221,7 @@ export function WorldStage() {
             // It has to be gone *before* the edge arrives, not as the edge
             // crosses it: bone type astride the wipe is dark-on-dark above the
             // line and bone-on-bone below it, and the headline reads as sliced.
-            const clearance = (wipeTop - (node.offsetTop + node.offsetHeight)) / 70;
+            const clearance = (wipeTop - typeBottom(node)) / 70;
             a = local >= 0 ? clamp01(clearance) : 0;
           } else {
             a = local >= 0 && local < 1 ? 1 : 0;
@@ -316,9 +331,15 @@ export function WorldStage() {
         <div className={styles.copy} ref={copyRef} data-world-copy>
           <section className={`${styles.block} ${styles.heroAnchor}`} data-cue="hero" aria-labelledby="hero-heading">
             <p className={`mono ${styles.eyebrow}`}>Pre Sales Head · Lead Generation</p>
-            <h1 className={styles.headline} id="hero-heading">
+            <h1
+              className={styles.headline}
+              id="hero-heading"
+              aria-label="Every deal begins with hello."
+            >
               {/* The trailing spaces are for assistive tech: three block spans
-                  otherwise announce as one unspaced run. */}
+                  otherwise announce as one unspaced run. The accessible name is
+                  fixed by aria-label above, so the greeting cycling underneath
+                  never changes what a screen reader hears. */}
               <span className={styles.line}>
                 <span>Every deal </span>
               </span>
@@ -326,7 +347,7 @@ export function WorldStage() {
                 <span>begins with </span>
               </span>
               <span className={`${styles.line} ${styles.say}`}>
-                <span>hello.</span>
+                <Greeting />
               </span>
             </h1>
             <p className={styles.lede}>
@@ -335,7 +356,7 @@ export function WorldStage() {
             </p>
 
             <dl className={styles.stats}>
-              {HERO_STATS.map((stat) => (
+              {HERO.stats.map((stat) => (
                 <div key={stat.label}>
                   <dt className={`${styles.statValue} tabular`}>{stat.value}</dt>
                   <dd className={`mono ${styles.statLabel}`}>{stat.label}</dd>
@@ -347,7 +368,7 @@ export function WorldStage() {
               <a className={styles.primary} href="#contact">
                 Hire me
               </a>
-              <a className={styles.quiet} href="#terms">
+              <a className={styles.quiet} href="#estimator">
                 Work with me
               </a>
             </div>

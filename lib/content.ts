@@ -38,10 +38,39 @@ export const HERO = {
   secondaryCta: { label: "Work with me", href: "#work-plan" },
   stats: [
     { value: "7+", label: "Years in pre-sales" },
-    { value: "24", label: "Markets worked" },
+    { value: "24", label: "Markets reached" },
     { value: "200M+", label: "Records mapped" },
   ],
 } as const;
+
+export interface Greeting {
+  word: string;
+  market: string;
+}
+
+/**
+ * The rotating "hello." — the markets he's actually sold into, felt rather
+ * than read. Sourced from `Portfolio/linkedin-profile.md`, not invented: US,
+ * UK, Europe, Australia, New Zealand, Singapore, Malaysia, UAE, Kuwait, India,
+ * Canada, MENA. Latin transliteration throughout, so every greeting sets in
+ * the same serif — one typeface, no fallback jumble.
+ */
+export const GREETINGS: Greeting[] = [
+  { word: "Vanakkam.", market: "India" },
+  { word: "Hello.", market: "US & UK" },
+  { word: "G'day.", market: "Australia" },
+  { word: "Kia ora.", market: "New Zealand" },
+  { word: "Nǐ hǎo.", market: "Singapore" },
+  { word: "Selamat.", market: "Malaysia" },
+  { word: "Marhaba.", market: "UAE & Kuwait" },
+  { word: "Bonjour.", market: "France & Canada" },
+  { word: "Hallo.", market: "Germany" },
+  { word: "Hola.", market: "Spain" },
+  { word: "Ciao.", market: "Italy" },
+  { word: "Hej.", market: "Nordics" },
+];
+
+export const GREETING_MS = 2600;
 
 /** The signature element: a cold open he'd actually send. */
 export const DRAFT = {
@@ -137,18 +166,20 @@ export interface Sector {
   tag: string;
   title: string;
   description: string;
+  /** Core verticals lead the section and take the accent treatment. */
+  core?: boolean;
 }
 
 export const SECTORS: Sector[] = [
-  { tag: "SaaS", title: "B2B & B2C SaaS", description: "High-velocity growth across IT and SaaS platforms." },
-  { tag: "Markets", title: "Service-based private markets", description: "Global account expansion and deal origination." },
+  { tag: "SaaS", title: "B2B & B2C SaaS", description: "High-velocity growth across IT and SaaS platforms.", core: true },
+  { tag: "Markets", title: "Service-based private markets", description: "Global account expansion and deal origination.", core: true },
+  { tag: "Services", title: "Digital marketing & translation", description: "Performance-driven outreach for MarTech agencies and localisation firms.", core: true },
   { tag: "Staffing", title: "Staffing & recruiting", description: "Fractional pre-sales and BDR talent acceleration." },
   { tag: "Health", title: "MediTech, pharma & healthcare", description: "B2B lead gen across MedTech startups, pharma, and hospital networks." },
   { tag: "Finance", title: "Banking, finance & BPO", description: "Financial service pipelines and back-end solutions." },
   { tag: "Commerce", title: "E-commerce, retail & aviation", description: "Omnichannel B2B and B2C campaign strategy." },
   { tag: "Education", title: "EdTech & institutions", description: "Institutional lead gen and consultative selling." },
   { tag: "Engineering", title: "Energy, utilities & engineering", description: "Technical proposal scoping and enterprise demos." },
-  { tag: "Services", title: "Digital marketing & translation", description: "Performance-driven outreach for MarTech agencies and localisation firms." },
 ];
 
 export interface ToolGroup {
@@ -341,9 +372,9 @@ export const LINKEDIN = {
 
 export const WORK_PLAN = {
   eyebrow: "Sampath work plan",
-  heading: "Pay for tools alone. Leads come later.",
+  heading: "Tools first. Pay when leads land.",
   body:
-    "A structured engagement model built for accountability — you control the spend, the results arrive before the retainer does.",
+    "You control the spend. Results arrive before the retainer does.",
   steps: [
     {
       no: "01",
@@ -387,7 +418,7 @@ export const POSTS: Post[] = [
   },
   {
     topic: "Global expansion",
-    title: "Navigating 12 international markets",
+    title: "Navigating 24 international markets",
     summary: "Adapting cadences and buyer communication norms across North America, Europe, APAC and MENA.",
   },
 ];
@@ -396,10 +427,10 @@ export const CONTACT = {
   eyebrow: "Reply",
   heading: "Start a conversation. I'll say hello first.",
   body:
-    "A focused remote consulting session for lead generation, outbound strategy, and pre-sales planning. Sessions run against IST availability.",
+    "First call is free — 30 to 45 minutes to unpack your pipeline and strategy. Sessions run against IST availability.",
   terms: [
-    { label: "Fee", value: "USD 350" },
-    { label: "Length", value: "60 minutes" },
+    { label: "First call", value: "Free, 30–45 min" },
+    { label: "Second call", value: "USD 350, 1 hour" },
     { label: "Format", value: "Remote, IST hours" },
     { label: "Booking", value: "After approval" },
   ],
@@ -409,12 +440,304 @@ export const CONTACT = {
   secondaryCta: { label: "Call +91 99949 69699", href: IDENTITY.phoneHref },
 } as const;
 
+/** The dedicated /schedule page. Two-call model: a free strategy call, then a
+ * paid setup session — sourced from the live Portfolio/schedule/index.html,
+ * which supersedes the single-session offer this site launched with. */
+export const SCHEDULE = {
+  eyebrow: "Strategy calendar",
+  headline: ["You bring the idea. I'll bring the ", "plan", "."],
+  freeBadge: ["Free", "Free", "Free"],
+  sub: {
+    lead: "First call is free",
+    rest: " — 30 to 45 minutes to unpack your pipeline and strategy.",
+  },
+  summary: [
+    { title: "First call — free", detail: "30–45 min · Strategy & pipeline deep-dive", free: true },
+    { title: "USD 350 — 1 hour setup", detail: "Infrastructure · Tool alignment · Methodology" },
+    { title: "Remote (IST)", detail: "Video call, Indian Standard Time" },
+    { title: "After approval", detail: "Payment link & scheduling instructions" },
+  ],
+  paymentStatus: {
+    eyebrow: "Payment & calendar setup",
+    body: "Payment link will be added after approval. A live booking button and slot selector will appear here once account setup is approved.",
+  },
+  fallback: {
+    eyebrow: "Direct contact & LinkedIn",
+    heading: "Start a conversation with Sampath",
+    body: "Connect via LinkedIn or phone. First call is free (30–45 min). Second call is USD 350 for one hour — infrastructure setup, tool alignment and methodology deep-dive.",
+    primaryCta: { label: "Connect on LinkedIn", href: IDENTITY.linkedin },
+    secondaryCta: { label: "View case studies", href: "/#history" },
+  },
+  links: [
+    { label: "Explore lead-gen background", href: "/#range" },
+    { label: "Review case studies", href: "/#history" },
+  ],
+} as const;
+
 export const FOOTER = {
   wordmark: "Sampath Kumar",
+  tagline: IDENTITY.tagline,
   fineprint: "© 2026 Sampath Kumar · Coimbatore, Tamil Nadu, India",
-  links: [
-    { label: "Terms of service", href: "/terms" },
-    { label: "Privacy policy", href: "/privacy" },
-    { label: "Refunds & cancellations", href: "/refunds" },
+  backToTop: "Back to top",
+  groups: [
+    {
+      title: "Site",
+      links: [
+        { label: "About", href: "/#about" },
+        { label: "Lead generation", href: "/lead-generation" },
+        { label: "Case studies", href: "/case-studies" },
+        { label: "Range", href: "/#range" },
+        { label: "Résumé", href: IDENTITY.resume },
+        { label: "Schedule", href: "/schedule" },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Terms of service", href: "/terms" },
+        { label: "Privacy policy", href: "/privacy" },
+        { label: "Refunds & cancellations", href: "/refunds" },
+      ],
+    },
+    {
+      title: "Contact",
+      links: [
+        { label: "LinkedIn", href: IDENTITY.linkedin },
+        { label: IDENTITY.phone, href: IDENTITY.phoneHref },
+      ],
+    },
   ],
+} as const;
+
+/**
+ * Legal pages — /terms, /privacy, /refunds. Source copy is SITE-CONTENT.md §13
+ * ("Legal and policy content"), which is the facts-only record; these documents
+ * render that text and carry no design intent.
+ */
+
+export interface LegalSection {
+  heading: string;
+  body: string[];
+}
+
+export interface LegalDoc {
+  title: string;
+  eyebrow: string;
+  updated: string;
+  sections: LegalSection[];
+}
+
+/** Shared close for all three policy pages. The contact channels are IDENTITY's. */
+export const LEGAL_CONTACT = {
+  eyebrow: "Questions",
+  body: "Questions about this policy go through LinkedIn or the phone number on this site.",
+  linkedinLabel: "Connect on LinkedIn",
+  phoneLabel: IDENTITY.phone,
+} as const;
+
+const LEGAL_UPDATED = "Last updated 2 August 2026";
+
+export const TERMS: LegalDoc = {
+  title: "Terms of service",
+  eyebrow: "Re: terms of service",
+  updated: LEGAL_UPDATED,
+  sections: [
+    {
+      heading: "The service",
+      body: [
+        "One-to-one remote consulting for lead generation, outbound strategy, pre-sales and related commercial pipeline work. The standard paid offer is a 60-minute online consultation at USD 350. This is a remote service; no physical product is sold and no shipping applies.",
+      ],
+    },
+    {
+      heading: "Booking and payment",
+      body: [
+        "A consultation is confirmed only once the appointment is accepted and payment is received. Payment instructions or a payment link are provided after payment setup is approved. Where a payment link is used, the payment is processed by the named provider; card details are not stored on this website.",
+      ],
+    },
+    {
+      heading: "Delivery",
+      body: [
+        "After payment, the client receives confirmation and scheduling instructions via the contact details they provide. The session runs online on an agreed video-call platform. The client is responsible for accurate contact details, joining on time, and a suitable connection.",
+      ],
+    },
+    {
+      heading: "Client responsibilities",
+      body: [
+        "Provide accurate booking and contact information; share only information they are authorised to share; use any strategy or recommendation at their own business risk; do not record or redistribute a session without prior agreement.",
+      ],
+    },
+    {
+      heading: "Cancellations and refunds",
+      body: [
+        "Governed by the refund and cancellation policy. Booking constitutes agreement to it.",
+      ],
+    },
+    {
+      heading: "Intellectual property",
+      body: [
+        "General methods, frameworks and examples remain the property of their respective owners. A client may use advice from their own session for internal business purposes, but may not resell or publish the material as their own training product.",
+      ],
+    },
+    {
+      heading: "No guaranteed outcome",
+      body: [
+        "Consulting is advisory. No specific revenue, lead, conversion, hiring or investment outcome is guaranteed. The client remains responsible for decisions and implementation.",
+      ],
+    },
+    {
+      heading: "Contact",
+      body: [
+        "Questions about these terms or a booking go through LinkedIn or the phone number on this site.",
+      ],
+    },
+  ],
+};
+
+export const PRIVACY: LegalDoc = {
+  title: "Privacy policy",
+  eyebrow: "Re: privacy policy",
+  updated: LEGAL_UPDATED,
+  sections: [
+    {
+      heading: "Information collected",
+      body: [
+        "Depending on how someone makes contact or books: name, contact details, company information, booking preferences, consultation notes they choose to share, and payment or refund status. This site does not ask for or store full card numbers, CVV codes, or banking passwords.",
+      ],
+    },
+    {
+      heading: "How it is used",
+      body: [
+        "To reply to enquiries and provide requested information; to schedule, deliver, reschedule or refund a consultation; to maintain transaction and service records; to improve the clarity and reliability of the site and service.",
+      ],
+    },
+    {
+      heading: "Payment and service providers",
+      body: [
+        "Where a payment provider is used, payment details are entered on that provider's secure page under its own privacy policy. Only the information needed to confirm the transaction and deliver the service is used by Sampath Kumar. No physical shipping applies.",
+      ],
+    },
+    {
+      heading: "Sharing and retention",
+      body: [
+        "Information may be shared with service providers assisting with scheduling, communications, payment processing or video calls. It is not sold as a mailing list. It is retained only as long as reasonably needed for the service, accounting, dispute handling, or legal obligations.",
+      ],
+    },
+    {
+      heading: "Your choices",
+      body: [
+        "You may ask what personal information is held, request correction of inaccurate information, or ask a service-related question. Some records may need to be retained for accounting, security or legal reasons.",
+      ],
+    },
+    {
+      heading: "Contact",
+      body: [
+        "Privacy questions go through LinkedIn or the phone number on this site.",
+      ],
+    },
+  ],
+};
+
+export const REFUNDS: LegalDoc = {
+  title: "Refund & cancellation policy",
+  eyebrow: "Re: refunds & cancellations",
+  updated: LEGAL_UPDATED,
+  sections: [
+    {
+      heading: "Cancelling before the session",
+      body: [
+        "A full refund is available when the client cancels at least 24 hours before the scheduled start time, requested through the same contact method used for booking.",
+      ],
+    },
+    {
+      heading: "Rescheduling",
+      body: [
+        "One reschedule may be requested at least 24 hours before the session, subject to availability, normally within 30 days of the original booking.",
+      ],
+    },
+    {
+      heading: "Late cancellation or no-show",
+      body: [
+        "Cancellations made less than 24 hours before the session, or a missed session without notice, may not qualify for a refund. A reschedule may be offered at his discretion.",
+      ],
+    },
+    {
+      heading: "If he cancels",
+      body: [
+        "The client may choose a replacement time or receive a full refund for the undelivered session.",
+      ],
+    },
+    {
+      heading: "Refund processing",
+      body: [
+        "Approved refunds go to the original payment method through the payment provider. Timing depends on the provider and the client's bank or card issuer. No physical shipping applies.",
+      ],
+    },
+    {
+      heading: "Requesting one",
+      body: [
+        "Contact via LinkedIn or phone, including the booking name, scheduled time, and payment reference if available.",
+      ],
+    },
+  ],
+};
+
+/**
+ * The dedicated /lead-generation page. Copy draws on SITE-CONTENT.md §2 (what
+ * he does) and reuses the typed process/model/stack already on the site
+ * (PIPELINE, WORK_PLAN, TOOL_GROUPS) so the page cannot drift from the rest.
+ */
+export const LEADGEN = {
+  eyebrow: "Lead generation",
+  headline: "Outbound, engineered like a pipeline.",
+  lede: "I build and run outbound lead generation and pre-sales systems for B2B and B2C companies — defining who is worth contacting, researching and sourcing those contacts, running multi-channel outreach, qualifying the replies, booking meetings, and handing qualified prospects to account executives with the CRM data and reporting to match.",
+  meaningHeading: "What that means in practice.",
+  meaning: [
+    "It is the whole funnel, run as one system: the ideal customer profile is defined, the accounts researched, the contacts sourced and verified, the cadence launched, the replies qualified, and the meetings booked with the data to back the hand-off.",
+    "The same system also carries direct pre-sales work — discovery calls, enterprise product demos, RFP and proposal responses, and ROI modelling for C-suite buyers.",
+  ],
+  processEyebrow: "The method",
+  processHeading: "Eight stages, in order.",
+  processBody: "Each depends on the one before it. This is the sequence the homepage world runs as you scroll.",
+  modelEyebrow: "The engagement model",
+  modelHeading: WORK_PLAN.heading,
+  modelBody: WORK_PLAN.body,
+  stackEyebrow: "The stack",
+  stackHeading: "The tools the pipeline runs on.",
+  stackBody: "Grouped by what they do — finding prospects, managing the pipeline, automating the work, and the market intelligence behind it.",
+  cta: {
+    heading: "Want this running for your pipeline?",
+    body: "Start with a free strategy call, then a performance-linked setup — pay the tool cost first, and pay for results once qualified leads and meetings are landing.",
+    primary: { label: "Schedule a call", href: "/schedule" },
+    secondary: { label: "Connect on LinkedIn", href: IDENTITY.linkedin },
+  },
+} as const;
+
+/**
+ * The /case-studies page. Content is gated: a visitor enters an email and a
+ * phone number, and the case studies open below. Employers are named and the
+ * figures come from ROLES / SITE-CONTENT.md — nothing here is invented.
+ */
+export const CASE_STUDIES = {
+  eyebrow: "Case studies",
+  title: "The proof, opened on request.",
+  lede: "Named employers, real numbers — each case is a role with the work and the result. Leave an email and a phone number to unlock them.",
+  gate: {
+    eyebrow: "Unlock",
+    heading: "Case studies are behind a short gate.",
+    body: "An email and a phone number open them below. The unlock is remembered in this browser only.",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    emailPlaceholder: "you@company.com",
+    phonePlaceholder: "+91 99999 99999",
+    submit: "Unlock case studies",
+    emailInvalid: "Enter a valid email address.",
+    phoneInvalid: "Enter a valid phone number.",
+    note: "Stored in this browser only, to remember the unlock. Nothing is sent anywhere.",
+  },
+  unlockedEyebrow: "Unlocked",
+  unlockedHeading: "Six engagements, named.",
+  unlockedBody: "Each role is a case study: the work, then the headline result.",
+  workLabel: "The work",
+  resultLabel: "The result",
+  footnote: "Employers and figures as recorded in the source content.",
 } as const;

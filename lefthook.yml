@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: "*.{ts,tsx,js,jsx}"
+      run: npx eslint {staged_files}
+
+pre-push:
+  jobs:
+    - name: typecheck-and-build
+      run: npx tsc --noEmit && npm run build

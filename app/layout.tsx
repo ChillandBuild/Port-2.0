@@ -52,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${bricolage.variable} ${interTight.variable} ${dmMono.variable} ${newsreader.variable}`}
       data-theme="light"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <head>

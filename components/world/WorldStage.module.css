@@ -234,8 +234,8 @@
 .centre {
   left: var(--space-shell);
   right: var(--space-shell);
-  top: var(--nav-h);
-  bottom: clamp(1.5rem, 4vh, 3rem);
+  top: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -292,6 +292,80 @@
   font-style: italic;
   font-weight: 300;
   color: var(--accent);
+  /* .line clips its own rise-in entrance with overflow:hidden and a 0.06em
+     floor, which is too tight to also hold the market label riding under the
+     greeting — widen the box rather than let the label escape it and get
+     clipped. */
+  padding-bottom: 1.35em;
+}
+
+/* The rotating greeting. No min-width: the hero is right-aligned, so a floor
+   width would make the box wider than a short word ("Ciao.", "Hola.") while
+   the glyph itself shifts to the box's right edge to stay flush with the line
+   above it — stranding the country label, anchored to the box's left edge,
+   in the gap that opens up on the left. The CTAs below don't depend on this
+   box's width (they're separate, independently right-aligned blocks in normal
+   flow), so there's nothing to reserve space for; the box tracking the word
+   exactly, always, is what keeps the label under it. */
+.greet {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.05em;
+}
+
+/* `.greet` is the direct child of `.line`, so `.line > span` (below) also
+   matches it and its `display: block` wins on specificity, stretching `.greet`
+   to the full right-aligned line width. That un-couples the absolutely
+   positioned market label (left: 0, keyed to `.greet`'s own box) from the
+   word: the label sits at the far-left edge of the whole headline while the
+   word sits right-aligned near the right edge. Two classes here outrank the
+   one-class-plus-element combinator, so `.greet` goes back to shrink-wrapping
+   the word and the label stays under it. */
+.say .greet {
+  display: inline-block;
+}
+
+.greetWord {
+  display: inline-block;
+  animation: greetIn 620ms var(--ease-out-expo) both;
+}
+
+/* A visible floor, not opacity 0: the brand line should never render as
+   "Every deal begins with ___" while the next word focuses in. */
+@keyframes greetIn {
+  from {
+    opacity: 0.32;
+    transform: translateY(0.38em) rotate(1.6deg);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.greetMarket {
+  position: absolute;
+  left: 0.08em;
+  bottom: 0.18em;
+  display: block;
+  color: var(--on-world-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: greetIn 620ms var(--ease-out-expo) 100ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .greetWord,
+  .greetMarket {
+    animation: none;
+  }
 }
 
 @keyframes rise {
@@ -380,9 +454,10 @@
     color 140ms var(--ease-out-expo);
 }
 
-/* Matches the close's primary exactly. One intent, one label, one treatment. */
+/* Matches the close's primary exactly. One intent, one label, one treatment.
+   The one CTA button on the hero, so it carries the brand gradient. */
 .primary {
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: var(--accent-ink);
 }
 
@@ -483,12 +558,26 @@
   list-style: none;
 }
 
+/* Centred on the frame, like the statement that introduces them: same geometry
+   as .centre, so the run reads as one continuous beat rather than a statement
+   followed by a column of cards.
+
+   The accent rail went with the move. A left border on a block that is centred
+   sits nowhere near its type — the number carries the marker on its own. */
 .gate {
   left: var(--space-shell);
-  bottom: clamp(2rem, 6vh, 4.5rem);
-  width: min(40ch, 84vw);
-  border-left: 1px solid var(--accent);
-  padding-left: 1.1rem;
+  right: var(--space-shell);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.gate > * {
+  max-width: min(52ch, 86vw);
 }
 
 .gateNo {

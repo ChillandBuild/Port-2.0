@@ -1,0 +1,66 @@
+.list {
+  margin-top: clamp(2rem, 5vh, 3rem);
+  display: grid;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.case {
+  display: grid;
+  gap: 1.1rem;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  background: var(--surface-page-alt);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.role {
+  color: var(--accent);
+}
+
+.when {
+  color: var(--on-page-soft);
+}
+
+.body {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.label {
+  color: var(--accent);
+}
+
+.work {
+  max-width: 62ch;
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: var(--on-page);
+}
+
+.result {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 62ch;
+}
+
+.resultValue {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  color: var(--on-page);
+}
+
+.footnote {
+  margin-top: 1.25rem;
+  color: var(--on-page-soft);
+}
