@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CONTACT, WORK_PLAN } from "@/lib/content";
 import styles from "./Terms.module.css";
 
@@ -40,6 +41,14 @@ export function Terms() {
           ))}
         </dl>
         <p className={styles.note}>{CONTACT.note}</p>
+
+        {/* The section states the offer; this is the one place on it that acts
+            on that. It goes to /schedule rather than straight to LinkedIn so the
+            free-call-then-paid-setup split is explained before anyone commits —
+            the Reply section below keeps the direct LinkedIn route. */}
+        <Link className={styles.cta} href="/schedule" data-magnet="0.22">
+          Schedule a call <span aria-hidden="true">→</span>
+        </Link>
       </div>
     </section>
   );

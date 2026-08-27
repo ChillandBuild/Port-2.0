@@ -141,6 +141,40 @@
   text-wrap: pretty;
 }
 
+/* Same treatment as the hero's "Hire me" and the close's LinkedIn button: one
+   button vocabulary across the page. `justify-self` because .session is a grid,
+   so without it the button stretches the full column width. */
+.cta {
+  justify-self: start;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  /* The magnet writes transform every frame, so hover cannot also write one —
+     the rAF loop would win and the feedback would silently never paint. */
+  transition: background 140ms var(--ease-out-quint);
+  will-change: transform;
+}
+
+.cta:hover {
+  background: var(--accent-hover);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 @media (min-width: 860px) {
   .steps {
     grid-template-columns: repeat(3, minmax(0, 1fr));

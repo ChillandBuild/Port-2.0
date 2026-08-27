@@ -1,0 +1,59 @@
+.section {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+  padding: clamp(2rem, 5vh, 3rem) var(--space-shell);
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  letter-spacing: -0.02em;
+}
+
+.toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pill {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: start;
+  padding: 0.9rem 1.4rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface-page);
+  color: var(--on-page);
+  cursor: pointer;
+  transition:
+    background 140ms var(--ease-out-quint),
+    border-color 140ms var(--ease-out-quint),
+    transform 140ms var(--ease-out-quint);
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+}
+
+.pill[aria-pressed="true"] {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: var(--accent-ink);
+}
+
+.pillLabel {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.pillHint {
+  font-size: var(--text-xs);
+  opacity: 0.8;
+}

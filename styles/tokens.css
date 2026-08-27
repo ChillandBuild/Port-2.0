@@ -101,8 +101,17 @@
   /* Density down the side the hero copy holds. A photograph is never a reliable
      ground for type, and a full-frame overlay throws the photograph away, so the
      density goes only where the words are. Pushes away from the ink, which means
-     it lightens on this theme and darkens on the other. */
-  --hero-scrim: rgba(253, 252, 255, 0.5);
+     it lightens on this theme and darkens on the other.
+
+     The pigment is the brand's own pale violet (#ede9fe, the spec's "subtle
+     bg") rather than the near-white it started as: over a bright photograph a
+     white wash is invisible as colour, so the one surface the hero copy sits on
+     was the last part of the light theme still reading neutral. Contrast is not
+     the constraint here — the worst pixel under this wash still measures 9.8:1
+     against the body ink — so the ceiling on the hue is taste, not legibility.
+     Coverage is unchanged: it is a column behind the words, gone by mid-frame,
+     never a veil over the subject. */
+  --hero-scrim: rgba(237, 233, 254, 0.5);
 
   /* The world's atmosphere: weather over the record field.
      Alpha pulled back from 0.82/0.6 so the ground under the traveling copy

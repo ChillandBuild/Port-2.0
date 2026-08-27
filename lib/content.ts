@@ -25,6 +25,7 @@ export const ENVELOPE = [
 export const NAV = [
   { label: "About", href: "#about" },
   { label: "Case studies", href: "#track-record" },
+  { label: "Hire me", href: "/hire" },
   { label: "Résumé", href: IDENTITY.resume },
   { label: "Schedule a call", href: "#contact" },
 ] as const;
@@ -481,6 +482,7 @@ export const FOOTER = {
         { label: "About", href: "/#about" },
         { label: "Lead generation", href: "/lead-generation" },
         { label: "Case studies", href: "/case-studies" },
+        { label: "Hire me", href: "/hire" },
         { label: "Range", href: "/#range" },
         { label: "Résumé", href: IDENTITY.resume },
         { label: "Schedule", href: "/schedule" },
@@ -727,7 +729,7 @@ export const CASE_STUDIES = {
     submit: "Unlock case studies",
     emailInvalid: "Enter a valid email address.",
     phoneInvalid: "Enter a valid phone number.",
-    note: "Stored in this browser only, to remember the unlock. Nothing is sent anywhere.",
+    note: "The unlock is remembered in this browser. Your email and phone reach Sampath directly — nothing else.",
   },
   unlockedEyebrow: "Unlocked",
   unlockedHeading: "Six engagements, named.",
@@ -735,4 +737,169 @@ export const CASE_STUDIES = {
   workLabel: "The work",
   resultLabel: "The result",
   footnote: "Employers and figures as recorded in the source content.",
+} as const;
+
+/**
+ * The /hire page. Built for a recruiter reading this in a DM: an 8-second
+ * answer up top, then the actual pre-sales move instead of a static
+ * portfolio — a worked teardown (see TEARDOWN below), applied to a real
+ * company, followed by "want this for yours?" and a capture form. A lane
+ * toggle (hiring vs. buying) swaps only the money & fit section; every other
+ * block is shared between both readers.
+ */
+export const HIRE = {
+  eyebrow: "Hire",
+  title: "Send your domain. I'll show you the outbound.",
+  lede: "A DM from a recruiter usually asks for two things: past work, and a price. This page answers both in under a minute — then shows exactly how the outbound would run for your company, instead of just claiming it can.",
+  card: {
+    eyebrow: "The 8-second version",
+    availability: "Open to full-time roles and fractional / contract engagements.",
+    timezone: "Coimbatore, India · GMT+5:30 — replies land across IST, GMT and PT hours.",
+    stackNote: "Runs on: " + TOOL_GROUPS.flatMap((group) => group.tools).slice(0, 6).join(" · ") + " and more",
+    resumeCta: { label: "Résumé", href: IDENTITY.resume },
+    contactCta: { label: "Message on LinkedIn", href: IDENTITY.linkedin },
+  },
+  lane: {
+    heading: "Which one are you?",
+    hiringLabel: "Hiring for a role",
+    buyingLabel: "Buying outbound",
+    hiringHint: "Full-time or fractional leadership.",
+    buyingHint: "A client project, agency, or engagement.",
+  },
+  teardownIntro: {
+    eyebrow: "How I'd actually run this",
+    heading: "Not a portfolio. A worked example.",
+    body: "Anyone can list numbers from old jobs. Here's the method instead: a full outbound teardown, built the way it would be built for you — on a company everyone already knows, so nothing here is a real client's data.",
+  },
+  captureCta: {
+    heading: "Want this built for your company?",
+    body: "Send a domain and the same teardown gets run on it — real ICP, real triggers, real message — back within a day.",
+    domainLabel: "Company domain",
+    emailLabel: "Work email",
+    nameLabel: "Name",
+    domainPlaceholder: "acme.com",
+    emailPlaceholder: "you@acme.com",
+    namePlaceholder: "Jane Doe",
+    domainInvalid: "Enter a company domain, like acme.com.",
+    emailInvalid: "Enter a valid work email address.",
+    nameInvalid: "Enter your name.",
+    submit: "Send it over",
+    success: "Sent. A reply lands within a day — check the email you gave.",
+    error: "Something broke on this end. Try LinkedIn instead — link below.",
+    note: "Goes straight to Sampath's inbox. No newsletter, no CRM signup.",
+  },
+  moneyFit: {
+    hiring: {
+      eyebrow: "For recruiters",
+      heading: "What I'm looking for, and what it costs.",
+      compLabel: "Expected compensation",
+      compBand: "Market rate for a Pre-Sales / Lead Generation leadership role in your region — open to a real conversation rather than a fixed number on a page.",
+      points: [
+        "7+ years running outbound and pre-sales across 24 markets — NA, EU, APAC, MENA.",
+        "Built and led research and outreach teams, not only individual-contributor work.",
+        "Comfortable owning a number: pipeline, MQLs, meetings booked, CRM hygiene.",
+      ],
+    },
+    buying: {
+      eyebrow: "For buyers",
+      heading: WORK_PLAN.heading,
+      body: WORK_PLAN.body,
+      rateLabel: "Strategy call",
+      rateValue: "Free · 30–45 min",
+      sessionLabel: "Setup session",
+      sessionValue: "USD 350 · 1 hour",
+    },
+  },
+  stackIntro: {
+    eyebrow: "The stack",
+    heading: "The tools this runs on.",
+  },
+  resultsIntro: {
+    eyebrow: "Results",
+    heading: "What the method has actually produced.",
+  },
+  proofLink: {
+    eyebrow: "Deeper proof",
+    heading: "Real named clients, on request.",
+    body: "The teardown above is illustrative, on purpose. The case studies behind it are real — named employers, real figures — gated behind a short form so it's clear who's asking.",
+    cta: { label: "View case studies", href: "/case-studies" },
+  },
+  contact: {
+    heading: "Or just say hello.",
+    body: "First call is free. LinkedIn, phone, or the form above — whichever is faster.",
+  },
+} as const;
+
+export interface TeardownSection {
+  key: string;
+  label: string;
+  body?: string[];
+  bullets?: string[];
+  subject?: string;
+  note?: string;
+  stats?: { value: string; label: string }[];
+}
+
+/**
+ * The public teardown. His method, applied in full to a real, globally
+ * recognisable CONSUMER brand — deliberately outside every sector he has
+ * actually sold into (see SITE-CONTENT.md: mid-market M&A/PE, fractional
+ * SDR, HR-tech, telecom SaaS). No real data about the company appears
+ * anywhere below: every account fact, trigger, and number is constructed to
+ * demonstrate method, not a claim of engagement with that company.
+ */
+export const TEARDOWN = {
+  brand: "Peloton",
+  disclaimer: "Illustrative only. No real data about Peloton was used to build this — it's a worked example of method, not a claim of work done for them.",
+  eyebrow: "Teardown",
+  heading: "How I'd run B2B outbound for a brand like Peloton.",
+  lede: "Peloton sells hardware to consumers, but it also runs a real B2B arm — Peloton Corporate Wellness — selling into hotels, gyms and corporate campuses. That's the account this teardown targets.",
+  sections: [
+    {
+      key: "account",
+      label: "The account",
+      body: [
+        "Peloton Corporate Wellness is a distinct business line inside Peloton, selling fleet hardware and content licensing to hotel groups, corporate campuses and gyms — not the consumer subscription most people know it for.",
+        "The buyer here isn't a Peloton rider. It's a Director of Facilities, a VP of People, or a hotel brand's Head of Guest Experience — someone with a wellness or amenity budget and a reason to spend it this quarter.",
+      ],
+    },
+    {
+      key: "icp",
+      label: "Segment logic",
+      bullets: [
+        "Hotel groups with 200+ properties currently renovating or opening amenity spaces — fitness is already a line item in that budget.",
+        "Corporate campuses of 500+ employees with an active wellness stipend or a benefits refresh underway.",
+        "Boutique gym chains expanding into a new metro, where branded hardware is a differentiator against a plain rack of dumbbells.",
+      ],
+    },
+    {
+      key: "triggers",
+      label: "Trigger events",
+      bullets: [
+        "A property announces a renovation or a new opening — construction and amenity budgets are live.",
+        "A company posts a new VP of People or Head of Workplace Experience — new leaders reopen vendor conversations in their first 90 days.",
+        "A competitor's wellness contract nears renewal — tracked the same way a trigger-event tool tracks funding rounds.",
+      ],
+    },
+    {
+      key: "message",
+      label: "Message reasoning",
+      subject: "A line item for the renovation, not a new vendor search",
+      body: [
+        "Opens with the trigger, not the pitch — the renovation or the budget cycle, named specifically, so it reads as researched rather than templated.",
+        "Names the actual decision Peloton Corporate Wellness sells into — amenity differentiation, not fitness for its own sake — so the reader feels understood in one line, not sold to.",
+        "Closes with a specific, low-friction ask: a 15-minute call to see if the timing lines up. Never a generic \"let's connect.\"",
+      ],
+    },
+    {
+      key: "numbers",
+      label: "Projected numbers",
+      note: "Modelled, not real — the same \"a model, not a claim\" framing used everywhere else on this site.",
+      stats: [
+        { value: "~15%", label: "Modelled reply rate on trigger-matched sends" },
+        { value: "<1.2%", label: "Bounce ceiling this list would be held to" },
+        { value: "8–12", label: "Qualified meetings per month, at this account volume" },
+      ],
+    },
+  ] as TeardownSection[],
 } as const;

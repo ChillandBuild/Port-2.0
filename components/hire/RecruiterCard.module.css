@@ -1,0 +1,131 @@
+.card {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: calc(var(--nav-h) + var(--space-section)) var(--space-shell) var(--space-section);
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  color: var(--on-page-soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.back:hover {
+  color: var(--accent);
+}
+
+.eyebrow {
+  color: var(--accent);
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.role {
+  margin-top: 0.6rem;
+  font-size: var(--text-lg);
+  color: var(--on-page-soft);
+}
+
+.meta {
+  margin-top: 0.3rem;
+  font-size: var(--text-sm);
+  color: var(--on-page-soft);
+  max-width: 48ch;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: clamp(1.75rem, 4vh, 2.5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.stat {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+.statLabel {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--on-page-soft);
+}
+
+.stackNote {
+  margin-top: 1.5rem;
+  color: var(--on-page-soft);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: clamp(1.5rem, 4vh, 2rem);
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform 140ms var(--ease-out-quint),
+    background 140ms var(--ease-out-quint);
+}
+
+.primary {
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+}
+
+.primary:hover {
+  background: var(--accent-hover);
+}
+
+.ghost {
+  border-color: var(--rule-strong);
+  color: var(--on-page);
+}
+
+.ghost:hover {
+  background: color-mix(in srgb, var(--on-page) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -24,6 +24,7 @@ const LINKS = [
   { label: "About", href: "/#about" },
   { label: "Lead generation", href: "/lead-generation" },
   { label: "Case studies", href: "/case-studies" },
+  { label: "Hire me", href: "/hire" },
   { label: "Résumé", href: IDENTITY.resume },
 ] as const;
 

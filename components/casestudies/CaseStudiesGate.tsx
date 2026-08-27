@@ -47,6 +47,15 @@ export function CaseStudiesGate({ children }: { children: React.ReactNode }) {
     } catch {
       // Still unlock for this visit; only the memory of it is lost.
     }
+    // Fire-and-forget: reaches Sampath directly, but a failed or slow request
+    // must never block the unlock the visitor is already owed.
+    fetch("/api/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "case-studies-gate", email: email.trim(), phone: phone.trim() }),
+    }).catch(() => {
+      // Still unlocked for this visit; only the notification is lost.
+    });
     setUnlocked(true);
   };
 
