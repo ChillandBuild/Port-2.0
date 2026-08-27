@@ -140,8 +140,9 @@ export const ABOUT = {
   },
   facts: [
     { label: "Based", value: "Coimbatore, IN · GMT+5:30" },
+    { label: "Engineering", value: "B.E. Mechanical, Sri Krishna College of Technology · 2020" },
+    { label: "Business", value: "MBA Marketing, Amrita Vishwa Vidyapeetham · 2026" },
     { label: "Working", value: "Every time zone that answers" },
-    { label: "Studying", value: "MBA Marketing, Amrita · 2024–2026" },
   ],
 } as const;
 
@@ -277,30 +278,10 @@ export const ROLES: Role[] = [
   },
 ];
 
-export interface Qualification {
-  degree: string;
-  institution: string;
-  dates: string;
-}
-
-/** Sourced from the LinkedIn profile and the résumé; both agree on these three. */
-export const EDUCATION: Qualification[] = [
-  {
-    degree: "MBA, Marketing Management",
-    institution: "Amrita Vishwa Vidyapeetham",
-    dates: "Apr 2024 – Apr 2026",
-  },
-  {
-    degree: "B.E., Mechanical Engineering",
-    institution: "Sri Krishna College of Technology",
-    dates: "2017 – 2020",
-  },
-  {
-    degree: "Diploma, Mechanical Engineering",
-    institution: "Sree Narayana Guru Polytechnic College",
-    dates: "2013 – 2016",
-  },
-];
+/* Education used to run as its own section (see git history for the removed
+   Qualification/EDUCATION shape). Both degrees are now stated inline as two
+   rows in ABOUT.facts instead — a full section was doing a fact list's job,
+   and it repeated the "engineer into sales" point Positioning already makes. */
 
 export interface EstimatorSector {
   key: string;
@@ -334,6 +315,13 @@ export const ESTIMATOR = {
   note:
     "A model, not a quote. The conversion rates track the method on this page; a real number comes out of a scoping call.",
   toolsLink: { label: "See the stack behind the cost", href: "#range" },
+  /** Surfaced right under the modelled numbers, where interest in a real
+   *  answer peaks — the same free first call CONTACT and SCHEDULE describe,
+   *  said again at the moment it's most likely to be acted on. */
+  freeCallNote: {
+    text: "First call is free — 30 to 45 minutes to go through your numbers.",
+    cta: { label: "Say hello", href: "#contact" },
+  },
   sectors: [
     { key: "saas", label: "B2B SaaS growth", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },
     { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350, costPerLead: 4 },
@@ -398,6 +386,9 @@ export interface Post {
   topic: string;
   title: string;
   summary: string;
+  /** Direct permalink to the LinkedIn post, so "Read post on LinkedIn" opens
+   *  the post itself rather than the profile. */
+  url: string;
 }
 
 export const POSTS: Post[] = [
@@ -405,21 +396,25 @@ export const POSTS: Post[] = [
     topic: "Lead gen strategy",
     title: "Achieving +35% lift in lead-to-meeting conversions",
     summary: "Why hyper-segmented industry value propositions outperform generic cold outreach across private markets.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7329332336322400256/",
   },
   {
     topic: "Pre-sales engineering",
     title: "Bridging complex SaaS features to C-suite value",
     summary: "How structured product demos and proposal scoping turn discovery calls into confident closures.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7406615365746823170/",
   },
   {
     topic: "Market intelligence",
     title: "Mapping 200M+ global private companies",
     summary: "Building proprietary database architectures for PE deal sourcing and target acquisition modelling.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7373673254269628416/",
   },
   {
     topic: "Global expansion",
     title: "Navigating 24 international markets",
     summary: "Adapting cadences and buyer communication norms across North America, Europe, APAC and MENA.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7404506078937292800/",
   },
 ];
 

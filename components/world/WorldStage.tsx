@@ -365,11 +365,17 @@ export function WorldStage() {
             </dl>
 
             <div className={styles.actions}>
-              <a className={styles.primary} href="#contact">
+              {/* Forked, not shared: a recruiter and a client want different
+                  proof, so each CTA lands on the section built for them
+                  instead of both funnelling into #contact. */}
+              <a className={styles.primary} href="#history">
                 Hire me
               </a>
               <a className={styles.quiet} href="#estimator">
                 Work with me
+              </a>
+              <a className={styles.quiet} href="#proof">
+                Skip to the numbers
               </a>
             </div>
           </section>

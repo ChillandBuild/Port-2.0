@@ -1,4 +1,4 @@
-import { IDENTITY, POSTS } from "@/lib/content";
+import { POSTS } from "@/lib/content";
 import styles from "./FeaturedPosts.module.css";
 
 /** The LinkedIn glyph, inline so the page stays self-contained. */
@@ -14,6 +14,11 @@ function LinkedInMark() {
  * Featured LinkedIn posts, floating: a seamless marquee that drifts the cards
  * across on their own instead of sitting behind a scrollbar.
  *
+ * Renders as the closing row of Proof — the writing behind the reach Proof's
+ * LinkedIn numbers already claim — rather than as its own section, so it no
+ * longer supplies its own page background, shell padding, or heading level;
+ * Proof provides all three.
+ *
  * The rail is doubled for the loop — the second set is the continuation of the
  * first, kept out of the tab order and hidden from screen readers so nobody
  * hears or tabs through the same four posts twice. Hover or keyboard focus
@@ -24,17 +29,17 @@ export function FeaturedPosts() {
   const loop = [...POSTS, ...POSTS];
 
   return (
-    <section
-      className={`spot ${styles.section}`}
+    <div
+      className={`spot ${styles.embedded}`}
       id="posts"
       data-spot
       aria-labelledby="posts-heading"
     >
       <div className={styles.head} data-reveal data-reveal-children>
         <p className={`mono ${styles.eyebrow}`}>Thought leadership</p>
-        <h2 className={styles.heading} id="posts-heading">
+        <h3 className={styles.heading} id="posts-heading">
           Featured LinkedIn posts
-        </h2>
+        </h3>
         <p className={styles.standfirst}>
           Rolling notes on B2B lead generation, pre-sales architecture, and
           private-market deal origination.
@@ -55,7 +60,7 @@ export function FeaturedPosts() {
               <li className={styles.slot} key={i} aria-hidden={duplicate}>
                 <a
                   className={styles.card}
-                  href={IDENTITY.linkedin}
+                  href={post.url}
                   target="_blank"
                   rel="noreferrer noopener"
                   data-tilt="4"
@@ -65,7 +70,7 @@ export function FeaturedPosts() {
                     <LinkedInMark />
                     {post.topic}
                   </p>
-                  <h3 className={styles.title}>{post.title}</h3>
+                  <h4 className={styles.title}>{post.title}</h4>
                   <p className={styles.summary}>{post.summary}</p>
                   <span className={`mono ${styles.more}`}>
                     Read post on LinkedIn <span className={styles.arrow} aria-hidden="true">↗</span>
@@ -76,6 +81,6 @@ export function FeaturedPosts() {
           })}
         </ul>
       </div>
-    </section>
+    </div>
   );
 }

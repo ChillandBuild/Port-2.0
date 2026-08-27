@@ -117,6 +117,12 @@ export function Estimator({
             </div>
           ))}
           <p className={`mono ${styles.note}`}>{ESTIMATOR.note}</p>
+          <p className={styles.freeCall}>
+            {ESTIMATOR.freeCallNote.text}{" "}
+            <a className={styles.freeCallLink} href={ESTIMATOR.freeCallNote.cta.href}>
+              {ESTIMATOR.freeCallNote.cta.label}
+            </a>
+          </p>
         </dl>
       </div>
     </section>

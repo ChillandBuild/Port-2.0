@@ -144,7 +144,7 @@ Zinnov company; the role was concurrent.)
 
 | Qualification | Institution | Dates |
 | --- | --- | --- |
-| MBA, Marketing Management | Amrita Vishwa Vidyapeetham | Apr 2024 – Apr 2026 |
+| MBA, Marketing Management | Amrita Vishwa Vidyapeetham | Apr 2024 – 2026 (completed) |
 | B.E., Mechanical Engineering | Sri Krishna College of Technology | 2017 – 2020 |
 | Diploma, Mechanical Engineering | Sree Narayana Guru Polytechnic College | 2013 – 2016 |
 

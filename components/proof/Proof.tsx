@@ -1,4 +1,5 @@
 import { ImpressionsChart } from "@/components/linkedin/ImpressionsChart";
+import { FeaturedPosts } from "@/components/posts/FeaturedPosts";
 import { LEDGER, LINKEDIN } from "@/lib/content";
 import styles from "./Proof.module.css";
 
@@ -6,6 +7,9 @@ import styles from "./Proof.module.css";
  * The arrival. The world has landed, the motion drops away, and the figures
  * that follow are the checkable ones — each with the engagement it came from
  * attached, because a number without a source is decoration.
+ *
+ * Closes with the featured LinkedIn posts as one continuous argument: here's
+ * the reach, here's the curve behind it, here's the writing that made both.
  */
 export function Proof() {
   return (
@@ -54,6 +58,10 @@ export function Proof() {
           ))}
         </ul>
         <ImpressionsChart />
+      </div>
+
+      <div className={styles.postsRow}>
+        <FeaturedPosts />
       </div>
     </section>
   );
