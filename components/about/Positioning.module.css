@@ -1,0 +1,115 @@
+.section {
+  padding: var(--space-section) var(--space-shell);
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.rail {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.35rem;
+  border-bottom: 1px solid var(--color-rule-inv);
+  color: var(--color-zinc-inv);
+}
+
+.stamp {
+  color: var(--color-ox-soft);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-gap);
+  padding-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+}
+
+.exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: auto;
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+  max-width: 26ch;
+}
+
+.asked {
+  font-size: var(--text-base);
+  color: var(--color-zinc-inv);
+}
+
+/* The answer is the one line that earns a different voice on this ground. */
+.answered {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-h3);
+  line-height: 1.25;
+  color: var(--color-ox-soft);
+}
+
+.eyebrow {
+  color: var(--color-ox-soft);
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  color: rgba(233, 235, 230, 0.78);
+  font-size: var(--text-base);
+  line-height: 1.72;
+  max-width: 56ch;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.15rem;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--color-rule-inv);
+}
+
+.fact dt {
+  color: var(--color-zinc-inv);
+}
+
+.factValue {
+  color: var(--color-bone);
+  font-size: var(--text-base);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}

@@ -1,0 +1,189 @@
+/* Cold Open — design tokens.
+   Single source for colour, type, space and motion. Nothing hardcodes a palette value.
+
+   Colour is named by ROLE, not by appearance. "ink" and "bone" describe pigment,
+   which is why a page built on them cannot flip: the same token has to be a
+   background in one section and text in another. Surfaces and their inks are
+   paired instead, and each pair is redefined per theme.
+
+   The page runs through six surfaces, in this order:
+     world → page → page-alt → panel → panel-alt → close
+   Within a theme they are tonal steps, not polarity flips. The world is
+   deliberately the most extreme step so the landing wipe still reads as arriving
+   somewhere, which is the one moment that would otherwise be lost by making the
+   whole page one polarity. */
+
+:root {
+  color-scheme: light;
+
+  /* The world: the canvas the page travels through. Furthest from the dossier. */
+  --surface-world: #fcfcfa;
+  --surface-world-wide: #f4f5f1;
+  --surface-world-lane: #f9faf6;
+  --on-world: #0b1b2a;
+  --on-world-soft: #5a6570;
+
+  /* The dossier's primary ground: proof, terms. */
+  --surface-page: #e9ebe6;
+  --on-page: #0b1b2a;
+  --on-page-soft: #59656f;
+
+  /* Secondary ground, so two document sections never abut in the same tone. */
+  --surface-page-alt: #f1f2ed;
+
+  /* The inverted bands: the sector rail and the stack. */
+  --surface-panel: #d7dbd2;
+  --surface-panel-alt: #cdd2c8;
+  --on-panel: #0b1b2a;
+  --on-panel-soft: #4b5761;
+  /* Deliberately the same as soft. The panel grounds are mid-tone, so a third,
+     lighter ink step cannot clear 4.5:1 on them: every value light enough to
+     read as a third step measured between 2.9 and 4.4. Hierarchy on the panels
+     comes from scale and weight instead of from a third grey. */
+  --on-panel-mute: #4b5761;
+
+  /* The close, and the chrome that sits over everything. */
+  --surface-close: #dcdfd6;
+  --on-close: #0b1b2a;
+  --on-close-soft: #4b5761;
+
+  /* The colophon. Its own step, because the close sits directly above it: on a
+     shared ground the two read as one band and the footer has no edge at all.
+     Darker here so the page ends on a base rather than trailing off, and the
+     soft ink is stepped down with it to hold 4.5:1 on the heavier ground. */
+  --surface-footer: #c8cec2;
+  --on-footer: #0b1b2a;
+  --on-footer-soft: #414d57;
+  --surface-chrome: #e4e7e0;
+  --on-chrome: #0b1b2a;
+  --on-chrome-soft: #5a6570;
+
+  /* One accent hue, one lightness per theme. */
+  --accent: #7c2434;
+  --accent-strong: #96303f;
+  --accent-soft: #a8404f;
+  --accent-ink: #f6f7f4;
+
+  /* Hairlines, derived from the ink of the surface they sit on. */
+  --rule: rgba(11, 27, 42, 0.14);
+  --rule-strong: rgba(11, 27, 42, 0.26);
+  --rule-panel: rgba(11, 27, 42, 0.16);
+  --rule-chrome: rgba(11, 27, 42, 0.18);
+
+  /* Pointer light, tinted to the accent and keyed to the ground. */
+  --spot-tint: rgba(124, 36, 52, 0.09);
+
+  /* Density down the side the hero copy holds. A photograph is never a reliable
+     ground for type, and a full-frame overlay throws the photograph away, so the
+     density goes only where the words are. Pushes away from the ink, which means
+     it lightens on this theme and darkens on the other. */
+  --hero-scrim: rgba(252, 252, 250, 0.5);
+
+  /* The world's atmosphere. Kept dark on the light theme by choice: it reads as
+     weather over the record field rather than as a scrim, and the murk is the
+     point. It is doing an aesthetic job here, not a contrast one. */
+  --world-scrim-lead: rgba(3, 10, 18, 0.82);
+  --world-scrim-trail: rgba(3, 10, 18, 0.6);
+  --world-grain: 0.05;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-world: #04090f;
+  --surface-world-wide: #020609;
+  --surface-world-lane: #060e16;
+  --on-world: #eef0ea;
+  --on-world-soft: #94a1ab;
+
+  /* Lifted clear of the world's near-black so the landing wipe is still a
+     visible arrival rather than a change nobody notices. */
+  --surface-page: #141d26;
+  --on-page: #eef0ea;
+  --on-page-soft: #9dabb5;
+
+  --surface-page-alt: #0f1720;
+
+  --surface-panel: #16202a;
+  --surface-panel-alt: #1b2632;
+  --on-panel: #eef0ea;
+  --on-panel-soft: #a4b1bb;
+  --on-panel-mute: #a4b1bb;
+
+  --surface-close: #0a1119;
+  --on-close: #eef0ea;
+  --on-close-soft: #a4b1bb;
+
+  /* Lifts on this theme rather than darkens: the close is already near-black,
+     so a darker footer would be an invisible step. Same seam, opposite
+     direction. */
+  --surface-footer: #131c25;
+  --on-footer: #eef0ea;
+  --on-footer-soft: #a4b1bb;
+  --surface-chrome: #070d13;
+  --on-chrome: #eef0ea;
+  --on-chrome-soft: #97a4ae;
+
+  /* Same hue, one step lighter: an accent tuned for paper goes muddy on a dark
+     ground and cannot clear 4.5:1 there. */
+  --accent: #d86e7c;
+  --accent-strong: #de7381;
+  --accent-soft: #f0b9c1;
+  --accent-ink: #0a1119;
+
+  --rule: rgba(238, 240, 234, 0.16);
+  --rule-strong: rgba(238, 240, 234, 0.3);
+  --rule-panel: rgba(238, 240, 234, 0.18);
+  --rule-chrome: rgba(238, 240, 234, 0.18);
+
+  --spot-tint: rgba(240, 185, 193, 0.1);
+
+  --hero-scrim: rgba(3, 10, 18, 0.5);
+  --world-scrim-lead: rgba(3, 10, 18, 0.82);
+  --world-scrim-trail: rgba(3, 10, 18, 0.6);
+  --world-grain: 0.05;
+}
+
+:root {
+  /* Type families are injected by next/font in layout.tsx */
+  --font-display: var(--font-bricolage, "Helvetica Neue"), system-ui, sans-serif;
+  --font-body: var(--font-inter-tight, system-ui), -apple-system, sans-serif;
+  --font-mono: var(--font-dm-mono, ui-monospace), "SF Mono", monospace;
+  --font-serif: var(--font-newsreader, Georgia), serif;
+
+  /* Type scale */
+  --text-meta: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: clamp(1.25rem, 0.9rem + 1vw, 1.5rem);
+  --text-h3: clamp(1.375rem, 1rem + 1.2vw, 1.75rem);
+  --text-h2: clamp(1.75rem, 1.1rem + 2.4vw, 2.75rem);
+  --text-h1: clamp(3rem, 1.2rem + 7.4vw, 7.5rem);
+  --text-stat: clamp(1.75rem, 1rem + 2.9vw, 2.75rem);
+
+  --tracking-meta: 0.14em;
+  --leading-tight: 0.88;
+  --leading-body: 1.62;
+
+  /* Space */
+  --space-shell: clamp(1.25rem, 4vw, 4.5rem);
+  --space-section: clamp(3rem, 1.6rem + 4.4vw, 5.5rem);
+  --space-gap: clamp(2rem, 5vw, 5rem);
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 260ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* The top bar is fixed chrome; jump targets and the world's readout clear it. */
+  --nav-h: 64px;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --nav-h: 56px;
+  }
+}

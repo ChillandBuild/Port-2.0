@@ -1,0 +1,293 @@
+.rail {
+  position: relative;
+  background: var(--surface-panel);
+  color: var(--on-panel);
+  overflow: hidden;
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(1.1rem, 1.8vw, 1.75rem);
+  align-items: center;
+  padding-inline: var(--space-shell);
+  width: max-content;
+  will-change: transform;
+}
+
+.item {
+  flex: 0 0 auto;
+  align-self: stretch;
+  max-height: 22rem;
+  width: clamp(14rem, 18vw, 17rem);
+}
+
+.itemInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule-panel);
+  transform-style: preserve-3d;
+  transition:
+    border-color 220ms var(--ease-out-expo),
+    background-color 220ms var(--ease-out-expo);
+}
+
+/* The card the pointer is actually over takes the accent rule. Hover, not the
+   pointer engine's proximity flag: proximity has reach, so two neighbours light
+   at once and "the one you are reading" stops meaning anything. */
+.item:hover .itemInner {
+  border-top-color: var(--accent);
+}
+
+.item:hover .itemInner {
+  background: linear-gradient(color-mix(in srgb, var(--accent) 8%, transparent), transparent);
+}
+
+.opener,
+.closer {
+  width: clamp(18rem, 26vw, 25rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  border-top: 0;
+  padding-top: 1.25rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.openerBody,
+.closerBody {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-panel-mute);
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+.closer {
+  justify-content: center;
+}
+
+.tag {
+  color: var(--accent);
+}
+
+.itemTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.itemBody {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-panel-soft);
+  text-wrap: pretty;
+}
+
+/* Directly after a pinned act, so the top padding is cut: the pin needs a
+   viewport to release and full section padding on top of that is a dead screen. */
+.stack {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-panel-alt);
+  color: var(--on-panel);
+  padding: clamp(2.5rem, 6vh, 4.5rem) var(--space-shell) var(--space-section);
+}
+
+.stackHead {
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+
+.stackHeading {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  max-width: 20ch;
+}
+
+.groups {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  border-top: 1px solid var(--rule-panel);
+  padding-top: clamp(1.75rem, 4vh, 3rem);
+}
+
+.group {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  padding: 0.9rem 1rem 1rem;
+  margin: -0.9rem -1rem -1rem;
+  border-radius: 2px;
+  transition: background-color 260ms var(--ease-out-expo);
+}
+
+.group:hover {
+  background: color-mix(in srgb, var(--on-panel) 5%, transparent);
+}
+
+.groupName {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+}
+
+.groupBody {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--on-panel-soft);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.tool {
+  color: var(--on-panel-soft);
+  transition:
+    color 260ms var(--ease-out-expo),
+    transform 260ms var(--ease-out-expo);
+  transition-delay: calc(var(--i, 0) * 22ms);
+}
+
+/* Hovering a group brings its stack up in order, which is what a stack does. */
+.group:hover .tool {
+  color: var(--on-panel);
+  transform: translateY(-2px);
+}
+
+.tool:hover {
+  color: var(--accent);
+  transition-delay: 0ms;
+}
+
+/* Punctuation between chips, not content. It is allowed to sit below the text
+   floor because nothing is lost if it is not read. */
+.tool + .tool::before {
+  content: "·";
+  margin-right: 0.9rem;
+  color: color-mix(in srgb, var(--on-panel) 35%, transparent);
+}
+
+.writes {
+  margin-top: clamp(2.5rem, 6vh, 4.5rem);
+  padding-top: clamp(1.75rem, 4vh, 3rem);
+  border-top: 1px solid var(--rule-panel);
+}
+
+.writesHeading {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-panel-mute);
+  margin-bottom: 1.25rem;
+}
+
+.writesList {
+  display: grid;
+  gap: 1rem;
+}
+
+.writesList li {
+  display: grid;
+  gap: 0.2rem;
+  max-width: 70ch;
+}
+
+.writesTitle {
+  font-size: var(--text-base);
+}
+
+.writesBody {
+  font-size: var(--text-sm);
+  color: var(--on-panel-soft);
+  text-wrap: pretty;
+}
+
+@media (min-width: 860px) {
+  .groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  .writesList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+
+/* A phone is too narrow to pan eleven cards: items arrive cropped mid-word and
+   the travel costs several screens of scroll. The breadth reads fine stacked. */
+@media (max-width: 899px) {
+  .rail {
+    min-height: 0;
+    padding-block: var(--space-section);
+  }
+
+  .track {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: auto;
+    transform: none !important;
+  }
+
+  .item,
+  .opener,
+  .closer {
+    width: auto;
+    max-height: none;
+  }
+}
+
+/* No pin under reduced motion, so the travel cannot carry the navigation. The
+   rail relays out as a grid rather than becoming a horizontal scroll region:
+   everything stays reachable and nothing has to be dragged. */
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    min-height: 0;
+    padding-block: var(--space-section);
+  }
+
+  .track {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.75rem;
+    width: auto;
+    transform: none !important;
+  }
+
+  .item,
+  .opener,
+  .closer {
+    width: auto;
+    max-height: none;
+  }
+
+  .opener,
+  .closer {
+    grid-column: 1 / -1;
+  }
+}

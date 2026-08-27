@@ -1,0 +1,87 @@
+.nav {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 40;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  padding-inline: var(--space-shell);
+  color: var(--on-world);
+  transition:
+    background-color 320ms var(--ease-out-expo),
+    border-color 320ms var(--ease-out-expo),
+    color 320ms var(--ease-out-expo);
+  border-bottom: 1px solid transparent;
+}
+
+.nav[data-grounded="true"] {
+  isolation: isolate;
+  background: color-mix(in srgb, var(--surface-chrome) 88%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--rule-chrome);
+  color: var(--on-chrome);
+}
+
+.home {
+  text-decoration: none;
+  color: inherit;
+}
+
+.links {
+  margin-left: auto;
+}
+
+.links ul {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.4vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  font-size: var(--text-sm);
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.82;
+  transition: opacity 160ms var(--ease-out-expo);
+}
+
+.link:hover {
+  opacity: 1;
+}
+
+.tail {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+}
+
+/* The one emphasised item, the way the reference underlines its primary link. */
+.cta {
+  font-size: var(--text-sm);
+  text-decoration: none;
+  color: inherit;
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid var(--accent);
+  transition: color 160ms var(--ease-out-expo);
+}
+
+.cta:hover {
+  color: var(--accent);
+}
+
+/* A linear page this short-labelled does not earn a hamburger: the section
+   links move to the footer and the phone keeps identity, theme and the ask. */
+@media (max-width: 900px) {
+  .links {
+    display: none;
+  }
+
+  .tail {
+    margin-left: auto;
+  }
+}

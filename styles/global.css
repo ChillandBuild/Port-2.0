@@ -1,0 +1,135 @@
+@import "./tokens.css";
+@import "./typography.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Jump targets clear the fixed top bar. */
+  scroll-padding-top: calc(var(--nav-h) + 0.75rem);
+}
+
+body {
+  margin: 0;
+  /* The page opens inside the world, so the ground behind it is the world's. */
+  background: var(--surface-world);
+  color: var(--on-world);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+ul,
+ol,
+dl {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.shell {
+  padding-inline: var(--space-shell);
+}
+
+/* One light, carried by the pointer across the dark grounds, the same way the
+   pointer leans the world above. Registered from JS, which only registers it at
+   all for a real hovering pointer with reduced motion off, so a phone never
+   loads a stuck highlight. */
+.spot {
+  position: relative;
+  overflow: hidden;
+}
+
+.spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out-expo);
+  background: radial-gradient(
+    360px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot-tint),
+    transparent 70%
+  );
+}
+
+.spot[data-pointer-near]::before {
+  opacity: 1;
+}
+
+.spot > * {
+  position: relative;
+  z-index: 1;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-shell);
+  top: -4rem;
+  z-index: 20;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: top var(--duration-fast) var(--ease-out-expo);
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,424 @@
+"use client";
+
+/**
+ * The world.
+ *
+ * One canvas, sticky for the whole travel, and the page moves through it. There
+ * are no sections in here and no cuts: copy arrives *inside* the frame at
+ * waypoints and leaves again, and the only thing in document flow is the spacer
+ * that gives the travel its length.
+ *
+ * It ends by landing — a single upward wipe hands the page over to paper — and
+ * the world never comes back.
+ */
+
+import Image from "next/image";
+import { useEffect, useRef } from "react";
+import heroImage from "@/public/assets/hero-image.png";
+import { PIPELINE } from "@/lib/content";
+import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/world";
+import { CLUSTERS, COHORT, FIELD } from "@/lib/world-instance";
+import {
+  drawWorld,
+  landingProgress,
+  LANDING_FROM,
+  readPalette,
+  type Palette,
+} from "@/lib/world-render";
+import { RunReadout } from "./RunReadout";
+import { prefersReducedMotion, registerWorld, subscribeScroll } from "@/lib/scroll-store";
+import { subscribeTheme } from "@/lib/theme";
+import styles from "./WorldStage.module.css";
+
+/** Length of the travel, in viewport-heights. The peak owns most of it. */
+/** The photo holds the first screen before it settles into the field, so the
+ *  travel is a little longer than it was. */
+export const WORLD_VH = 7.4;
+
+/** Real figures, all three sourced in SITE-CONTENT.md. */
+const HERO_STATS = [
+  { value: "7+", label: "Years in pre-sales" },
+  { value: "24", label: "Markets worked" },
+  { value: "200M+", label: "Records mapped" },
+] as const;
+
+/** How much of the travel the photograph holds before the field takes over. */
+const HERO_DISSOLVE = 0.09;
+
+interface Cue {
+  from: number;
+  to: number;
+  rampIn?: number;
+  rampOut?: number;
+}
+
+const CUES: Record<string, Cue> = {
+  hero: { from: 0, to: 0.165, rampIn: 0, rampOut: 0.3 },
+  field: { from: 0.15, to: 0.355, rampIn: 0.24, rampOut: 0.26 },
+  cost: { from: 0.35, to: 0.455, rampIn: 0.22, rampOut: 0.28 },
+  runHead: { from: 0.5, to: 0.565, rampIn: 0.22, rampOut: 0.36 },
+};
+
+/**
+ * Gate windows tile the run exactly: each stage owns one step, edge to edge,
+ * and the swap at the boundary is a cut, not a fade.
+ *
+ * Windows that merely *abut* with fades leave a hole between every stage — a few
+ * pixels of scroll with nothing on screen, seven times over. Windows that
+ * overlap superimpose two headlines on the same anchor and both go illegible.
+ * A cut can do neither. The incoming stage slides the last few pixels into
+ * place so the change still reads as movement rather than a flicker.
+ */
+const GATE_SLIDE_PX = 12;
+const GATE_SLIDE_PART = 0.22;
+
+function clamp01(n: number): number {
+  return Math.max(0, Math.min(1, n));
+}
+
+function cueAt(t: number, cue: Cue): number {
+  const { from, to } = cue;
+  const span = Math.max(0.0001, to - from);
+  const rampIn = (cue.rampIn ?? 0.3) * span;
+  const rampOut = (cue.rampOut ?? 0.3) * span;
+  if (t <= from) return rampIn === 0 && t === from ? 1 : t < from ? 0 : 1;
+  if (t >= to) return 0;
+  const intoIn = rampIn > 0 ? (t - from) / rampIn : 1;
+  const intoOut = rampOut > 0 ? (to - t) / rampOut : 1;
+  return Math.max(0, Math.min(1, intoIn, intoOut));
+}
+
+export function WorldStage() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
+  const heroScrimRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const canvas = canvasRef.current;
+    const copy = copyRef.current;
+    if (!section || !canvas || !copy) return;
+
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    const stageEl = canvas.parentElement as HTMLElement;
+
+    registerWorld(section);
+    const reduced = prefersReducedMotion();
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const cueNodes = Array.from(copy.querySelectorAll<HTMLElement>("[data-cue]"));
+    const arrival = copy.querySelector<HTMLElement>('[data-cue="arrival"]');
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let pointerX = 0;
+    let pointerY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    // The canvas has no CSS of its own, so the theme is read out of the document
+    // and re-read whenever it changes.
+    let palette: Palette = readPalette();
+    const unsubscribeTheme = subscribeTheme(() => {
+      palette = readPalette();
+      if (reduced) paint(0.62);
+    });
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+
+    // Fewer points on a phone: the frame budget is smaller and the field reads
+    // dense at that width anyway.
+    const budget = width < 720 ? 1600 : 4200;
+
+    const onPointer = (e: PointerEvent) => {
+      targetX = (e.clientX / window.innerWidth) * 2 - 1;
+      targetY = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+    if (!reduced && !coarse) window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("resize", resize);
+
+    const paint = (t: number) => {
+      pointerX += (targetX - pointerX) * 0.06;
+      pointerY += (targetY - pointerY) * 0.06;
+      drawWorld({
+        ctx,
+        width,
+        height,
+        dpr,
+        t,
+        field: FIELD,
+        clusters: CLUSTERS,
+        cohort: COHORT,
+        budget,
+        palette,
+        px: reduced ? 0 : pointerX,
+        py: reduced ? 0 : pointerY,
+      });
+
+      // The scrim and grain belong to the world. Once the wipe starts they have
+      // to go with it, or they render as a grey haze over the landed paper.
+      const landed = Math.max(0, Math.min(1, (t - LANDING_FROM) / (1 - LANDING_FROM)));
+      stageEl.style.setProperty("--world-veil", (1 - landed).toFixed(3));
+
+      // Where the paper has risen to, in viewport pixels. The curve is the
+      // canvas's own, not a copy of it.
+      const eased = landingProgress(t);
+      const wipeTop = height - height * eased;
+      // The veil is clipped to the part of the frame that is still world, so it
+      // never greys the paper coming up underneath it.
+      stageEl.style.setProperty("--world-wipe", eased.toFixed(4));
+
+      for (const node of cueNodes) {
+        const key = node.dataset.cue as string;
+        const gate = node.dataset.gate;
+        let a: number;
+        let slide: number | null = null;
+        if (node === arrival) {
+          // The arrival is ink, and ink only reads on paper. So it is not on a
+          // clock at all: it fades in as the wipe edge rises through it and
+          // holds to the end of the travel. Riding the edge instead put it below
+          // the fold for the first half of the landing, behind the rail.
+          a = clamp01((node.offsetTop + 60 - wipeTop) / 96);
+        } else if (gate) {
+          const index = Number(gate);
+          const at = GATES[index - 1].at;
+          const local = (t - (at - GATE_STEP_AT / 2)) / GATE_STEP_AT;
+          if (index === GATES.length) {
+            // The last stage is bone type at the foot of the frame and the paper
+            // comes up underneath it, so it is not dismissed on a clock: it is
+            // driven out by the approaching wipe edge. On a clock it clears the
+            // screen well before the sheet has risen far enough for the arrival —
+            // an empty frame at the one moment the whole travel is building to.
+            // It has to be gone *before* the edge arrives, not as the edge
+            // crosses it: bone type astride the wipe is dark-on-dark above the
+            // line and bone-on-bone below it, and the headline reads as sliced.
+            const clearance = (wipeTop - (node.offsetTop + node.offsetHeight)) / 70;
+            a = local >= 0 ? clamp01(clearance) : 0;
+          } else {
+            a = local >= 0 && local < 1 ? 1 : 0;
+          }
+          slide = (1 - clamp01(local / GATE_SLIDE_PART)) * GATE_SLIDE_PX;
+        } else {
+          a = cueAt(t, CUES[key]);
+        }
+        node.style.opacity = a.toFixed(3);
+        node.style.visibility = a < 0.01 ? "hidden" : "visible";
+        const shift = node === arrival ? 0 : (slide ?? (1 - a) * 14);
+        node.style.transform = shift === 0 ? "none" : `translate3d(0, ${shift.toFixed(2)}px, 0)`;
+      }
+
+      if (heroScrimRef.current) {
+        heroScrimRef.current.style.opacity = cueAt(t, CUES.hero).toFixed(3);
+      }
+
+      if (photoRef.current) {
+        // Opens at true scale, then eases in by six percent as it fades, so the
+        // world appears to come through the frame rather than replace it. The
+        // travel stays at or above 1: below it the box edges would expose the
+        // ground behind while the photograph is still partly opaque.
+        const held = Math.max(0, Math.min(1, t / HERO_DISSOLVE));
+        const eased = held * held * (3 - 2 * held);
+        photoRef.current.style.opacity = (1 - eased).toFixed(3);
+        photoRef.current.style.transform = `scale(${(1 + eased * 0.06).toFixed(4)})`;
+        // The world's own atmosphere waits for the photograph to clear: its
+        // leading lobe lands on the subject, not on type.
+        stageEl.style.setProperty("--photo-hold", (1 - eased).toFixed(3));
+      }
+
+      if (countRef.current) {
+        const c = cueAt(t, CUES.field);
+        const shown = Math.round(200 * Math.min(1, c * 1.35));
+        countRef.current.textContent = `${shown}M+`;
+      }
+    };
+
+    if (reduced) {
+      // No travel: one representative frame, and every cue held open so the
+      // meaning survives without the motion.
+      section.dataset.ready = "true";
+      resize();
+      paint(0.62);
+      for (const node of cueNodes) {
+        node.style.opacity = "1";
+        node.style.transform = "none";
+        node.style.visibility = "visible";
+      }
+      if (countRef.current) countRef.current.textContent = "200M+";
+      return () => {
+        window.removeEventListener("resize", resize);
+        unsubscribeTheme();
+        registerWorld(null);
+      };
+    }
+
+    // Only now does the stage take over its own layout: everything above this
+    // point renders as a plain stacked document.
+    section.dataset.ready = "true";
+    resize();
+    paint(0);
+
+    const unsubscribe = subscribeScroll((frame) => paint(frame.world));
+
+    return () => {
+      unsubscribe();
+      unsubscribeTheme();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointer);
+      delete section.dataset.ready;
+      registerWorld(null);
+    };
+  }, []);
+
+  return (
+    <div
+      className={styles.world}
+      ref={sectionRef}
+      style={{ ["--world-vh" as string]: `${WORLD_VH}` }}
+    >
+      <div className={styles.stage} data-world-stage>
+        <canvas className={styles.canvas} ref={canvasRef} data-world-canvas aria-hidden="true" />
+        {/* The hero photograph, settling into the record field rather than
+            cutting to it. next/image so the browser is served AVIF or WebP at
+            the size it actually needs: the source is a 1.9MB PNG and this is the
+            page's largest paint. */}
+        <div className={styles.photo} ref={photoRef} aria-hidden="true">
+          <Image
+            src={heroImage}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            placeholder="blur"
+            className={styles.photoImage}
+          />
+        </div>
+
+        <div className={styles.heroScrim} ref={heroScrimRef} aria-hidden="true" />
+        <div className={styles.grain} aria-hidden="true" />
+        <div className={styles.scrim} aria-hidden="true" />
+
+        <RunReadout />
+
+        <div className={styles.copy} ref={copyRef} data-world-copy>
+          <section className={`${styles.block} ${styles.heroAnchor}`} data-cue="hero" aria-labelledby="hero-heading">
+            <p className={`mono ${styles.eyebrow}`}>Pre Sales Head · Lead Generation</p>
+            <h1 className={styles.headline} id="hero-heading">
+              {/* The trailing spaces are for assistive tech: three block spans
+                  otherwise announce as one unspaced run. */}
+              <span className={styles.line}>
+                <span>Every deal </span>
+              </span>
+              <span className={styles.line}>
+                <span>begins with </span>
+              </span>
+              <span className={`${styles.line} ${styles.say}`}>
+                <span>hello.</span>
+              </span>
+            </h1>
+            <p className={styles.lede}>
+              I build outbound engines for B2B and B2C companies, and run the pre-sales that
+              turns the meetings into deals. This page runs one of them while you scroll.
+            </p>
+
+            <dl className={styles.stats}>
+              {HERO_STATS.map((stat) => (
+                <div key={stat.label}>
+                  <dt className={`${styles.statValue} tabular`}>{stat.value}</dt>
+                  <dd className={`mono ${styles.statLabel}`}>{stat.label}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className={styles.actions}>
+              <a className={styles.primary} href="#contact">
+                Hire me
+              </a>
+              <a className={styles.quiet} href="#terms">
+                Work with me
+              </a>
+            </div>
+          </section>
+
+          <section className={`${styles.block} ${styles.trail}`} data-cue="field" id="field">
+            <p className={`mono ${styles.kicker}`}>The addressable market, honestly</p>
+            <p className={styles.figure}>
+              <span className="tabular" ref={countRef}>
+                200M+
+              </span>
+            </p>
+            <p className={styles.body}>
+              Private companies, mapped into a sourcing database at Client A for mid-market
+              M&amp;A origination. Every one of them is a company somebody could sell to.
+              Almost none of them are worth your Tuesday.
+            </p>
+          </section>
+
+          <section className={`${styles.block} ${styles.centre}`} data-cue="cost">
+            <p className={styles.statement}>
+              Writing to all of them is not outbound.
+              <br />
+              It is noise with a logo on it.
+            </p>
+          </section>
+
+          <section className={`${styles.block} ${styles.centre}`} data-cue="runHead" id="run">
+            <h2 className={styles.runHeading}>So it runs like an engine.</h2>
+            <p className={styles.body}>
+              Eight stages, in order, each one depending on the one before it. Keep scrolling
+              and it runs.
+            </p>
+          </section>
+
+          <ol className={styles.gates}>
+            {PIPELINE.map((stage, i) => (
+              <li
+                className={styles.gate}
+                key={stage.no}
+                data-cue={`gate-${stage.no}`}
+                data-gate={i + 1}
+              >
+                    <p className={`mono ${styles.gateNo}`}>{stage.no}</p>
+                <h3 className={styles.gateName}>{stage.name}</h3>
+                <p className={styles.gateBody}>{stage.description}</p>
+              </li>
+            ))}
+          </ol>
+
+          <section className={`${styles.block} ${styles.lead} ${styles.arrival}`} data-cue="arrival">
+            {/* The three marks that survived the run, carried onto the paper, so
+                the number in the sentence is the thing that was just watched. */}
+            <p className={styles.marks} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </p>
+            <p className={styles.statement}>
+              Two hundred and forty contacts in.
+              <br />
+              Three meetings out.
+            </p>
+            <p className={`mono ${styles.note}`}>
+              Simulated cadence, real method. The verified figures are below.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export { RUN_ENDS_AT, LANDING_FROM };

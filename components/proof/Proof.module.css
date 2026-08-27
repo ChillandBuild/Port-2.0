@@ -1,0 +1,170 @@
+.proof {
+  position: relative;
+  background: var(--surface-page);
+  color: var(--on-page);
+  /* Directly under the world's landing wipe: no top padding, or the page opens
+     on an empty screen the reader has to scroll past. */
+  padding: clamp(2rem, 5vh, 4rem) var(--space-shell) var(--space-section);
+}
+
+.intro {
+  max-width: 34ch;
+  margin-bottom: clamp(2.5rem, 6vh, 5rem);
+}
+
+.intro > p {
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+
+.ledger {
+  margin: 0 0 var(--space-gap);
+  border-top: 1px solid var(--rule);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(6rem, 22%) 1fr;
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: baseline;
+  padding-block: clamp(1.1rem, 2.6vh, 2rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* The rule under the row you are reading draws itself in the accent. It is the
+   same gesture the world uses for a gate: a line that means "this one". */
+.row::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 420ms var(--ease-out-expo);
+}
+
+.row:hover::after {
+  transform: scaleX(1);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-stat);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  transition: transform 320ms var(--ease-out-expo);
+}
+
+.row:hover .value {
+  transform: translateX(6px);
+}
+
+.meaning {
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: var(--text-lg);
+  line-height: 1.45;
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+
+.source {
+  color: var(--on-page-soft);
+  transition:
+    color 320ms var(--ease-out-expo),
+    transform 320ms var(--ease-out-expo);
+}
+
+.row:hover .source {
+  color: var(--on-page);
+  transform: translateX(4px);
+}
+
+.inbound {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 62rem;
+  padding-top: clamp(1.5rem, 4vh, 3rem);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.inboundHeading {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.inboundBody {
+  font-size: var(--text-base);
+  color: var(--on-page-soft);
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+
+.inboundStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 5vw, 3.5rem);
+}
+
+.inboundStats li {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.inboundValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  letter-spacing: -0.035em;
+}
+
+.inboundLabel {
+  color: var(--on-page-soft);
+}
+
+@media (min-width: 1080px) {
+  .proof {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    column-gap: clamp(3rem, 6vw, 7rem);
+    align-items: start;
+  }
+
+  .intro {
+    grid-column: 1;
+  }
+
+  .ledger {
+    grid-column: 1;
+    margin-bottom: 0;
+  }
+
+  .inbound {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: clamp(3rem, 12vh, 8rem);
+    border-top: 0;
+    padding-top: 0;
+  }
+}

@@ -1,0 +1,132 @@
+/* Its own ground, one tonal step off the close above it, plus a hairline on the
+   seam. Sharing --surface-close with the reply section meant the two ran
+   together as a single band and the footer had no edge on either theme. */
+.footer {
+  background: var(--surface-footer);
+  color: var(--on-footer);
+  border-top: 1px solid var(--rule-strong);
+  padding: clamp(2.5rem, 5vw, 4rem) var(--space-shell) clamp(2rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+/* Same four fields the page used to open with, now closing it. */
+.envelope {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-block: 1.15rem;
+  padding-right: 1.5rem;
+  color: var(--on-footer-soft);
+  border-right: 1px solid var(--rule-strong);
+}
+
+.field:last-child {
+  border-right: 0;
+  padding-right: 0;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.value {
+  color: var(--on-footer);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+/* The links the top bar drops below 900px. */
+.sections ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  /* Quieter than the close above it. The last statement on the page is the
+     reply section's, and a 7rem wordmark under it would take that back. */
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: right;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.fine {
+  color: var(--on-footer-soft);
+}
+
+.link {
+  color: var(--on-footer);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.link:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .envelope {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field {
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .field:nth-child(even) {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .field:nth-child(3),
+  .field:last-child {
+    border-bottom: 0;
+  }
+
+  .field:last-child {
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .links {
+    text-align: left;
+  }
+}

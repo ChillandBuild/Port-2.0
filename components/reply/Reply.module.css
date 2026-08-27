@@ -1,0 +1,153 @@
+.reply {
+  background: var(--surface-close);
+  color: var(--on-close);
+  padding: var(--space-section) var(--space-shell) clamp(4rem, 10vh, 7rem);
+  min-height: 88svh;
+  display: grid;
+  align-items: center;
+}
+
+.inner {
+  width: 100%;
+  max-width: 72rem;
+}
+
+.kicker {
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1rem + 3.6vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.say {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+
+/* Tracks, not content-width boxes. On flex each column was as wide as whatever
+   it happened to hold — "240" against "3", "VERIFIED" against "SENT" — so the
+   five gaps came out at four different widths and the row read as mis-set. A
+   fixed track is the same width for every column, which is what makes the
+   labels and the figures line up as a rhythm. Capped rather than 1fr: five
+   equal fractions of a 72rem container spread the row so far apart it stops
+   reading as one receipt. */
+.receipt {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 8.5rem));
+  justify-content: start;
+  gap: 1.5rem clamp(1.25rem, 4vw, 3rem);
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.receipt > div {
+  display: grid;
+  gap: 0.25rem;
+  transition: transform 320ms var(--ease-out-expo);
+}
+
+.receipt:hover > div {
+  opacity: 0.64;
+  transition:
+    opacity 260ms var(--ease-out-expo),
+    transform 320ms var(--ease-out-expo);
+}
+
+.receipt > div:hover {
+  opacity: 1;
+  transform: translateY(-4px);
+}
+
+.receipt dt {
+  color: var(--on-close-soft);
+}
+
+.receipt dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  letter-spacing: -0.035em;
+}
+
+.receipt > div:last-child dd {
+  color: var(--accent);
+}
+
+/* A footnote to the receipt, not a sixth row of it. Set hard against the
+   figures it read as part of the table, and running the full width it read as
+   another line of data. */
+.disclaimer {
+  color: var(--on-close-soft);
+  margin-top: clamp(1.25rem, 2.5vh, 2rem);
+  max-width: 52ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+/* The magnet writes transform every frame, so the hover state cannot also write
+   one: the rAF loop would win and the press feedback would silently vanish. */
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform 140ms var(--ease-out-quint),
+    background-color 140ms var(--ease-out-quint);
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.primary:hover {
+  background: var(--accent-strong);
+}
+
+.ghost {
+  border-color: var(--rule-strong);
+  color: var(--on-close);
+}
+
+.ghost:hover {
+  background: color-mix(in srgb, var(--on-close) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+.primary:active,
+.ghost:active {
+  transform: translateY(1px);
+}
+
+.sign {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-xl);
+  color: var(--on-close-soft);
+}

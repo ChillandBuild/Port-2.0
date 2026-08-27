@@ -1,0 +1,14 @@
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-base);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.stop {
+  color: var(--accent);
+}

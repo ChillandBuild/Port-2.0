@@ -1,0 +1,56 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--color-ink);
+  transition:
+    background-color var(--duration-normal) var(--ease-out-expo),
+    border-color var(--duration-normal) var(--ease-out-expo),
+    color var(--duration-normal) var(--ease-out-expo),
+    transform var(--duration-fast) var(--ease-out-expo);
+}
+
+.solid {
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.button:hover {
+  background: var(--color-ox);
+  border-color: var(--color-ox);
+  color: var(--color-bone);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+/* Dark grounds: the hero sits over an image, so the pair inverts. */
+.light {
+  background: var(--color-bone);
+  border-color: var(--color-bone);
+  color: var(--color-ink);
+}
+
+.onDark {
+  background: transparent;
+  border-color: rgba(233, 235, 230, 0.5);
+  color: var(--color-bone);
+}
+
+.onDark:hover {
+  background: var(--color-bone);
+  border-color: var(--color-bone);
+  color: var(--color-ink);
+}

@@ -1,0 +1,148 @@
+"use client";
+
+/**
+ * Scroll behaviour for the paper half of the page.
+ *
+ * The world runs on its own rAF loop because it needs a camera. Everything below
+ * the landing is document-shaped, so it runs on ScrollTrigger instead, wired from
+ * one place off data attributes. Section components stay server components and
+ * stay presentational.
+ *
+ * GSAP is imported dynamically, so it is not in the bundle that paints the hero.
+ */
+
+import { useEffect } from "react";
+
+export function ScrollFX() {
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let cleanup = () => {};
+    let cancelled = false;
+
+    (async () => {
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      if (cancelled) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      const ctx = gsap.context(() => {
+        // Entrances fire once. Content that re-hides on the way back up is a
+        // defect, not an effect.
+        gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+          const children = el.hasAttribute("data-reveal-children")
+            ? Array.from(el.children)
+            : [el];
+          gsap.from(children, {
+            opacity: 0,
+            y: reduced ? 0 : 26,
+            duration: reduced ? 0.3 : 0.9,
+            ease: "power3.out",
+            stagger: reduced ? 0 : 0.06,
+            scrollTrigger: { trigger: el, start: "top 86%", once: true },
+          });
+        });
+
+        gsap.utils.toArray<HTMLElement>("[data-count]").forEach((el) => {
+          const target = Number(el.dataset.count);
+          if (!Number.isFinite(target)) return;
+          const prefix = el.dataset.countPrefix ?? "";
+          const suffix = el.dataset.countSuffix ?? "";
+          const decimals = Number(el.dataset.countDecimals ?? 0);
+          const obj = { n: 0 };
+          gsap.to(obj, {
+            n: target,
+            duration: reduced ? 0 : 1.5,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            onUpdate: () => {
+              el.textContent = `${prefix}${obj.n.toLocaleString("en-US", {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals,
+              })}${suffix}`;
+            },
+          });
+        });
+
+        // Lateral travel reads as breadth. Vertical reads as argument.
+        if (!reduced) {
+          gsap.utils.toArray<HTMLElement>("[data-pan]").forEach((section) => {
+            const track = section.querySelector<HTMLElement>("[data-pan-track]");
+            if (!track) return;
+
+            // Below 900px the rail is stacked in CSS, so there is nothing to pan.
+            if (window.innerWidth < 900) return;
+
+            const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+            if (distance() < window.innerWidth * 0.4) return; // nothing to travel: leave it as a scroll region
+
+            gsap.to(track, {
+              x: () => -distance(),
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: () => `+=${distance() + window.innerHeight * 0.15}`,
+                pin: true,
+                scrub: 0.6,
+                invalidateOnRefresh: true,
+                anticipatePin: 1,
+              },
+            });
+
+            gsap.utils.toArray<HTMLElement>("[data-pan-item]", track).forEach((item, i) => {
+              if (i === 0) return;
+              gsap.from(item, {
+                opacity: 0.55,
+                y: 26,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: item,
+                  containerAnimation: undefined,
+                  start: "top 92%",
+                  once: true,
+                },
+              });
+            });
+          });
+
+          // The spine draws itself as the history passes it.
+          gsap.utils.toArray<HTMLElement>("[data-spine]").forEach((spine) => {
+            gsap.fromTo(
+              spine,
+              { scaleY: 0 },
+              {
+                scaleY: 1,
+                ease: "none",
+                transformOrigin: "top",
+                scrollTrigger: {
+                  trigger: spine.parentElement ?? spine,
+                  start: "top 70%",
+                  end: "bottom 80%",
+                  scrub: 0.4,
+                },
+              },
+            );
+          });
+        }
+      });
+
+      // The world's height is set in svh and the rail measures against real
+      // offsets, so a late font or image load has to re-measure everything.
+      const refresh = () => ScrollTrigger.refresh();
+      document.fonts?.ready.then(refresh);
+      window.addEventListener("load", refresh);
+
+      cleanup = () => {
+        window.removeEventListener("load", refresh);
+        ctx.revert();
+      };
+    })();
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, []);
+
+  return null;
+}

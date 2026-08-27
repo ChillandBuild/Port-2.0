@@ -1,0 +1,51 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* A 24px target around a 7px mark. */
+  min-height: 1.5rem;
+  padding: 0.25rem 0.4rem;
+  margin: -0.25rem -0.4rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  transition: opacity 160ms var(--ease-out-expo);
+}
+
+.toggle:hover {
+  opacity: 0.75;
+}
+
+.toggle:active .mark {
+  transform: rotate(45deg) scale(0.86);
+}
+
+.mark {
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  border: 1px solid var(--accent-soft);
+  background: var(--accent-soft);
+  transition:
+    background-color 200ms var(--ease-out-expo),
+    transform 160ms var(--ease-out-expo);
+}
+
+:root[data-theme="light"] .mark {
+  background: transparent;
+}
+
+.label {
+  font-size: var(--text-meta);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-chrome-soft);
+}
+
+@media (max-width: 900px) {
+  .label {
+    display: none;
+  }
+}

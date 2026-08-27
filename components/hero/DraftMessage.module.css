@@ -1,0 +1,70 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+  box-shadow: var(--shadow-card);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 1.35rem;
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-zinc);
+}
+
+.tag {
+  color: var(--color-ink);
+}
+
+.subject {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  padding: 1.35rem 1.35rem 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.85rem 1.35rem 1.5rem;
+  font-size: var(--text-base);
+  line-height: 1.68;
+  color: var(--color-ink-2);
+}
+
+.signature {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.35rem;
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-zinc);
+}
+
+.reply {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: -1px;
+  padding: 1.05rem 1.35rem;
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.replyValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  letter-spacing: -0.035em;
+  color: var(--color-ox-soft);
+}

@@ -1,0 +1,148 @@
+.terms {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: var(--space-section) var(--space-shell);
+}
+
+.head {
+  max-width: 48rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin-top: 1.1rem;
+  font-size: var(--text-base);
+  color: var(--on-page-soft);
+  max-width: 52ch;
+}
+
+.steps {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  margin: 0 0 var(--space-gap);
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-strong);
+  transition: opacity 260ms var(--ease-out-expo);
+}
+
+/* Reading one phase quietens the other two. The model is sequential, so at any
+   moment exactly one of the three should be the one you are on. */
+.steps:hover .step {
+  /* Quiet, not unreadable. Below about 0.6 the ink drops under 4.5:1 on this
+     ground, and a de-emphasised phase is still a phase somebody may be reading. */
+  opacity: 0.62;
+}
+
+.steps .step:hover {
+  opacity: 1;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 460ms var(--ease-out-expo);
+}
+
+.step:hover::before {
+  transform: scaleX(1);
+}
+
+.stepNo {
+  color: var(--accent);
+}
+
+.stepName {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.stepBody {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-page);
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+
+.session {
+  display: grid;
+  gap: 1rem;
+  padding-top: clamp(1.75rem, 4vh, 3rem);
+  border-top: 1px solid var(--rule);
+  max-width: 62rem;
+}
+
+.sessionHeading {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  letter-spacing: -0.03em;
+}
+
+.sessionBody {
+  font-size: var(--text-base);
+  color: var(--on-page-soft);
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+
+.sessionTerms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 4vw, 3rem);
+  margin: 0.5rem 0 0;
+}
+
+.sessionTerms > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.sessionTerms dt {
+  color: var(--on-page-soft);
+}
+
+.sessionTerms dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+}
+
+.note {
+  font-size: var(--text-sm);
+  color: var(--on-page-soft);
+  max-width: 58ch;
+  text-wrap: pretty;
+}
+
+@media (min-width: 860px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

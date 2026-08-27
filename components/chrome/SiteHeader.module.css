@@ -1,0 +1,49 @@
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.35rem var(--space-shell);
+  color: var(--color-bone);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-base);
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: clamp(1rem, 3vw, 2.25rem);
+}
+
+.link {
+  color: rgba(233, 235, 230, 0.72);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.link:hover {
+  color: var(--color-ox-soft);
+}
+
+@media (max-width: 560px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+}

@@ -1,0 +1,128 @@
+.history {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+  padding: var(--space-section) var(--space-shell);
+}
+
+.head {
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin-top: 1.25rem;
+  font-size: var(--text-base);
+  color: var(--on-page-soft);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+.list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.spine {
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 2rem;
+  width: 1px;
+  background: var(--accent);
+  transform-origin: top;
+}
+
+.role {
+  position: relative;
+  display: grid;
+  gap: 0.5rem clamp(1.5rem, 5vw, 4rem);
+  padding: 0 0 clamp(1.75rem, 4vh, 3rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+.role::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 0.55rem;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  transition:
+    transform 320ms var(--ease-out-expo),
+    box-shadow 320ms var(--ease-out-expo);
+}
+
+/* The marker for the role you are reading blooms, the same mark the run uses
+   for a booked contact. One vocabulary, two halves of the page. */
+.role:hover::before {
+  transform: rotate(45deg) scale(1.7);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.dates {
+  color: var(--on-page-soft);
+}
+
+.detail {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.place {
+  color: var(--on-page-soft);
+}
+
+.summary {
+  margin-top: 0.35rem;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  max-width: 62ch;
+  color: var(--on-page);
+  text-wrap: pretty;
+}
+
+.result {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--accent);
+  transition: transform 380ms var(--ease-out-expo);
+}
+
+.role:hover .result {
+  transform: translateX(8px);
+}
+
+.title {
+  transition: transform 380ms var(--ease-out-expo);
+}
+
+.role:hover .title {
+  transform: translateX(4px);
+}
+
+@media (min-width: 900px) {
+  .role {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    align-items: start;
+  }
+}

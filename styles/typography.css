@@ -1,0 +1,21 @@
+/* Shared type primitives. Component styles compose these rather than restating them. */
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variation-settings: "opsz" 96;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

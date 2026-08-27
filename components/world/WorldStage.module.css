@@ -1,0 +1,759 @@
+.world {
+  position: relative;
+  height: calc(var(--world-vh) * 100svh);
+  background: var(--surface-world);
+}
+
+.stage {
+  --world-veil: 1;
+  --world-wipe: 0;
+  /* 1 while the photograph holds the frame, 0 once it has gone. */
+  --photo-hold: 1;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* A flat dark ground bands on real displays. Grain is the difference between
+   "a dark page" and "a lit room". */
+/* The photograph. Above the field, below the copy, and it never scrolls on its
+   own: its whole life is the first tenth of the travel. */
+.photo {
+  position: absolute;
+  /* Full bleed to the top edge. Starting it below the bar left a band of bare
+     world ground across the first screen, which read as an opaque header bar —
+     the bar is transparent, so the photograph has to reach the top itself. */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+  /* Sized to the source's own 3:2, so the frame fills this box exactly and the
+     only edge in play is the box's. Left it to the box that a contained image
+     ends part way across, and the strip of bare ground beside it reads as a
+     seam no scrim is dense enough to hide. */
+  width: min(100%, calc(100svh * 1.5));
+  /* Its own right edge, dissolved into the ground rather than cut against it.
+     The feather sits inside the scrim's opaque plateau, so nothing legible is
+     lost to it. */
+  --photo-edge: linear-gradient(to right, #000 0%, #000 76%, transparent 100%);
+  -webkit-mask-image: var(--photo-edge);
+  mask-image: var(--photo-edge);
+  /* Pinned at the top edge: the dissolve scales up, and from a centred origin
+     that growth would carry the frame back under the bar it was just moved out
+     of. */
+  transform-origin: 50% 0;
+  background: var(--surface-world-wide);
+  will-change: opacity, transform;
+}
+
+.photoImage {
+  /* The box is already the source's aspect, so cover crops nothing here. */
+  object-fit: cover;
+  object-position: 50% 50%;
+  /* A small push in, pinned to the top edge so the growth runs downward: the
+     subject's head moves *away* from the bar rather than up under it, and no
+     ground is exposed above the frame. Scaled here and not on .photo, which the
+     cue loop writes its own transform to on every frame. */
+  transform: scale(1.1);
+  transform-origin: 50% 0;
+}
+
+/* Deliberately unmistakable. It must not be possible to ship this by accident,
+   so it announces what it is instead of imitating a photograph. */
+.photoNote {
+  position: absolute;
+  left: var(--space-shell);
+  right: var(--space-shell);
+  bottom: calc(var(--space-shell) + 1rem);
+  max-width: 26rem;
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed color-mix(in srgb, var(--on-world) 40%, transparent);
+  color: var(--on-world);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.photoNote span {
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--on-world-soft);
+}
+
+/* Belongs to the hero, not to the photograph: the copy outlives the dissolve by
+   a little, so this fades on the hero's own cue rather than the photo's. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  /* Above the world's atmosphere, not below it. On the light theme the
+     atmosphere is dark and lands on exactly the corner the hero copy holds, so
+     underneath it this cancels out completely. */
+  z-index: 3;
+  pointer-events: none;
+  /* A plateau, then a feather. Starting the fade immediately leaves the left
+     edge of the copy column on raw ground, which is where the darkest pixel
+     under a line of type turns out to be.
+
+     Held to the copy column and nothing past it. The old stop ran to 85% of the
+     frame, which is a veil over the whole photograph: the subject sat under it
+     as much as the type did. The plateau now ends just outside the text box and
+     is gone by the middle of the frame, well clear of the subject. */
+  background: linear-gradient(
+    to left,
+    var(--hero-scrim) 0%,
+    var(--hero-scrim) 34%,
+    color-mix(in srgb, var(--hero-scrim) 55%, transparent) 46%,
+    transparent 60%
+  );
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: calc(var(--world-grain) * var(--world-veil));
+  clip-path: inset(0 0 calc(var(--world-wipe) * 100%) 0);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Density where the type sits, not across the whole frame. Sibling of the copy,
+   never a child of it, so it can be measured.
+
+   Held off entirely while the photograph is up. Its leading lobe sits at the
+   bottom-left corner, which is exactly where the subject stands, so during the
+   hero it is a veil over a person rather than ground under type. It arrives as
+   the photograph dissolves, which is when the world underneath it needs it. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: calc(var(--world-veil) * (1 - var(--photo-hold, 0)));
+  clip-path: inset(0 0 calc(var(--world-wipe) * 100%) 0);
+  background:
+    radial-gradient(120% 90% at 0% 100%, var(--world-scrim-lead) 0%, transparent 62%),
+    radial-gradient(90% 70% at 100% 50%, var(--world-scrim-trail) 0%, transparent 60%);
+}
+
+.copy {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  color: var(--on-world);
+}
+
+.block,
+.gate {
+  position: absolute;
+  will-change: opacity, transform;
+}
+
+.block a,
+.block button {
+  pointer-events: auto;
+}
+
+/* Anchors. Varied on purpose: a page where every act is centred reads as a deck. */
+.lead {
+  left: var(--space-shell);
+  bottom: clamp(2rem, 6vh, 4.5rem);
+  max-width: min(54rem, 90vw);
+}
+
+/* Mirrors the reference: subject on the left of the frame, copy held on the
+   right and vertically centred. */
+.heroAnchor {
+  right: var(--space-shell);
+  top: var(--nav-h);
+  bottom: clamp(1.5rem, 4vh, 3rem);
+  width: min(34rem, 88vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.heroAnchor .headline,
+.heroAnchor .lede {
+  margin-left: auto;
+}
+
+/* The hero carries six elements now, so the headline cannot also run at full
+   display scale: at --text-h1 the stat row and the call to action fall below the
+   fold, and a hero whose CTA needs scrolling is a broken hero. */
+.heroAnchor .headline {
+  font-size: clamp(2.4rem, 1rem + 3.4vw, 4.25rem);
+  line-height: 0.94;
+}
+
+.heroAnchor .lede {
+  margin-top: 1.15rem;
+  font-size: var(--text-sm);
+}
+
+.heroAnchor .stats {
+  margin-top: 1.6rem;
+}
+
+.heroAnchor .actions {
+  margin-top: 1.6rem;
+}
+
+/* Centring is done with box geometry, never with transform.
+   The cue loop writes `transform` on every block on every frame to drive the
+   entrance rise, so a `translate(-50%, -50%)` used for layout is overwritten
+   before it ever paints: these three anchors sat a full half-block low from the
+   day they were written and it is invisible in any single screenshot. */
+.trail {
+  right: var(--space-shell);
+  top: var(--nav-h);
+  bottom: clamp(1.5rem, 4vh, 3rem);
+  width: min(38ch, 84vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.centre {
+  left: var(--space-shell);
+  right: var(--space-shell);
+  top: var(--nav-h);
+  bottom: clamp(1.5rem, 4vh, 3rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.centre > * {
+  max-width: min(52ch, 86vw);
+}
+
+.eyebrow {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+
+.headline {
+  /* The line breaks are authored in the markup. A measure set in ch would be
+     computed against body size and wrap display type mid-line. */
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.line > span {
+  display: block;
+  transform: translateY(102%);
+  animation: rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.line:nth-child(2) > span {
+  animation-delay: 0.09s;
+}
+
+.line:nth-child(3) > span {
+  animation-delay: 0.18s;
+}
+
+.say {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+}
+
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.lede {
+  margin-top: 1.5rem;
+  max-width: 38ch;
+  font-size: var(--text-base);
+  line-height: 1.62;
+  color: var(--on-world-soft);
+  text-wrap: pretty;
+}
+
+.stats {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(1rem, 2.6vw, 2.25rem);
+  margin: 2rem 0 0;
+}
+
+.stats > div + div {
+  padding-left: clamp(1rem, 2.6vw, 2.25rem);
+  border-left: 1px solid color-mix(in srgb, var(--on-world) 26%, transparent);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 0.9rem + 1.8vw, 2.25rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.statLabel {
+  margin: 0.35rem 0 0;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-world-soft);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.quiet {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-world);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+  transition: color 140ms var(--ease-out-expo);
+}
+
+.quiet:hover {
+  color: var(--accent);
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.9rem;
+  padding: 0 1.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform 140ms var(--ease-out-expo),
+    background-color 140ms var(--ease-out-expo),
+    color 140ms var(--ease-out-expo);
+}
+
+/* Matches the close's primary exactly. One intent, one label, one treatment. */
+.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.ghost {
+  border-color: color-mix(in srgb, var(--on-world) 42%, transparent);
+  color: var(--on-world);
+}
+
+.primary:hover,
+.ghost:hover {
+  transform: translateY(-2px);
+}
+
+.ghost:hover {
+  background: color-mix(in srgb, var(--on-world) 10%, transparent);
+}
+
+.primary:active,
+.ghost:active {
+  transform: translateY(1px);
+}
+
+.kicker {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-world-soft);
+}
+
+.figure {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 1.5rem + 6vw, 7rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  margin: 0.4rem 0 1rem;
+}
+
+.body {
+  font-size: var(--text-base);
+  line-height: 1.66;
+  color: var(--on-world-soft);
+  text-wrap: pretty;
+}
+
+.marks {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.marks span {
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.statement {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 0.9rem + 2.6vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+/* The arrival is the only copy that survives the landing. It is set in ink
+   because it only ever appears on paper: the block rides the wipe edge. */
+.arrival {
+  color: var(--on-page);
+}
+
+.arrival .note {
+  color: var(--on-page-soft);
+}
+
+.note {
+  margin-top: 1.5rem;
+  font-size: var(--text-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-world-soft);
+}
+
+.runHeading {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 1rem + 3vw, 3.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0 0 1rem;
+  text-wrap: balance;
+}
+
+.gates {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gate {
+  left: var(--space-shell);
+  bottom: clamp(2rem, 6vh, 4.5rem);
+  width: min(40ch, 84vw);
+  border-left: 1px solid var(--accent);
+  padding-left: 1.1rem;
+}
+
+.gateNo {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  color: var(--accent);
+}
+
+.gateName {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 1rem + 2.4vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0.3rem 0 0.6rem;
+}
+
+.gateBody {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-world-soft);
+  max-width: 38ch;
+  text-wrap: pretty;
+}
+
+@media (max-width: 700px) {
+  /* The desktop scrim runs sideways because the copy holds a column on the
+     right. A phone has no column: the copy is full width and sits low, so the
+     ground it needs is the bottom of the frame, not one side of it. Measured
+     over the subject's trousers the stat row was 1.04:1. */
+  /* contain is a desktop answer. A phone is 1:2 against a 3:2 source, so
+     containing it leaves a 260px strip floating in an 844px screen. The frame
+     goes back to filling, cropped to the subject. */
+  .photoImage {
+    object-position: 30% 26%;
+    /* The phone frame already crops hard to the subject; a second push in on
+       top of it puts the face into the copy. */
+    transform: none;
+  }
+
+  /* Full width and cropped to the subject: a phone is 1:2 against a 3:2 source,
+     so holding the source's aspect would leave a 260px strip in an 844px
+     screen. Nothing to feather once the box spans the stage. */
+  .photo {
+    width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .heroScrim {
+    background: linear-gradient(
+      to top,
+      var(--hero-scrim) 0%,
+      var(--hero-scrim) 56%,
+      color-mix(in srgb, var(--hero-scrim) 58%, transparent) 74%,
+      transparent 93%
+    );
+  }
+
+  .headline {
+    font-size: clamp(2.6rem, 1rem + 11vw, 4rem);
+  }
+
+  .heroAnchor .headline {
+    font-size: clamp(2.1rem, 1rem + 7vw, 3rem);
+  }
+
+  /* The phone has no left half to hold a subject, so the copy comes back to the
+     leading edge and sits low, over the quiet part of the frame. */
+  .heroAnchor {
+    right: var(--space-shell);
+    left: var(--space-shell);
+    top: var(--nav-h);
+    bottom: clamp(1.25rem, 4vh, 2.5rem);
+    width: auto;
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: left;
+  }
+
+  .heroAnchor .headline,
+  .heroAnchor .lede {
+    margin-left: 0;
+  }
+
+  .stats,
+  .actions {
+    justify-content: flex-start;
+  }
+
+  /* A phone has no room for three columns of value-over-label: the labels wrap,
+     the row doubles in height and pushes the call to action into the frame
+     below it. One compact line each instead. */
+  .stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-top: 1.25rem;
+  }
+
+  .stats > div {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .stats > div + div {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .statValue {
+    font-size: 1.25rem;
+  }
+
+  .statLabel {
+    margin: 0;
+  }
+
+  /* Away from the hero copy, which shares the leading edge down here. */
+  .photoNote {
+    top: calc(var(--nav-h) + 1rem);
+    bottom: auto;
+  }
+
+  .trail {
+    right: var(--space-shell);
+    left: var(--space-shell);
+    width: auto;
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: left;
+  }
+
+  .centre {
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: left;
+  }
+
+  .centre > * {
+    max-width: min(90vw, 44ch);
+  }
+
+  .lede {
+    font-size: var(--text-sm);
+  }
+}
+
+/* Before the canvas has a frame on it, and if the script never arrives at all,
+   the world renders as an ordinary stacked document. Nothing is hidden behind a
+   progress value that will never be written. */
+.world:not([data-ready]) {
+  height: auto;
+}
+
+.world:not([data-ready]) .stage {
+  position: static;
+  height: auto;
+  padding-block: var(--space-section);
+}
+
+.world:not([data-ready]) .canvas {
+  position: relative;
+  height: 52svh;
+}
+
+.world:not([data-ready]) .scrim,
+.world:not([data-ready]) .grain,
+.world:not([data-ready]) .photo,
+.world:not([data-ready]) .heroScrim {
+  display: none;
+}
+
+.world:not([data-ready]) .copy {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-gap);
+  padding: var(--space-section) var(--space-shell) 0;
+}
+
+.world:not([data-ready]) .block,
+.world:not([data-ready]) .gate {
+  position: static;
+  display: block;
+  transform: none;
+  width: auto;
+  max-width: 62ch;
+  text-align: left;
+}
+
+.world:not([data-ready]) .gates {
+  display: grid;
+  gap: var(--space-gap);
+}
+
+/* Reduced motion: fewer and gentler, not zero. The travel goes; the world stays
+   as one held frame and every waypoint becomes readable at once. */
+@media (prefers-reduced-motion: reduce) {
+  .world {
+    height: auto;
+  }
+
+  .stage {
+    position: static;
+    height: auto;
+    padding-block: var(--space-section);
+  }
+
+  .canvas {
+    position: relative;
+    height: 52svh;
+  }
+
+  /* The layers that only mean anything over a moving camera. Left in place they
+     stay absolutely positioned over a document that no longer is, and cover the
+     whole section. */
+  .scrim,
+  .grain,
+  .photo,
+  .heroScrim {
+    display: none;
+  }
+
+  .copy {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-gap);
+    padding: var(--space-section) var(--space-shell) 0;
+  }
+
+  .block,
+  .gate {
+    position: static;
+    display: block;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: auto;
+    max-width: 62ch;
+    text-align: left;
+  }
+
+  .heroAnchor .headline,
+  .heroAnchor .lede {
+    margin-left: 0;
+  }
+
+  .stats,
+  .actions {
+    justify-content: flex-start;
+  }
+
+  .centre > * {
+    max-width: none;
+  }
+
+  .gates {
+    display: grid;
+    gap: var(--space-gap);
+  }
+
+  .line > span {
+    animation: none;
+    transform: none;
+  }
+}

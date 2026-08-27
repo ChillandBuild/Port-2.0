@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sampath Kumar — Port 2.0
 
-## Getting Started
+Personal site for Sampath Kumar, Pre Sales Head and Lead Generation lead (Coimbatore, IN).
 
-First, run the development server:
+## Design direction: Cold Open
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The site is the outbound message. Sampath opens conversations for a living, so the page
+opens one — an envelope rail carries real facts across the top, the headline lands on
+*hello*, and a drafted cold open sits where a portfolio would normally put a headshot.
+
+Every section header is framed as a message field (`Re: how the pipeline runs`), so the
+structural device encodes something true about the content rather than decorating it.
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--color-ink` | `#0b1b2a` | Primary text, dark grounds |
+| `--color-bone` | `#e9ebe6` | Page ground |
+| `--color-paper` | `#f6f7f4` | Raised surfaces (message, cards, chart) |
+| `--color-ox` | `#7c2434` | The single accent — one voice, used sparingly |
+| `--color-zinc` | `#59656f` | Muted text on light grounds |
+| `--color-zinc-inv` | `#8c99a2` | Muted text on dark grounds |
+
+Two muted tokens exist because a single grey cannot clear 4.5:1 against both `--color-bone`
+and `--color-ink` at 11px. Do not collapse them.
+
+**Type.** Bricolage Grotesque (display, 700/800) · Inter Tight (body, 400) ·
+DM Mono (metadata rails and labels, 400) · Newsreader italic 300, which carries exactly
+one word: *hello.*
+
+All tokens live in [styles/tokens.css](styles/tokens.css). Nothing hardcodes a palette value.
+
+## Structure
+
+```
+app/                 layout (fonts, metadata) and the homepage route
+components/<area>/   one folder per page area, each with a colocated CSS module
+lib/content.ts       every string the page renders, typed
+styles/              tokens, shared type primitives, global reset
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Components are server components — the page ships no client-side interactivity.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running it
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev     # http://localhost:3000
+npm run build   # production build
+npm start       # serve the production build
+```
 
-## Learn More
+## Verified
 
-To learn more about Next.js, take a look at the following resources:
+- Zero horizontal overflow at 320 / 375 / 768 / 1024 / 1440 / 1920
+- axe-core (WCAG 2.1 A + AA): 0 violations
+- Visible keyboard focus, skip link, `prefers-reduced-motion` honoured globally
+- Transfer weight: ~133 kB JS, ~97 kB fonts, ~6 kB CSS (gzipped)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Source copy is in [SITE-CONTENT.md](SITE-CONTENT.md). Employers are anonymised as
+Client A–F, matching the source. Remaining pages (Story, Case Studies, Schedule, 404,
+Terms, Privacy, Refunds) are not built yet.
