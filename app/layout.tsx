@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BackToTop } from "@/components/chrome/BackToTop";
 import { Bricolage_Grotesque, DM_Mono, Inter_Tight, Newsreader } from "next/font/google";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "@/styles/global.css";
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         {children}
+        <BackToTop />
       </body>
     </html>
   );

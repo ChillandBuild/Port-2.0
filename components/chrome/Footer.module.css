@@ -6,10 +6,13 @@
   background: #ffffff;
   color: #101014;
   border-top: 1px solid #e6e4ef;
-  padding: clamp(4rem, 10vh, 8rem) var(--space-shell) 0;
+  padding: clamp(4rem, 10vh, 8rem) var(--space-shell) clamp(1.25rem, 2.5vh, 2rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(3rem, 7vw, 5.5rem);
+  /* A step tighter than it was: the wordmark now sits directly under the
+     tagline as one signature block, and a wide gap there would read as two
+     unrelated sections again. */
+  gap: clamp(1.75rem, 4vw, 3rem);
   overflow: hidden;
 }
 
@@ -110,7 +113,6 @@
 
 .bottom {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
@@ -122,35 +124,23 @@
   color: #9a99a6;
 }
 
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #9a99a6;
-  text-decoration: none;
-  font-family: var(--font-mono);
-  font-size: var(--text-meta);
-  letter-spacing: var(--tracking-meta);
-  text-transform: uppercase;
-  transition: color var(--duration-fast) var(--ease-out-expo);
-}
-
-.back:hover {
-  color: var(--accent);
-}
-
-/* The sign-off. One line set wider than the viewport, drifted sideways by the
-   scroll engine, so the name leaves the page the way a pen leaves paper. It is
-   also the way home: pressing it returns to the hero. */
+/* The sign-off. The name lives in the identity column, directly under the
+   tagline it belongs with, sized to that column and centred there — no
+   full-bleed banner, no sideways drift. It is also the way home: pressing it
+   returns to the hero. */
 .wordmark {
-  margin: 0 calc(var(--space-shell) * -1);
-  padding-bottom: 1.5rem;
+  display: block;
+  margin-top: 0.5rem;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(4.5rem, 16.5vw, 20rem);
+  /* The column is roughly half the shell width, so the name is sized to that,
+     not to the viewport. ~14 glyphs at this tracking run about 7.5em wide;
+     5.9vw keeps the line inside the column from laptop up to wide desktop. */
+  font-size: clamp(2.4rem, 5.9vw, 7.6rem);
   line-height: 0.95;
   letter-spacing: -0.04em;
   white-space: nowrap;
+  text-align: center;
   color: #101014;
   text-decoration: none;
   user-select: none;
@@ -163,6 +153,13 @@
 @media (max-width: 900px) {
   .body {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, the identity column is the full shell width, so the name scales
+     back up to fill it — 11vw keeps the ~7.7em line inside a 390px phone with
+     its shell padding, instead of cropping at the edge. */
+  .wordmark {
+    font-size: clamp(2.6rem, 11vw, 9rem);
   }
 }
 

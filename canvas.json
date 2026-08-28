@@ -1,0 +1,12 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Favicon" },
+    { "id": "page-2", "name": "Explorations" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "page": "page-1", "x": 0, "y": 0, "w": 900, "h": 900 },
+    { "file": "TileConcept.dc.html", "page": "page-2", "x": 0, "y": 0, "w": 900, "h": 860 },
+    { "file": "ThePeriod.dc.html", "page": "page-2", "x": 0, "y": 980, "w": 540, "h": 620 }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

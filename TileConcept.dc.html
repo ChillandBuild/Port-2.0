@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+  <style>
+    :root{
+      --surface-page:#f5f3ff; --surface-page-alt:#ede9fe;
+      --ink:#0b1b2a; --ink-soft:#59656f;
+      --accent:#5b21b6; --accent-strong:#2e1065; --accent-ink:#f6f7f4;
+      --rule:rgba(11,27,42,0.14);
+      --font-display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+      --font-body:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+    }
+    body{margin:0;background:var(--surface-page);color:var(--ink);
+      font-family:var(--font-display);-webkit-font-smoothing:antialiased;}
+    a{color:var(--accent);} a:hover{color:var(--accent-strong);}
+    .wrap{padding:48px 56px;display:flex;flex-direction:column;gap:34px;}
+    .meta{display:flex;flex-direction:column;gap:8px;}
+    .meta span{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft);font-family:var(--font-body);}
+    .meta b{font-size:21px;letter-spacing:-0.03em;font-weight:800;}
+    .meta b i{color:var(--accent);font-style:normal;}
+    .hero{display:flex;align-items:center;gap:44px;}
+    .tile{background:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;}
+    .glyph{font-weight:800;letter-spacing:-0.045em;color:var(--accent-ink);line-height:1;}
+    .tile.big{width:300px;height:300px;border-radius:72px;box-shadow:0 26px 64px -26px rgba(46,16,101,0.55);}
+    .tile.big .glyph{font-size:186px;}
+    .heronote{display:flex;flex-direction:column;gap:12px;max-width:300px;}
+    .heronote h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-0.02em;}
+    .heronote p{margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft);font-family:var(--font-body);}
+    .ladder{display:flex;align-items:flex-end;gap:40px;padding-top:22px;border-top:1px solid var(--rule);}
+    .rung{display:flex;flex-direction:column;align-items:center;gap:14px;}
+    .rung span{font-size:11px;letter-spacing:0.12em;color:var(--ink-soft);font-family:var(--font-body);}
+    .t64{width:64px;height:64px;border-radius:15px;}
+    .t64 .glyph{font-size:40px;}
+    .t32{width:32px;height:32px;border-radius:8px;}
+    .t32 .glyph{font-size:20px;}
+    .t16{width:16px;height:16px;border-radius:4px;}
+    .t16 .glyph{font-size:11px;letter-spacing:-0.07em;}
+    .tab{display:flex;max-width:520px;border:1px solid var(--rule);border-bottom:0;border-radius:12px 12px 0 0;overflow:hidden;background:var(--surface-page-alt);}
+    .tab .chip{display:flex;align-items:center;gap:9px;padding:12px 16px;font-size:13px;font-family:var(--font-body);color:var(--ink-soft);border-right:1px solid var(--rule);}
+    .tab .chip.active{background:var(--surface-page);color:var(--ink);font-weight:500;}
+    .caption{font-size:13px;line-height:1.62;color:var(--ink-soft);font-family:var(--font-body);max-width:560px;}
+    .caption code{font-family:"DM Mono",ui-monospace,monospace;font-size:12px;color:var(--ink);}
+  </style>
+</helmet>
+<div class="wrap">
+  <div class="meta">
+    <span>Exploration &middot; not chosen</span>
+    <b>Violet tile, knockout S<i>.</i></b>
+  </div>
+
+  <div class="hero">
+    <div class="tile big"><span class="glyph">S.</span></div>
+    <div class="heronote">
+      <h2>Initial, plus the stop</h2>
+      <p>The one letterform the wordmark can spare, still carrying the accent full stop &mdash; his signature device &mdash; knocked out of the brand violet. A filled tile holds its shape on any tab colour, light or dark.</p>
+    </div>
+  </div>
+
+  <div class="ladder">
+    <div class="rung"><div class="tile t64"><span class="glyph">S.</span></div><span>64</span></div>
+    <div class="rung"><div class="tile t32"><span class="glyph">S.</span></div><span>32</span></div>
+    <div class="rung"><div class="tile t16"><span class="glyph">S.</span></div><span>16 &middot; actual size</span></div>
+  </div>
+
+  <div class="tab">
+    <div class="chip active"><div class="tile t16"><span class="glyph">S.</span></div>Sampath Kumar</div>
+    <div class="chip">Case studies</div>
+    <div class="chip">Inbox</div>
+  </div>
+
+  <div class="caption">Would ship as a violet <code>#5b21b6</code> tile, glyph <code>#f6f7f4</code>, radius 24%. Set aside for the flat mark, which matches the nav lockup one-to-one.</div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
+  <style>
+    :root{
+      --surface-page:#f5f3ff; --ink:#0b1b2a; --ink-soft:#59656f;
+      --accent:#5b21b6; --accent-strong:#2e1065;
+      --bone:#eef0ea; --accent-lift:#8b5cf6;
+      --panel-dark:#141d26; --panel-dark-alt:#1b2632;
+      --rule:rgba(11,27,42,0.14);
+      --font-display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+      --font-body:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+    }
+    body{margin:0;background:var(--surface-page);color:var(--ink);
+      font-family:var(--font-display);-webkit-font-smoothing:antialiased;}
+    a{color:var(--accent);} a:hover{color:var(--accent-strong);}
+    .wrap{padding:48px 56px;display:flex;flex-direction:column;gap:34px;}
+    .meta{display:flex;flex-direction:column;gap:8px;}
+    .meta span{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft);font-family:var(--font-body);}
+    .meta b{font-size:21px;letter-spacing:-0.03em;font-weight:800;}
+    .meta b i{color:var(--accent);font-style:normal;}
+
+    .sk{font-weight:800;letter-spacing:-0.05em;line-height:1;color:var(--ink);display:inline-block;}
+    .sk i{color:var(--accent);font-style:normal;}
+    .sk.on-dark{color:var(--bone);}
+    .sk.on-dark i{color:var(--accent-lift);}
+
+    .hero{display:flex;align-items:center;gap:44px;}
+    .frame{width:300px;height:300px;flex:none;background:#fff;border:1px solid var(--rule);border-radius:20px;
+      display:flex;align-items:center;justify-content:center;box-shadow:0 26px 64px -30px rgba(46,16,101,0.4);}
+    .frame .sk{font-size:184px;}
+    .heronote{display:flex;flex-direction:column;gap:12px;max-width:300px;}
+    .heronote h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-0.02em;}
+    .heronote p{margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft);font-family:var(--font-body);}
+
+    .ladder{display:flex;align-items:flex-end;gap:44px;padding-top:22px;border-top:1px solid var(--rule);}
+    .rung{display:flex;flex-direction:column;align-items:center;gap:14px;}
+    .rung span{font-size:11px;letter-spacing:0.12em;color:var(--ink-soft);font-family:var(--font-body);}
+    .cell{background:#fff;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;}
+    .c64{width:64px;height:64px;border-radius:12px;} .c64 .sk{font-size:40px;}
+    .c32{width:32px;height:32px;border-radius:7px;} .c32 .sk{font-size:20px;}
+    .c16{width:16px;height:16px;border-radius:4px;} .c16 .sk{font-size:11px;letter-spacing:-0.08em;}
+
+    .tabs{display:flex;flex-direction:column;gap:12px;}
+    .tab{display:flex;max-width:480px;border-radius:11px 11px 0 0;overflow:hidden;font-family:var(--font-body);font-size:12.5px;}
+    .tab.light{border:1px solid var(--rule);border-bottom:0;background:#ede9fe;}
+    .tab.light .chip{color:var(--ink-soft);border-right:1px solid var(--rule);}
+    .tab.light .chip.active{background:var(--surface-page);color:var(--ink);}
+    .tab.dark{border:1px solid rgba(238,240,234,0.14);border-bottom:0;background:var(--panel-dark);}
+    .tab.dark .chip{color:#9dabb5;border-right:1px solid rgba(238,240,234,0.12);}
+    .tab.dark .chip.active{background:var(--panel-dark-alt);color:var(--bone);}
+    .chip{display:flex;align-items:center;gap:8px;padding:11px 15px;}
+    .chip.active{font-weight:500;}
+
+    .caption{font-size:13px;line-height:1.62;color:var(--ink-soft);font-family:var(--font-body);max-width:600px;}
+    .caption code{font-family:"DM Mono",ui-monospace,monospace;font-size:12px;color:var(--ink);}
+    .caption b{color:var(--ink);font-weight:600;font-family:var(--font-display);}
+  </style>
+</helmet>
+<div class="wrap">
+  <div class="meta">
+    <span>Favicon &middot; final</span>
+    <b>S<i>.</i> &mdash; the wordmark, cropped to one letter</b>
+  </div>
+
+  <div class="hero">
+    <div class="frame"><span class="sk">S<i>.</i></span></div>
+    <div class="heronote">
+      <h2>No container</h2>
+      <p>Real Bricolage Grotesque at weight 800, ink <code style="font-family:inherit">#0b1b2a</code> S with the accent <code style="font-family:inherit">#5b21b6</code> stop &mdash; the nav lockup, one to one. The SVG flips to bone on dark browser chrome so it never disappears.</p>
+    </div>
+  </div>
+
+  <div class="ladder">
+    <div class="rung"><div class="cell c64"><span class="sk">S<i>.</i></span></div><span>64</span></div>
+    <div class="rung"><div class="cell c32"><span class="sk">S<i>.</i></span></div><span>32</span></div>
+    <div class="rung"><div class="cell c16"><span class="sk">S<i>.</i></span></div><span>16 &middot; actual size</span></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab light">
+      <div class="chip active"><span class="sk c16-inline" style="font-size:12px;letter-spacing:-0.08em">S<i>.</i></span>Sampath Kumar</div>
+      <div class="chip">Case studies</div>
+    </div>
+    <div class="tab dark">
+      <div class="chip active"><span class="sk on-dark" style="font-size:12px;letter-spacing:-0.08em">S<i>.</i></span>Sampath Kumar</div>
+      <div class="chip">Case studies</div>
+    </div>
+  </div>
+
+  <div class="caption"><b>Shipping:</b> <code>icon.svg</code> (theme-adaptive master) &middot; <code>favicon.ico</code> 16/32/48 &middot; <code>apple-icon.png</code> 180 &middot; <code>icon-192/512.png</code> &middot; <code>icon-maskable-512.png</code> on the <code>#f5f3ff</code> ground for Android. Built from the live Bricolage outline, not a lookalike.</div>
+</div>
+</x-dc>
+</body>
+</html>

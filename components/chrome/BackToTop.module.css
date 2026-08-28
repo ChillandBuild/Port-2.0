@@ -1,0 +1,68 @@
+/* The floating way home. The inset and z-index mirror the chat dock exactly
+   (ChatWidget.module.css: same clamps, same tier) — the arrow owns the
+   bottom-left, the bot owns the bottom-right, and neither can overlap the
+   other at any viewport size. */
+
+.dock {
+  position: fixed;
+  left: clamp(12px, 2vw, 20px);
+  bottom: clamp(12px, 2vw, 20px);
+  z-index: 40;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface-page);
+  color: var(--on-page);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 28px -14px rgb(0 0 0 / 45%);
+  opacity: 0;
+  transform: translateY(12px);
+  visibility: hidden;
+  /* visibility flips on a delay so the exit fade finishes before it stops
+     catching pointer events; the entrance clears the delay. */
+  transition:
+    opacity 320ms var(--ease-out-expo),
+    transform 320ms var(--ease-out-expo),
+    background-color var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo),
+    border-color var(--duration-fast) var(--ease-out-expo),
+    visibility 0s linear 320ms;
+}
+
+.dock.shown {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    opacity 320ms var(--ease-out-expo),
+    transform 320ms var(--ease-out-expo),
+    background-color var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo),
+    border-color var(--duration-fast) var(--ease-out-expo),
+    visibility 0s;
+}
+
+.dock:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.dock:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock,
+  .dock.shown {
+    transition: none;
+    transform: none;
+  }
+}
