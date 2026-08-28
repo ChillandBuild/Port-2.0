@@ -167,12 +167,4 @@
     border-top: 0;
     padding-top: 0;
   }
-
-  /* Full-bleed under both columns — the sticky inbound column above is only
-     two rows tall, so this needs its own explicit row rather than falling
-     into auto-placement next to it. */
-  .postsRow {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
 }

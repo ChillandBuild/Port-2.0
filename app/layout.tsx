@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BackToTop } from "@/components/chrome/BackToTop";
-import { Bricolage_Grotesque, DM_Mono, Inter_Tight, Newsreader } from "next/font/google";
+import { Bricolage_Grotesque, DM_Mono, Great_Vibes, Inter_Tight, Newsreader } from "next/font/google";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "@/styles/global.css";
 
@@ -22,6 +22,15 @@ const dmMono = DM_Mono({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-dm-mono",
+  weight: ["400"],
+});
+
+/** The signature wordmark only — the cursive brand mark, nothing else on the
+ *  page uses it. Ported from the portfolio site's identity system. */
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-great-vibes",
   weight: ["400"],
 });
 
@@ -51,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${interTight.variable} ${dmMono.variable} ${newsreader.variable}`}
+      className={`${bricolage.variable} ${interTight.variable} ${dmMono.variable} ${greatVibes.variable} ${newsreader.variable}`}
       data-theme="light"
       data-scroll-behavior="smooth"
       suppressHydrationWarning

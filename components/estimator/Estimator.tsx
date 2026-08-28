@@ -2,20 +2,16 @@
 
 /**
  * Interactive estimator. Pick a market focus and a monthly lead volume; the
- * panel models booked meetings, the time to a first MQL, and the tool spend
- * behind it. Every output is a pure function of the two inputs — the same model
+ * panel models steady-state booked meetings, the ramp to reach that rate, and
+ * the tool spend behind it. Every output is a pure function of the two inputs — the same model
  * the earlier site shipped — and the panel labels itself as an estimate.
  */
 
 import { useId, useMemo, useState } from "react";
-import { ESTIMATOR } from "@/lib/content";
+import { ESTIMATOR, estimateOutcome } from "@/lib/content";
 import styles from "./Estimator.module.css";
 
-const { volume, sectors, mqlTiers } = ESTIMATOR;
-
-function mqlTimeline(leads: number): string {
-  return (mqlTiers.find((tier) => leads <= tier.upTo) ?? mqlTiers[mqlTiers.length - 1]).label;
-}
+const { volume, sectors } = ESTIMATOR;
 
 interface EstimatorProps {
   /** Lets the schedule page re-pitch the same model against booking, rather
@@ -34,18 +30,15 @@ export function Estimator({
   const [leads, setLeads] = useState(volume.default);
   const sliderId = useId();
 
-  const sector = sectors.find((s) => s.key === sectorKey) ?? sectors[0];
-
   const results = useMemo(() => {
-    const meetings = Math.max(1, Math.round(leads * sector.meetingRate));
-    const toolsCost = sector.baseToolCost + leads * sector.costPerLead;
+    const { meetings, toolsCost, rampLabel } = estimateOutcome(leads, sectorKey);
     return [
-      { label: "Estimated meetings & MQL leads", value: `~${meetings} a month` },
+      { label: "Meetings & MQL leads at steady state", value: `~${meetings} a month` },
       { label: "Research cycle", value: ESTIMATOR.researchCycle },
-      { label: "Time to first MQL lead", value: mqlTimeline(leads) },
+      { label: "Ramp to first MQL / steady state", value: rampLabel },
       { label: "Estimated tools cost stack", value: `$${toolsCost.toLocaleString()} / mo` },
     ];
-  }, [leads, sector]);
+  }, [leads, sectorKey]);
 
   return (
     <section

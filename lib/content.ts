@@ -34,7 +34,7 @@ export const HERO = {
   eyebrow: "Pre Sales Head · Lead Generation",
   headline: ["Every deal", "begins with", "hello."],
   lede:
-    "Engineer-turned-sales leader. Seven years building outbound engines for B2B & B2C SaaS, service-based private markets, fractional pre-sales, and global account expansion.",
+    "Engineer-turned-sales leader with 7+ years driving B2B & B2C SaaS growth, service-based private markets, fractional pre-sales, and global account expansion across 24 major markets all over the globe.",
   primaryCta: { label: "Hire me", href: "#contact" },
   secondaryCta: { label: "Work with me", href: "#work-plan" },
   stats: [
@@ -140,10 +140,9 @@ export const ABOUT = {
     answered: "An engineer's head, a salesperson's calendar.",
   },
   facts: [
-    { label: "Based", value: "Coimbatore, IN · GMT+5:30" },
+    { label: "Diploma", value: "Diploma in Mechanical Engineering, Sree Narayana Guru Polytechnic College" },
     { label: "Engineering", value: "B.E. Mechanical, Sri Krishna College of Technology · 2020" },
     { label: "Business", value: "MBA Marketing, Amrita Vishwa Vidyapeetham · 2026" },
-    { label: "Working", value: "Every time zone that answers" },
   ],
 } as const;
 
@@ -314,7 +313,7 @@ export const ESTIMATOR = {
   volume: { min: 30, max: 400, step: 10, default: 120, unit: "leads / mo" },
   researchCycle: "30 days, held constant",
   note:
-    "A model, not a quote. The conversion rates track the method on this page; a real number comes out of a scoping call.",
+    "A model, not a quote. The monthly figure is a steady-state rate — the ramp row is how long it takes to reach it, and months inside that window run below it. The conversion rates track the method on this page; a real number comes out of a scoping call.",
   toolsLink: { label: "See the stack behind the cost", href: "#range" },
   /** Surfaced right under the modelled numbers, where interest in a real
    *  answer peaks — the same free first call CONTACT and SCHEDULE describe,
@@ -329,14 +328,41 @@ export const ESTIMATOR = {
     { key: "midmarket", label: "Mid-market & digital marketing", meetingRate: 0.14, baseToolCost: 500, costPerLead: 6 },
   ] as EstimatorSector[],
   mqlTiers: [
-    { upTo: 30, label: "45–90 days to first MQL" },
-    { upTo: 70, label: "75–100 days to first MQL" },
-    { upTo: 120, label: "90–120 days to first MQL" },
-    { upTo: 180, label: "110–140 days to first MQL" },
-    { upTo: 250, label: "130–160 days to first MQL" },
-    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days to first MQL" },
+    { upTo: 30, label: "45–90 days" },
+    { upTo: 70, label: "75–100 days" },
+    { upTo: 120, label: "90–120 days" },
+    { upTo: 180, label: "110–140 days" },
+    { upTo: 250, label: "130–160 days" },
+    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days" },
   ] as EstimatorTier[],
 };
+
+export interface EstimateResult {
+  sector: EstimatorSector;
+  /** Booked meetings / MQL leads per month, at steady state (min 1). */
+  meetings: number;
+  /** Modelled monthly tool spend. */
+  toolsCost: number;
+  /** How long before output reaches the steady-state rate above. */
+  rampLabel: string;
+}
+
+/**
+ * The one estimator model. Both the interactive panel and the chat route call
+ * this — do not re-implement the arithmetic anywhere else. Output is a pure
+ * function of monthly lead volume and sector key; an unknown key falls back to
+ * the first sector.
+ */
+export function estimateOutcome(leads: number, sectorKey: string): EstimateResult {
+  const sector = ESTIMATOR.sectors.find((s) => s.key === sectorKey) ?? ESTIMATOR.sectors[0];
+  const tiers = ESTIMATOR.mqlTiers;
+  return {
+    sector,
+    meetings: Math.max(1, Math.round(leads * sector.meetingRate)),
+    toolsCost: sector.baseToolCost + leads * sector.costPerLead,
+    rampLabel: (tiers.find((tier) => leads <= tier.upTo) ?? tiers[tiers.length - 1]).label,
+  };
+}
 
 export const LINKEDIN = {
   eyebrow: "Live LinkedIn impact",

@@ -3,6 +3,7 @@ import { TopNav } from "@/components/chrome/TopNav";
 import { Positioning } from "@/components/about/Positioning";
 import { Estimator } from "@/components/estimator/Estimator";
 import { History } from "@/components/history/History";
+import { FeaturedPosts } from "@/components/posts/FeaturedPosts";
 import { PointerFX } from "@/components/motion/PointerFX";
 import { Proof } from "@/components/proof/Proof";
 import { Range } from "@/components/range/Range";
@@ -20,8 +21,8 @@ import { WorldStage } from "@/components/world/WorldStage";
  * History and a client to Estimator, and each of those two runs gets its
  * evidence right before it — Positioning before History, Range before
  * Estimator — instead of alternating between the two the whole way down.
- * Education and the featured-posts rail no longer have their own stops: the
- * first is folded into Positioning's fact list, the second closes out Proof.
+ * Education is folded into Positioning's fact list. The featured-posts rail
+ * is the last stop before the footer.
  */
 export default function HomePage() {
   return (
@@ -38,6 +39,7 @@ export default function HomePage() {
         <Estimator />
         <Terms />
         <Reply />
+        <FeaturedPosts />
       </main>
 
       <Footer />

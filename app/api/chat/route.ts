@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ESTIMATOR, estimateOutcome } from "@/lib/content";
 
 // Mock brain — answers ONLY from published content, no LLM key needed.
 // Swap this fetch handler for Vercel AI SDK + OpenAI later; the widget stays identical.
@@ -90,17 +91,13 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
 
   // Estimate intent
   if (q.includes("estimate") || q.includes("leads/mo") || q.includes("leads / mo") || q.match(/\d+\s*leads/)) {
-    const volume = Number((q.match(/(\d+)\s*leads/) ?? [])[1] ?? 120);
-    const sector = q.includes("service") ? "Service-based sector" : q.includes("mid-market") ? "Mid-market" : "B2B SaaS growth";
-    const rate = sector === "B2B SaaS growth" ? 0.15 : sector === "Service-based sector" ? 0.12 : 0.14;
-    const base = sector === "B2B SaaS growth" ? 450 : sector === "Service-based sector" ? 350 : 500;
-    const cpl = sector === "B2B SaaS growth" ? 5 : sector === "Service-based sector" ? 4 : 6;
-    const meetings = Math.round(volume * rate);
-    const cost = base + volume * cpl;
-    const mqlLabel = volume <= 30 ? "45–90 days to first MQL" : volume <= 70 ? "75–100 days" : volume <= 120 ? "90–120 days" : volume <= 180 ? "110–140 days" : volume <= 250 ? "130–160 days" : "150–180 days";
+    const raw = Number((q.match(/(\d+)\s*leads/) ?? [])[1] ?? ESTIMATOR.volume.default);
+    const volume = Math.min(ESTIMATOR.volume.max, Math.max(ESTIMATOR.volume.min, raw));
+    const sectorKey = q.includes("service") ? "services" : q.includes("mid-market") ? "midmarket" : "saas";
+    const { sector, meetings, toolsCost, rampLabel } = estimateOutcome(volume, sectorKey);
     return {
       text:
-        `Model, not a quote — for ${volume} leads/mo in ${sector}:\n\n• ~${meetings} meetings/mo (${Math.round(rate * 100)}% rate)\n• $${cost}/mo tool spend ($${base} base + $${cpl}/lead)\n• ${mqlLabel}\n• Research cycle: 30 days (held constant)\n\nReal number comes from a scoping call.`,
+        `Model, not a quote — for ${volume} leads/mo in ${sector.label}:\n\n• ~${meetings} meetings/mo at steady state (${Math.round(sector.meetingRate * 100)}% rate)\n• ${rampLabel} to ramp to that rate (below it until then)\n• $${toolsCost.toLocaleString()}/mo tool spend ($${sector.baseToolCost} base + $${sector.costPerLead}/lead)\n• Research cycle: ${ESTIMATOR.researchCycle}\n\nReal number comes from a scoping call.`,
       chips: ["Try 50/mo", "Try 200/mo", "Service sector"],
       ctas: [
         { label: "Open estimator → /#work-plan", href: "/#work-plan" },

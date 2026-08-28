@@ -1,8 +1,8 @@
-/* No section chrome of its own: this renders as the closing row of Proof,
-   which already supplies the page background and the shell inset. */
-.embedded {
-  margin-top: clamp(2.5rem, 6vh, 4.5rem);
-  padding-top: clamp(1.5rem, 4vh, 3rem);
+/* Standalone section down by the footer: its own page background, shell inset,
+   and a rule to part it from the section above. */
+.section {
+  background: var(--surface-page);
+  padding: clamp(2.5rem, 6vh, 4.5rem) var(--space-shell) var(--space-section);
   border-top: 1px solid var(--rule-strong);
 }
 
@@ -18,12 +18,11 @@
   text-transform: uppercase;
 }
 
-/* One step down from a standalone section's h2 — this heading nests under
-   Proof's own "proof-heading", not the page directly. */
+/* Section-level heading, matching the other page sections. */
 .heading {
   margin-top: 0.6rem;
   font-family: var(--font-display);
-  font-size: var(--text-h3);
+  font-size: var(--text-h2);
   line-height: 1.05;
   letter-spacing: -0.03em;
   text-wrap: balance;
@@ -38,7 +37,7 @@
 }
 
 /* The viewport. Overflow is hidden while the track drifts. No shell padding
-   of its own — Proof's own padding already insets the whole embedded block. */
+   of its own — the section's own padding already insets the whole block. */
 .rail {
   position: relative;
   overflow: hidden;

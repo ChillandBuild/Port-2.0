@@ -14,10 +14,9 @@ function LinkedInMark() {
  * Featured LinkedIn posts, floating: a seamless marquee that drifts the cards
  * across on their own instead of sitting behind a scrollbar.
  *
- * Renders as the closing row of Proof — the writing behind the reach Proof's
- * LinkedIn numbers already claim — rather than as its own section, so it no
- * longer supplies its own page background, shell padding, or heading level;
- * Proof provides all three.
+ * Its own section down by the footer — the writing behind the reach Proof's
+ * LinkedIn numbers claim — so it supplies its own page background, shell
+ * padding, and section-level heading.
  *
  * The rail is doubled for the loop — the second set is the continuation of the
  * first, kept out of the tab order and hidden from screen readers so nobody
@@ -29,17 +28,17 @@ export function FeaturedPosts() {
   const loop = [...POSTS, ...POSTS];
 
   return (
-    <div
-      className={`spot ${styles.embedded}`}
+    <section
+      className={`spot ${styles.section}`}
       id="posts"
       data-spot
       aria-labelledby="posts-heading"
     >
       <div className={styles.head} data-reveal data-reveal-children>
         <p className={`mono ${styles.eyebrow}`}>Thought leadership</p>
-        <h3 className={styles.heading} id="posts-heading">
+        <h2 className={styles.heading} id="posts-heading">
           Featured LinkedIn posts
-        </h3>
+        </h2>
         <p className={styles.standfirst}>
           Rolling notes on B2B lead generation, pre-sales architecture, and
           private-market deal origination.
@@ -81,6 +80,6 @@ export function FeaturedPosts() {
           })}
         </ul>
       </div>
-    </div>
+    </section>
   );
 }

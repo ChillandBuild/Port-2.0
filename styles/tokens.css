@@ -64,11 +64,18 @@
   --on-chrome: #0b1b2a;
   --on-chrome-soft: #5a6570;
 
-  /* A hard card behind the wordmark while the nav floats over the hero
-     photograph, so the name holds whatever pixel is under it. Gone once the bar
-     takes its own ground. */
-  --wordmark-box: #ffffff;
-  --wordmark-box-ink: #0b1b2a;
+  /* The cursive brand mark: deep brand violet with a single orchid underline
+     sweep. Ported from the portfolio identity, where it is the site signature.
+     It floats straight on the hero photo — the nav veil is its ground. */
+  --wordmark-ink: #2e1065;
+  --wordmark-sweep: #c084fc;
+
+  /* The bar floats over the same bright hero frame on both themes with no ground
+     of its own, which leaves the links faint on the photograph. This is a
+     top-anchored veil that lifts them clear and feathers to nothing by the
+     bar's lower edge, so the screen below it stays all photograph. */
+  --nav-veil: rgba(253, 252, 255, 0.82);
+  --nav-link-hover: rgba(11, 27, 42, 0.08);
 
   /* Brand violet, per the client's design-token spec. Five roles: the base
      action colour, its dark gradient/hover partner, a lighter hover shift, and
@@ -168,10 +175,14 @@
   --on-chrome: #eef0ea;
   --on-chrome-soft: #97a4ae;
 
-  /* The hero photograph is the same bright frame on both themes, so the card
-     stays near-white and the name stays dark on it. */
-  --wordmark-box: #f4f5f1;
-  --wordmark-box-ink: #0b1b2a;
+  /* Lifted off the near-black ground; the underline sweep stays orchid. */
+  --wordmark-ink: #c4b5fd;
+  --wordmark-sweep: #c084fc;
+
+  /* Dark ink is near-white here and the hero frame is still bright, so the veil
+     flips dark to lift the links off the photograph. */
+  --nav-veil: rgba(4, 9, 15, 0.66);
+  --nav-link-hover: rgba(238, 240, 234, 0.12);
 
   /* Same brand violet, lifted for a dark ground — not part of the client's
      spec, which only covers the light surfaces below; this is a minimal,
@@ -210,6 +221,8 @@
   --font-body: var(--font-inter-tight, system-ui), -apple-system, sans-serif;
   --font-mono: var(--font-dm-mono, ui-monospace), "SF Mono", monospace;
   --font-serif: var(--font-newsreader, Georgia), serif;
+  /* The cursive brand mark only. */
+  --font-signature: var(--font-great-vibes, "Great Vibes"), "Apple Chancery", cursive;
 
   /* Type scale */
   --text-meta: 0.6875rem;

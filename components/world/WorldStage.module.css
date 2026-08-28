@@ -193,7 +193,14 @@
    right and vertically centred. */
 .heroAnchor {
   right: var(--space-shell);
-  top: var(--nav-h);
+  /* Clearance under the bar: on a short viewport the centred column has no
+     slack left to give and the eyebrow sits flush against the nav. Doubled
+     against the visible target — column stays vertically centred, so only
+     half of whatever's added here above the eyebrow actually shows. Scaled
+     by vh too: full amount where the viewport has room to spare, less of it
+     on a short window where the same push would just shove "Skip to the
+     numbers" into the chat dock at the other end of this same centred box. */
+  top: calc(var(--nav-h) + clamp(1rem, 5.5vh, 3.5rem));
   bottom: clamp(1.5rem, 4vh, 3rem);
   width: min(34rem, 88vw);
   display: flex;
@@ -221,16 +228,16 @@
 }
 
 .heroAnchor .lede {
-  margin-top: 1.15rem;
+  margin-top: clamp(0.3rem, 1.6vh, 1.15rem);
   font-size: var(--text-sm);
 }
 
 .heroAnchor .stats {
-  margin-top: 1.6rem;
+  margin-top: clamp(0.3rem, 2.6vh, 1.6rem);
 }
 
 .heroAnchor .actions {
-  margin-top: 1.6rem;
+  margin-top: clamp(0.3rem, 2.6vh, 1.6rem);
 }
 
 /* Centring is done with box geometry, never with transform.
@@ -271,7 +278,11 @@
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 1.25rem;
+  /* Compresses on a short viewport, same reasoning as .heroAnchor's top
+     clearance above: this whole column is centred between the nav and the
+     chat dock, so every fixed gap in it is vertical space that box doesn't
+     have to spare below 800px or so. */
+  margin-bottom: clamp(0.5rem, 2vh, 1.25rem);
   animation: heroRise 900ms var(--ease-out-expo) 320ms both;
 }
 
@@ -690,7 +701,7 @@
   .heroAnchor {
     right: var(--space-shell);
     left: var(--space-shell);
-    top: var(--nav-h);
+    top: calc(var(--nav-h) + 1.75rem);
     bottom: clamp(1.25rem, 4vh, 2.5rem);
     width: auto;
     align-items: flex-start;

@@ -11,10 +11,11 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Brandmark } from "@/components/brand/Brandmark";
 import { ThemeToggle } from "./ThemeToggle";
 import { IDENTITY } from "@/lib/content";
-import { subscribeScroll } from "@/lib/scroll-store";
+import { prefersReducedMotion, subscribeScroll } from "@/lib/scroll-store";
 import styles from "./TopNav.module.css";
 
 // Homepage-qualified, so the bar works unchanged from an inner route like
@@ -37,6 +38,20 @@ interface TopNavProps {
 
 export function TopNav({ forceGrounded = false }: TopNavProps) {
   const ref = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+
+  // Next only re-runs its hash-scroll effect when the URL's hash actually
+  // changes. Already home with the hash sitting at #top from an earlier click,
+  // the second click is a no-op href and the router never scrolls — the
+  // wordmark then "works sometimes." Same fix BackToTop already uses: scroll
+  // it ourselves when we're already on the page the link points at, and leave
+  // the href alone so it still lands here (and still scrolls, via a real
+  // navigation) from every other route or with JS off.
+  const toTop = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/") return;
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  };
 
   useEffect(() => {
     if (forceGrounded) return;
@@ -56,7 +71,7 @@ export function TopNav({ forceGrounded = false }: TopNavProps) {
       ref={ref}
       data-grounded={forceGrounded ? "true" : "false"}
     >
-      <Link className={styles.home} href="/#top" aria-label="Sampath Kumar, back to top">
+      <Link className={styles.home} href="/#top" onClick={toTop} aria-label="Sampath Kumar, back to top">
         <Brandmark />
       </Link>
 

@@ -350,10 +350,7 @@ export function WorldStage() {
                 <Greeting />
               </span>
             </h1>
-            <p className={styles.lede}>
-              I build outbound engines for B2B and B2C companies, and run the pre-sales that
-              turns the meetings into deals. This page runs one of them while you scroll.
-            </p>
+            <p className={styles.lede}>{HERO.lede}</p>
 
             <dl className={styles.stats}>
               {HERO.stats.map((stat) => (

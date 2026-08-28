@@ -9,38 +9,55 @@
   gap: clamp(1rem, 3vw, 2.5rem);
   padding-inline: var(--space-shell);
   color: var(--on-world);
+  isolation: isolate;
   transition:
-    background-color 320ms var(--ease-out-expo),
     border-color 320ms var(--ease-out-expo),
     color 320ms var(--ease-out-expo);
   border-bottom: 1px solid transparent;
 }
 
-/* No fill: the bar stays transparent at every scroll position, on every page.
-   Only the ink swaps once the hero is behind us, and on this token system
-   --on-world and --on-chrome are the same value in both themes, so even that
-   is here for the pairing's sake more than for a visible change. */
+/* The ground the bar never used to have. Ungrounded it is a top-anchored veil
+   that feathers out by the bar's lower edge, so the links read on the hero
+   photograph without a fill spilling onto the screen below. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--nav-veil) 0%,
+    color-mix(in srgb, var(--nav-veil) 52%, transparent) 58%,
+    transparent 100%
+  );
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  transition: background 320ms var(--ease-out-expo);
+}
+
+/* Once the hero is behind us the bar takes a real chrome ground and a hairline,
+   the way the reference does — a transparent bar over the scrolling dossier was
+   unreadable about a third of the time. The ink swaps on the same trigger. */
 .nav[data-grounded="true"] {
   color: var(--on-chrome);
+  border-bottom-color: var(--rule);
+}
+
+.nav[data-grounded="true"]::before {
+  background: color-mix(in srgb, var(--surface-page) 82%, transparent);
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 .home {
-  text-decoration: none;
-  /* A hard white card while the bar floats over the photograph. Sharp corners,
-     tight to the wordmark. It fades to nothing once the bar has its own ground,
-     on the same trigger the bar uses. */
+  /* No card: the cursive mark floats straight on the photograph, with the nav
+     veil as its ground. The mark carries its own colour on both themes. */
   display: inline-flex;
-  padding: 6px 10px;
-  background: var(--wordmark-box);
-  color: var(--wordmark-box-ink);
-  transition:
-    background-color 320ms var(--ease-out-expo),
-    color 320ms var(--ease-out-expo);
-}
-
-.nav[data-grounded="true"] .home {
-  background: transparent;
-  color: inherit;
+  text-decoration: none;
+  border-radius: 8px;
 }
 
 .links {
@@ -50,22 +67,34 @@
 .links ul {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2.4vw, 2rem);
+  gap: clamp(0.5rem, 1.6vw, 1.25rem);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .link {
+  display: inline-flex;
   font-size: var(--text-sm);
   text-decoration: none;
   color: inherit;
-  opacity: 0.82;
-  transition: opacity 160ms var(--ease-out-expo);
+  padding: 5px 9px;
+  border-radius: 7px;
+  opacity: 0.92;
+  transition:
+    opacity 160ms var(--ease-out-expo),
+    background-color 160ms var(--ease-out-expo),
+    color 160ms var(--ease-out-expo);
 }
 
 .link:hover {
   opacity: 1;
+  background: var(--nav-link-hover);
+}
+
+.link:active {
+  background: var(--nav-link-hover);
+  transform: translateY(0.5px);
 }
 
 .tail {
@@ -84,7 +113,8 @@
   transition: color 160ms var(--ease-out-expo);
 }
 
-.cta:hover {
+.cta:hover,
+.cta:active {
   color: var(--accent);
 }
 
