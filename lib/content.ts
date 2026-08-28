@@ -26,7 +26,7 @@ export const NAV = [
   { label: "About", href: "#about" },
   { label: "Case studies", href: "#track-record" },
   { label: "Hire me", href: "/hire" },
-  { label: "Résumé", href: IDENTITY.resume },
+  { label: "Resume", href: IDENTITY.resume },
   { label: "Schedule a call", href: "#contact" },
 ] as const;
 
@@ -39,7 +39,7 @@ export const HERO = {
   secondaryCta: { label: "Work with me", href: "#work-plan" },
   stats: [
     { value: "7+", label: "Years in pre-sales", count: { to: 7, suffix: "+" } },
-    { value: "24", label: "Markets reached", count: { to: 24 } },
+    { value: "24", label: "Global markets reached", count: { to: 24 } },
     { value: "200M+", label: "Records mapped", count: { to: 200, suffix: "M+" } },
   ],
 } as const;
@@ -118,7 +118,7 @@ export const LEDGER: LedgerRow[] = [
   {
     value: "1.2%",
     label: "Email bounce ceiling held on every list, through multi-stage verification.",
-    source: "Deliverability · Finquest",
+    source: "Deliverability · Uplers & Mavlers",
     count: { to: 1.2, suffix: "%", decimals: 1 },
   },
   {
@@ -176,7 +176,7 @@ export interface Sector {
 export const SECTORS: Sector[] = [
   { tag: "SaaS", title: "B2B & B2C SaaS", description: "High-velocity growth across IT and SaaS platforms.", core: true },
   { tag: "Markets", title: "Service-based private markets", description: "Global account expansion and deal origination.", core: true },
-  { tag: "Services", title: "Digital marketing & translation", description: "Performance-driven outreach for MarTech agencies and localisation firms.", core: true },
+  { tag: "Services", title: "Digital marketing conciliation and translation", description: "Performance-driven outreach for MarTech agencies and localisation firms.", core: true },
   { tag: "Staffing", title: "Staffing & recruiting", description: "Fractional pre-sales and BDR talent acceleration." },
   { tag: "Health", title: "MediTech, pharma & healthcare", description: "B2B lead gen across MedTech startups, pharma, and hospital networks." },
   { tag: "Finance", title: "Banking, finance & BPO", description: "Financial service pipelines and back-end solutions." },
@@ -219,64 +219,109 @@ export interface Role {
   title: string;
   dates: string;
   place: string;
-  summary: string;
+  /** Key deliverables, one per bullet — not a paragraph. */
+  summary: string[];
   result: string;
 }
 
 export const ROLES: Role[] = [
   {
-    company: "Finquest",
-    title: "Senior Lead Generation Manager",
-    dates: "Jul 2024 – Sep 2025",
+    company: "Emotii",
+    title: "Lead Generation Manager",
+    dates: "Mar 2026 – Present",
     place: "Bengaluru, India",
-    summary:
-      "Led outbound strategy for sourcing proprietary mid-market M&A opportunities across North America, Europe and APAC. Built target lists on Finquest's AI platform using firmographic filters, trigger events and investment signals, and ran a cross-functional team of researchers and outreach specialists on email and LinkedIn. Owned CRM pipeline hygiene and the tracking behind lead quality and conversion stages.",
-    result: "+35% lead-to-meeting conversion · 200M+ private companies mapped",
+    summary: [
+      "Lead Generation Strategy: managed market research and multi-channel outreach campaigns, increasing lead pipeline by 25%.",
+      "Email & LinkedIn Campaigns: developed targeted outbound strategies using aged LinkedIn accounts and Waalaxy automation, compliant with GDPR and CAN-SPAM.",
+      "CRM & Data Management: oversaw cold email campaigns, monitoring SPF, DKIM and DMARC records to maintain email account health.",
+      "Automation & Prospecting Tools: worked across Clay, Mailchimp, HubSpot, Smartlead, Instantly and Buying Leads for data-driven outreach.",
+      "Market Research & Analysis: delivered projects on prospecting, candidate sourcing, salary benchmarking and competitive analysis.",
+      "Performance Tracking: designed monthly and daily production plans against OKRs, optimising lead handover to sales.",
+    ],
+    result: "+25% lead pipeline growth",
+  },
+  {
+    company: "Finquest",
+    title: "Lead Generation Manager",
+    dates: "Jan 2024 – Dec 2025",
+    place: "Bengaluru, India",
+    summary: [
+      "Demand Generation & Lead Qualification: executed campaigns with sales and marketing, improving lead quality, conversion and pipeline growth across SEA, MENA, US, UK, Singapore, Malaysia, Australia and Europe.",
+      "Prospect Engagement & Appointment Setting: scheduled discovery calls and product demos, connecting qualified prospects with Account Executives.",
+      "Customer Experience & Quality Assurance: delivered a high-quality customer experience, adhering to quality standards throughout the outreach process.",
+      "Project & Campaign Management: planned and managed end-to-end deliverables, including pre- and post-campaign activity and CRM data management.",
+      "Reporting & Performance Analytics: monitored outbound campaign metrics, providing insights on lead generation, effectiveness and revenue contribution.",
+      "Cross-Functional Collaboration: worked with sales and marketing stakeholders to streamline lead handover and outreach efficiency.",
+    ],
+    result: "Demand generation & appointment setting across 8 global markets",
   },
   {
     company: "The Sales Group",
     title: "Lead Generation Manager",
     dates: "Jan 2024 – Jun 2024",
     place: "Toronto, Canada (remote)",
-    summary:
-      "Fractional SDR leadership for North American business owners buying part-time BD support, fractional sales leadership and permanent sales-team placement. Built a custom outbound strategy per client against their ICP and growth goals, managed part-time BDR resources, and launched and optimised email and LinkedIn campaigns by industry and vertical.",
+    summary: [
+      "Fractional SDR leadership for North American business owners buying part-time BD support, fractional sales leadership and permanent sales-team placement.",
+      "Built a custom outbound strategy per client against their ICP and growth goals.",
+      "Managed part-time BDR resources.",
+      "Launched and optimised email and LinkedIn campaigns by industry and vertical.",
+    ],
     result: "18–25 meetings per seat, per month",
-  },
-  {
-    company: "Uplers & Mavlers",
-    title: "Business Development Manager",
-    dates: "May 2023 – Dec 2023",
-    place: "Ahmedabad, India",
-    summary:
-      "Cross-border outbound across the US, UK, Africa and Asia for two sister agency brands. Ran QA on team-generated data lists and verified uploads into Salesforce, built segmented databases of investors and strategic partners, and produced daily performance reporting for the senior marketing director alongside prospect, company and competitive analysis.",
-    result: "Bounce rate held under 1.5%",
   },
   {
     company: "Ecosmob Technologies",
     title: "Lead Generation Manager",
     dates: "Jun 2022 – Apr 2023",
     place: "Ahmedabad, India",
-    summary:
-      "Led a lead-generation team serving a diverse client portfolio for enterprise VoIP and telecom SaaS platforms, with territory-based allocation across the US, UK, MENA and APAC. Ran automated inbound and outbound email campaigns through Sales Navigator and CRM tooling, designed the outreach templates, and built the monthly conversion and engagement analytics.",
+    summary: [
+      "Led a lead-generation team serving a diverse client portfolio for enterprise VoIP and telecom SaaS platforms.",
+      "Territory-based allocation across the US, UK, MENA and APAC.",
+      "Ran automated inbound and outbound email campaigns through Sales Navigator and CRM tooling.",
+      "Designed outreach templates and built the monthly conversion and engagement analytics.",
+    ],
     result: "300+ enterprise MQLs a year",
+  },
+  {
+    company: "Uplers Pvt Limited",
+    title: "Senior Lead Generation Specialist",
+    dates: "Jul 2021 – Dec 2023",
+    place: "Gujarat, India",
+    summary: [
+      "Outbound Campaigns: designed and executed multi-touch lead generation strategies, elevating brand awareness and increasing conversion rates.",
+      "Campaign Performance Optimization: analysed ROI metrics, optimised outbound campaigns, and ensured alignment with revenue goals.",
+      "Client Engagement & Quality Assurance: ensured a seamless customer experience, enhancing satisfaction scores and refining outreach processes.",
+      "Marketing Collateral Development: created case studies, email templates and sales presentations to support lead generation.",
+      "Stakeholder Collaboration: partnered with BDR and marketing teams to enhance business development initiatives and optimise CRM data.",
+      "Data-Driven Sales Support: monitored email responses, nurtured hand-raisers, and provided structured updates to sales and market research teams.",
+    ],
+    result: "Multi-touch outbound campaigns lifting brand awareness & conversion",
   },
   {
     company: "Alore (Growth OS)",
     title: "Lead Generation Specialist",
     dates: "Apr 2021 – May 2022",
     place: "Bengaluru, India",
-    summary:
-      "In-depth prospect research and qualification — domain expertise, product fit and system requirements — feeding targeted outbound email campaigns across the US, UK and Australia. Handled client communication and appointment setting, and oversaw lead assignment and QA workflows across research, outreach and sales, with daily and monthly bounce and lead reporting.",
+    summary: [
+      "In-depth prospect research and qualification — domain expertise, product fit and system requirements.",
+      "Fed targeted outbound email campaigns across the US, UK and Australia.",
+      "Handled client communication and appointment setting.",
+      "Oversaw lead assignment and QA workflows across research, outreach and sales, with daily and monthly bounce and lead reporting.",
+    ],
     result: "Research, QA and reporting rigour",
   },
   {
     company: "Zinnov & Draup",
-    title: "Lead Generation Specialist (Pre-Sales Lead)",
-    dates: "Jul 2020 – Mar 2021",
+    title: "Lead Generation Specialist",
+    dates: "Jun 2019 – Jul 2021",
     place: "Coimbatore, India",
-    summary:
-      "Solution consulting across IT and non-IT domains in the Digital & Analytics portfolio, with product depth in core HR, workforce management, talent acquisition, reskilling and diversity. Generated and validated leads through targeted research and cold calling, ran product demos, prepared commercial and technical proposals, and scoped projects with time and resource estimates.",
-    result: "Deal velocity up 30%",
+    summary: [
+      "Market Research Execution: conducted in-depth industry research, sourcing verified leads for IT and technology sales teams.",
+      "Data Validation & Enrichment: used multi-stage verification techniques to extract and validate prospect information.",
+      "CRM & Email Tracking: maintained records in Salesforce, tracking lead engagement and sales conversion data.",
+      "Competitive Intelligence: leveraged Draup, Hoovers, ZoomInfo and Crunchbase to enhance outreach strategies.",
+      "Performance Optimization: aligned lead generation strategies with OKRs, ensuring consistent achievement of targets.",
+    ],
+    result: "Verified lead sourcing & multi-stage data validation for IT/tech sales teams",
   },
 ];
 
@@ -512,7 +557,7 @@ export const FOOTER = {
         { label: "Case studies", href: "/case-studies" },
         { label: "Hire me", href: "/hire" },
         { label: "Range", href: "/#range" },
-        { label: "Résumé", href: IDENTITY.resume },
+        { label: "Resume", href: IDENTITY.resume },
         { label: "Schedule", href: "/schedule" },
       ],
     },
@@ -784,7 +829,7 @@ export const HIRE = {
     availability: "Open to full-time roles and fractional / contract engagements.",
     timezone: "Coimbatore, India · GMT+5:30 — replies land across IST, GMT and PT hours.",
     stackNote: "Runs on: " + TOOL_GROUPS.flatMap((group) => group.tools).slice(0, 6).join(" · ") + " and more",
-    resumeCta: { label: "Résumé", href: IDENTITY.resume },
+    resumeCta: { label: "Resume", href: IDENTITY.resume },
     contactCta: { label: "Message on LinkedIn", href: IDENTITY.linkedin },
   },
   lane: {

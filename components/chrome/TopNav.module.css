@@ -89,11 +89,13 @@
 
 .link:hover {
   opacity: 1;
-  background: var(--nav-link-hover);
+  background: var(--accent-muted);
+  color: var(--accent);
 }
 
 .link:active {
-  background: var(--nav-link-hover);
+  background: var(--accent-muted);
+  color: var(--accent);
   transform: translateY(0.5px);
 }
 

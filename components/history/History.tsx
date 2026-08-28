@@ -15,8 +15,8 @@ export function History() {
           Seven years of doing exactly this.
         </h2>
         <p className={styles.standfirst}>
-          Six roles across North America, Europe, APAC and MENA — the employer, the
-          work and the numbers, in order.
+          Global reach across the United States, United Kingdom, UAE, Singapore,
+          Australia and Canada — the employer, the work and the numbers, in order.
         </p>
       </div>
 
@@ -30,7 +30,7 @@ export function History() {
               <p className={`mono ${styles.place}`}>
                 {role.company} · {role.place}
               </p>
-              <RoleSummary text={role.summary} />
+              <RoleSummary items={role.summary} />
               <p className={styles.result}>{role.result}</p>
             </div>
           </li>

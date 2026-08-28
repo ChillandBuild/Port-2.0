@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 import { Brandmark } from "@/components/brand/Brandmark";
 import { ThemeToggle } from "./ThemeToggle";
 import { IDENTITY } from "@/lib/content";
-import { prefersReducedMotion, scrollToId, subscribeScroll } from "@/lib/scroll-store";
+import { scrollToId, subscribeScroll } from "@/lib/scroll-store";
 import styles from "./TopNav.module.css";
 
 // Homepage-qualified, so the bar works unchanged from an inner route like
@@ -26,7 +26,7 @@ const LINKS = [
   { label: "Lead generation", href: "/lead-generation" },
   { label: "Case studies", href: "/case-studies" },
   { label: "Hire me", href: "/hire" },
-  { label: "Résumé", href: IDENTITY.resume },
+  { label: "Resume", href: IDENTITY.resume },
 ] as const;
 
 interface TopNavProps {
@@ -40,21 +40,12 @@ export function TopNav({ forceGrounded = false }: TopNavProps) {
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  // Next only re-runs its hash-scroll effect when the URL's hash actually
-  // changes. Already home with the hash sitting at #top from an earlier click,
-  // the second click is a no-op href and the router never scrolls — the
-  // wordmark then "works sometimes." Same fix BackToTop already uses: scroll
-  // it ourselves when we're already on the page the link points at, and leave
-  // the href alone so it still lands here (and still scrolls, via a real
-  // navigation) from every other route or with JS off.
-  const toTop = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    if (pathname !== "/") return;
-    event.preventDefault();
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
-  };
-
-  // Same reasoning as toTop: on "/" already, drive the jump ourselves rather
-  // than trust native anchor scrolling across the world's 7.4-viewport spacer.
+  // The wordmark is a plain <a href="/">, not a Next Link: a real reload
+  // every time, not a client-side transition.
+  //
+  // Same reasoning below for in-page jumps: on "/" already, drive the jump
+  // ourselves rather than trust native anchor scrolling across the world's
+  // 7.4-viewport spacer.
   const jumpTo = (id: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (pathname !== "/") return;
     event.preventDefault();
@@ -79,9 +70,10 @@ export function TopNav({ forceGrounded = false }: TopNavProps) {
       ref={ref}
       data-grounded={forceGrounded ? "true" : "false"}
     >
-      <Link className={styles.home} href="/#top" onClick={toTop} aria-label="Sampath Kumar, back to top">
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- deliberate full reload, not a client-side transition */}
+      <a className={styles.home} href="/" aria-label="Sampath Kumar, back to top">
         <Brandmark />
-      </Link>
+      </a>
 
       <nav className={styles.links} aria-label="Sections">
         <ul>

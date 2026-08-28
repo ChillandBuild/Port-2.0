@@ -10,7 +10,7 @@
 html {
   scroll-behavior: smooth;
   /* Jump targets clear the fixed top bar. */
-  scroll-padding-top: calc(var(--nav-h) + 0.75rem);
+  scroll-padding-top: calc(var(--nav-h) + 0.25rem);
 }
 
 body {

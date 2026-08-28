@@ -41,52 +41,115 @@
   margin: clamp(2.5rem, 6vh, 4rem) 0 0;
 }
 
-.receipt {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: end;
+/* Three stages of the funnel, widest to narrowest: the stated total, the
+   measured rates, then the two outcomes. The vertical hairlines between them
+   are the stages — not decoration, the divider *is* the drop-off. */
+.funnel {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(1.5rem, 4vw, 3rem);
   padding-top: 1.5rem;
   border-top: 1px solid var(--rule-strong);
 }
 
-.line {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  min-width: 0;
-  text-align: start;
+.funnel > * {
   transition:
     opacity 260ms var(--ease-out-expo),
     translate 320ms var(--ease-out-expo);
 }
 
-.receipt:hover .line {
-  opacity: 0.64;
+.funnel:hover > * {
+  opacity: 0.6;
 }
 
-.receipt .line:hover {
+.funnel:hover > *:hover {
   opacity: 1;
   translate: 0 -4px;
 }
 
-.receipt dt {
+.funnel dt {
   color: var(--on-close-soft);
 }
 
-.receipt dd {
+.funnel dd {
   margin: 0;
-  min-width: 3ch;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: var(--text-h3);
   line-height: 1;
   letter-spacing: -0.035em;
   font-variant-numeric: tabular-nums;
 }
 
-.receipt .line:last-child dd {
+.sourced {
+  flex: 0 0 auto;
+  padding-right: clamp(1.5rem, 4vw, 3rem);
+  border-right: 1px solid var(--rule);
+}
+
+.sourced dd {
+  margin-top: 0.6rem;
+  font-size: clamp(2.75rem, 1.6rem + 3.4vw, 5rem);
+}
+
+.rates {
+  display: flex;
+  flex: 1 1 auto;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  padding-right: clamp(1.5rem, 4vw, 3rem);
+  border-right: 1px solid var(--rule);
+}
+
+.rate {
+  display: flex;
+  flex-direction: column;
+  min-width: 5.5rem;
+}
+
+.rate dd {
+  margin-top: 0.5rem;
+  font-size: var(--text-h3);
+}
+
+.bar {
+  position: relative;
+  display: block;
+  height: 2px;
+  margin-top: 0.6rem;
+  background: var(--rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: var(--fill, 0%);
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 600ms var(--ease-out-expo);
+}
+
+.outcomes {
+  display: flex;
+  flex: 0 0 auto;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.outcome {
+  display: flex;
+  flex-direction: column;
+  min-width: 3ch;
+}
+
+.outcome dd {
+  margin-top: 0.5rem;
+  font-size: var(--text-h3);
+}
+
+.booked dd {
   color: var(--accent);
+  font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
 }
 
 .disclaimer {
@@ -94,21 +157,23 @@
 }
 
 @media (max-width: 700px) {
-  .receipt {
-    grid-template-columns: 1fr;
+  .funnel {
+    flex-direction: column;
     align-items: stretch;
+    gap: 1.25rem;
   }
 
-  .line {
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-    padding: 0.75rem 0;
+  .sourced,
+  .rates {
+    padding-right: 0;
+    padding-bottom: 1.25rem;
+    border-right: none;
     border-bottom: 1px solid var(--rule);
   }
 
-  .receipt dd {
-    text-align: end;
+  .rates,
+  .outcomes {
+    justify-content: space-between;
   }
 }
 

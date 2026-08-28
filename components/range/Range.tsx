@@ -14,7 +14,7 @@ export function Range() {
         <h2 className={styles.heading} id="range-heading">
           Nine sectors.
           <br />
-          Twenty-four markets.
+          Twenty-four global markets.
         </h2>
         <p className={styles.headBody}>
           The method holds across all of them. The message never does, which is

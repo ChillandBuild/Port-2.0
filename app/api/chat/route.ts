@@ -14,10 +14,10 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
     return {
       text:
         "Yes — open to full-time roles and fractional / contract engagements.\n\nCoimbatore, IN (GMT+5:30) — replies land across IST, GMT and PT hours. 7+ years across 24 markets (NA, EU, APAC, MENA). Market rate for a Pre-Sales / Lead Gen leadership role — no fixed number on a page, prefers a real conversation.\n\nBuilt and led research + outreach teams, not just IC work. Owns a number: pipeline, MQLs, meetings booked, CRM hygiene.",
-      chips: ["Show work history", "What sectors?", "Résumé"],
+      chips: ["Show work history", "What sectors?", "Resume"],
       ctas: [
         { label: "View /hire", href: "/hire", solid: true },
-        { label: "Résumé", href: "/assets/sampath-kumar-resume.pdf" },
+        { label: "Resume", href: "/assets/sampath-kumar-resume.pdf" },
         { label: "Message on LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699" },
       ],
     };

@@ -17,7 +17,7 @@ export default function ChatDemoPage() {
 
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))", marginTop: 20 }}>
           {[
-            { k: "01", t: "Recruiter", d: "“Is he open to full-time?” → hiring card + résumé CTA" },
+            { k: "01", t: "Recruiter", d: "“Is he open to full-time?” → hiring card + resume CTA" },
             { k: "02", t: "Founder", d: "“20 meetings/mo for SaaS?” → live estimate from ESTIMATOR" },
             { k: "03", t: "Skeptic", d: "“Prove the 200M+” → grounded ledger with employer sources" },
           ].map((s) => (

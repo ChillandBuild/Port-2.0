@@ -99,18 +99,22 @@
 }
 
 .summary {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  list-style: disc;
+}
+
+.summary li {
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--on-page);
   text-wrap: pretty;
 }
 
-.clamped {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
+.summary li::marker {
+  color: var(--accent);
 }
 
 .moreBtn {
