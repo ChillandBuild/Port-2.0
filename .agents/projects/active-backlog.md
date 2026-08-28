@@ -4,12 +4,10 @@
 - Remaining unbuilt pages: **Story** and a custom **404** (`app/not-found.tsx`).
   Case Studies, Schedule, Terms, Privacy, Refunds and Lead Generation all shipped in
   commit `198f462` (2026-08-28). | unprioritized | not started [[decisions-log]]
-- `README.md` lines 61–62 still claim Story, Case Studies, Schedule, 404, Terms, Privacy
-  and Refunds are "not built yet" — stale as of `198f462`; only Story and 404 remain.
-  | small | not started
 - Lead-generation and schedule pages have no submission backend — the contact/schedule
-  surfaces are presentational. Decide whether they stay that way or get a real endpoint.
-  | undecided | not started
+  surfaces are presentational. A shared endpoint now exists (`/api/submissions`, added
+  `e3034a1`) and could be reused; decide whether these pages adopt it or stay static.
+  | undecided | not started [[decisions-log]]
 
 ## Known Tech Debt
 - No unit/integration test suite — verification currently relies on manual Playwright

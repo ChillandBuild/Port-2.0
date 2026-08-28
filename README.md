@@ -38,7 +38,9 @@ lib/content.ts       every string the page renders, typed
 styles/              tokens, shared type primitives, global reset
 ```
 
-Components are server components — the page ships no client-side interactivity.
+Components are server components by default. Client code is limited to the motion
+layer (`components/motion/ScrollFX.tsx`, the canvas world, the rotating greeting) and
+the form handlers on `/hire` and the case-studies gate.
 
 ## Running it
 
@@ -58,5 +60,7 @@ npm start       # serve the production build
 ## Content
 
 Source copy is in [SITE-CONTENT.md](SITE-CONTENT.md). Employers are anonymised as
-Client A–F, matching the source. Remaining pages (Story, Case Studies, Schedule, 404,
-Terms, Privacy, Refunds) are not built yet.
+Client A–F, matching the source. Case Studies, Schedule, Lead Generation, Terms,
+Privacy and Refunds have shipped; a Story page and a custom 404 remain unbuilt.
+
+Contributor and onboarding docs live in [docs/wiki/](docs/wiki/).

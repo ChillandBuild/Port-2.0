@@ -66,6 +66,21 @@
      cue loop writes its own transform to on every frame. */
   transform: scale(1.1);
   transform-origin: 50% 0;
+  /* Load-in: the photograph settles from a deeper push into its resting 1.1,
+     fading up over the world ground while the headline rises. The final
+     keyframe is the resting state itself, so nothing snaps when it ends. */
+  animation: photoArrive 1400ms var(--ease-out-expo) both;
+}
+
+@keyframes photoArrive {
+  from {
+    opacity: 0;
+    transform: scale(1.16);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
 /* Deliberately unmistakable. It must not be possible to ship this by accident,
@@ -253,6 +268,7 @@
   text-transform: uppercase;
   color: var(--accent);
   margin-bottom: 1.25rem;
+  animation: heroRise 900ms var(--ease-out-expo) 320ms both;
 }
 
 .headline {
@@ -345,6 +361,24 @@
   }
 }
 
+/* The load-in choreography. The headline's lines rise out of their clip boxes
+   on their own clock (above) and the photograph settles underneath them; these
+   four blocks ride the same beat — eyebrow, lede, stats, CTAs — each arriving
+   as the previous one settles, so the first paint is a composed entrance
+   rather than everything landing at once. `both` holds the from state through
+   the delay, so a block never flashes before its turn, and the whole sequence
+   is pure CSS: it runs at first paint, with or without the script. */
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .greetMarket {
   position: absolute;
   left: 0.08em;
@@ -381,6 +415,7 @@
   line-height: 1.62;
   color: var(--on-world-soft);
   text-wrap: pretty;
+  animation: heroRise 900ms var(--ease-out-expo) 560ms both;
 }
 
 .stats {
@@ -388,6 +423,7 @@
   justify-content: flex-end;
   gap: clamp(1rem, 2.6vw, 2.25rem);
   margin: 2rem 0 0;
+  animation: heroRise 900ms var(--ease-out-expo) 720ms both;
 }
 
 .stats > div + div {
@@ -418,6 +454,7 @@
   justify-content: flex-end;
   gap: 1.25rem;
   margin-top: 2rem;
+  animation: heroRise 900ms var(--ease-out-expo) 880ms both;
 }
 
 .quiet {
@@ -844,5 +881,15 @@
   .line > span {
     animation: none;
     transform: none;
+  }
+
+  /* The load-in choreography goes with the travel: the hero copy reads at
+     once, and the photograph (display: none here anyway) never settles. */
+  .eyebrow,
+  .lede,
+  .stats,
+  .actions,
+  .photoImage {
+    animation: none;
   }
 }

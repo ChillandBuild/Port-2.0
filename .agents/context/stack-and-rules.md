@@ -9,7 +9,13 @@
 - Testing/QA: no unit test framework configured. Visual/E2E verification runs through
   ad-hoc `lab/*.mjs` scripts using `playwright-core` (screenshot-driven, not an assertion suite)
 - Hosting: Vercel (`.vercel/project.json` present, linked project)
-- No database, no backend API routes, no auth — fully static/server-rendered marketing site
+- Backend: one route only — `app/api/submissions/route.ts` (POST). Backs the `/hire`
+  capture form and records case-studies-gate emails. Writes to a Supabase `submissions`
+  table (`@supabase/supabase-js`, service-role key); sends a best-effort Resend
+  notification. Both steps no-op cleanly when their env vars are unset. No auth.
+- Everything else is static / server-rendered. Env keys: `SUPABASE_URL`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, `HIRE_NOTIFY_TO`
+  (see `docs/wiki/getting-started.md`).
 
 ## Hard Invariants
 - `styles/tokens.css` is the only source of palette/type/spacing values — no hardcoded
@@ -26,7 +32,10 @@
   source — section structure, headlines, and layout are separate decisions.
 
 ## File Map
-- `app/` — layout (fonts, metadata) and the homepage route
+- `app/` — layout (fonts, metadata), the homepage, and routes `/hire`, `/case-studies`,
+  `/lead-generation`, `/schedule`, `/privacy`, `/terms`, `/refunds`
+- `app/api/submissions/route.ts` — the single POST backend (Supabase insert + Resend email)
+- `lib/supabase/`, `lib/email.ts`, `lib/submissions.ts` — submissions endpoint support
 - `components/<area>/` — one folder per page area (hero, world, range, posts, ledger,
   linkedin, history, education, estimator, contact, chrome, brand, about, etc.), each with
   a colocated `.module.css`
