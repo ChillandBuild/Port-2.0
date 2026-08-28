@@ -201,6 +201,10 @@
   justify-content: center;
   align-items: flex-end;
   text-align: right;
+  /* The chat dock is fixed to this same bottom-right corner. Without a gutter
+     the last action ("Skip to the numbers") runs under the pill. Reserve the
+     dock's footprint so the column always clears it. */
+  padding-bottom: clamp(3.5rem, 8vh, 5rem);
 }
 
 .heroAnchor .headline,
@@ -692,6 +696,9 @@
     align-items: flex-start;
     justify-content: flex-end;
     text-align: left;
+    /* Same corner clash as desktop: the dock pill sits over the bottom row.
+       The stat/action rows are short here, so a smaller gutter clears it. */
+    padding-bottom: 3.25rem;
   }
 
   .heroAnchor .headline,
