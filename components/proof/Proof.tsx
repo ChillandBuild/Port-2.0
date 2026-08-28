@@ -33,6 +33,16 @@ export function Proof() {
                 >
                   {row.value}
                 </span>
+              ) : row.countRange ? (
+                <span
+                  data-count-range
+                  data-count-range-from={row.countRange.from}
+                  data-count-range-to={row.countRange.to}
+                  data-count-prefix={row.countRange.prefix ?? ""}
+                  data-count-suffix={row.countRange.suffix ?? ""}
+                >
+                  {row.value}
+                </span>
               ) : (
                 row.value
               )}
@@ -51,7 +61,20 @@ export function Proof() {
         <ul className={styles.inboundStats}>
           {LINKEDIN.stats.map((stat) => (
             <li key={stat.label}>
-              <span className={`${styles.inboundValue} tabular`}>{stat.value}</span>
+              <span className={`${styles.inboundValue} tabular`}>
+                {"count" in stat && stat.count ? (
+                  <span
+                    data-count={stat.count.to}
+                    data-count-prefix={"prefix" in stat.count ? stat.count.prefix : ""}
+                    data-count-suffix={"suffix" in stat.count ? stat.count.suffix : ""}
+                    data-count-decimals={"decimals" in stat.count ? stat.count.decimals : 0}
+                  >
+                    {stat.value}
+                  </span>
+                ) : (
+                  stat.value
+                )}
+              </span>
               <span className={`mono ${styles.inboundLabel}`}>{stat.label}</span>
             </li>
           ))}

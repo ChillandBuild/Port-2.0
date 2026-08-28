@@ -10,6 +10,23 @@
   gap: 10px;
 }
 
+/* When embedded inline (e.g. hero actions), sit in normal flow instead of fixed. */
+.dockInline {
+  position: relative;
+  right: unset;
+  bottom: unset;
+  z-index: 30;
+}
+
+.dockInline .panel {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 0;
+  z-index: 100;
+}
+
+
+
 .bubble {
   font-family: var(--font-mono);
   font-size: var(--text-meta);

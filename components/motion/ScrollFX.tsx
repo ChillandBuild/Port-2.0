@@ -51,9 +51,9 @@ export function ScrollFX() {
           const obj = { n: 0 };
           gsap.to(obj, {
             n: target,
-            duration: reduced ? 0 : 1.5,
+            duration: reduced ? 0 : 1.6,
             ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
             onUpdate: () => {
               el.textContent = `${prefix}${obj.n.toLocaleString("en-US", {
                 minimumFractionDigits: decimals,
@@ -62,6 +62,26 @@ export function ScrollFX() {
             },
           });
         });
+
+        gsap.utils.toArray<HTMLElement>("[data-count-range]").forEach((el) => {
+          const from = Number(el.dataset.countRangeFrom ?? 0);
+          const to = Number(el.dataset.countRangeTo ?? 0);
+          if (!Number.isFinite(to)) return;
+          const prefix = el.dataset.countPrefix ?? "";
+          const suffix = el.dataset.countSuffix ?? "";
+          const obj = { a: 0, b: 0 };
+          gsap.to(obj, {
+            a: from,
+            b: to,
+            duration: reduced ? 0 : 1.6,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+            onUpdate: () => {
+              el.textContent = `${prefix}${Math.round(obj.a)}–${Math.round(obj.b)}${suffix}`;
+            },
+          });
+        });
+
 
         // Lateral travel reads as breadth. Vertical reads as argument.
         if (!reduced) {

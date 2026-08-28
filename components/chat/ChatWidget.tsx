@@ -22,7 +22,7 @@ const GREETING: Msg = {
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
-export function ChatWidget() {
+export function ChatWidget({ inline }: { inline?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -56,7 +56,7 @@ export function ChatWidget() {
   }
 
   return (
-    <div className={styles.dock} aria-live="polite">
+    <div className={`${styles.dock} ${inline ? styles.dockInline : ""}`} aria-live="polite">
       {open && (
         <div className={styles.panel} role="dialog" aria-label="Hello bot chat">
           <div className={styles.head}>

@@ -99,3 +99,19 @@ export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
+
+/**
+ * Same-page hash links (`#about`, `#history`, ...) are driven from here
+ * instead of a plain `<a href="#...">`. The world spacer alone is 7.4
+ * viewport-heights, and native anchor scrolling shares the main thread with
+ * the world's rAF paint loop across that whole distance — long enough that a
+ * browser's smooth-scroll can stall or settle short of the target. Driving it
+ * ourselves via scrollIntoView keeps the jump deterministic.
+ */
+export function scrollToId(id: string): boolean {
+  if (typeof document === "undefined") return false;
+  const el = document.getElementById(id);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  return true;
+}

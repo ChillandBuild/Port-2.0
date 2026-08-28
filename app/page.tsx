@@ -9,7 +9,7 @@ import { Proof } from "@/components/proof/Proof";
 import { Range } from "@/components/range/Range";
 import { Reply } from "@/components/reply/Reply";
 import { ScrollFX } from "@/components/motion/ScrollFX";
-import { ChatWidget } from "@/components/chat/ChatWidget";
+import { PlatformArchitecture } from "@/components/stack/PlatformArchitecture";
 import { Terms } from "@/components/terms/Terms";
 import { WorldStage } from "@/components/world/WorldStage";
 
@@ -36,6 +36,7 @@ export default function HomePage() {
         <Positioning />
         <History />
         <Range />
+        <PlatformArchitecture />
         <Estimator />
         <Terms />
         <Reply />
@@ -43,7 +44,6 @@ export default function HomePage() {
       </main>
 
       <Footer />
-      <ChatWidget />
       <ScrollFX />
       <PointerFX />
     </>

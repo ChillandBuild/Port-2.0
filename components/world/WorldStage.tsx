@@ -19,6 +19,7 @@ import { HERO, PIPELINE } from "@/lib/content";
 import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/world";
 import { CLUSTERS, COHORT, FIELD } from "@/lib/world-instance";
 import { Greeting } from "./Greeting";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import {
   drawWorld,
   landingProgress,
@@ -27,7 +28,7 @@ import {
   type Palette,
 } from "@/lib/world-render";
 import { RunReadout } from "./RunReadout";
-import { prefersReducedMotion, registerWorld, subscribeScroll } from "@/lib/scroll-store";
+import { prefersReducedMotion, registerWorld, scrollToId, subscribeScroll } from "@/lib/scroll-store";
 import { subscribeTheme } from "@/lib/theme";
 import styles from "./WorldStage.module.css";
 
@@ -354,26 +355,66 @@ export function WorldStage() {
 
             <dl className={styles.stats}>
               {HERO.stats.map((stat) => (
-                <div key={stat.label}>
-                  <dt className={`${styles.statValue} tabular`}>{stat.value}</dt>
+                <div key={stat.label} className={styles.statItem}>
+                  <dt className={`${styles.statValue} tabular`}>
+                    {"count" in stat && stat.count ? (
+                      <span
+                        data-count={stat.count.to}
+                        data-count-prefix={"prefix" in stat.count ? stat.count.prefix : ""}
+                        data-count-suffix={"suffix" in stat.count ? stat.count.suffix : ""}
+                        data-count-decimals={"decimals" in stat.count ? stat.count.decimals : 0}
+                      >
+                        {stat.value}
+                      </span>
+                    ) : (
+                      stat.value
+                    )}
+                  </dt>
                   <dd className={`mono ${styles.statLabel}`}>{stat.label}</dd>
                 </div>
               ))}
             </dl>
 
             <div className={styles.actions}>
-              {/* Forked, not shared: a recruiter and a client want different
-                  proof, so each CTA lands on the section built for them
-                  instead of both funnelling into #contact. */}
-              <a className={styles.primary} href="#history">
-                Hire me
-              </a>
-              <a className={styles.quiet} href="#estimator">
-                Work with me
-              </a>
-              <a className={styles.quiet} href="#proof">
-                Skip to the numbers
-              </a>
+              {/* Primary action pair: matching button geometry for crisp baseline alignment */}
+              <div className={styles.actionRowPrimary}>
+                <a
+                  className={styles.primary}
+                  href="#history"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToId("history");
+                  }}
+                >
+                  Hire me
+                </a>
+                <a
+                  className={styles.ghost}
+                  href="#estimator"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToId("estimator");
+                  }}
+                >
+                  Work with me
+                </a>
+              </div>
+
+              {/* Secondary actions: fast jump link and interactive assistant */}
+              <div className={styles.actionRowSecondary}>
+                <a
+                  className={styles.skipLink}
+                  href="#proof"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToId("proof");
+                  }}
+                >
+                  <span>Skip to the numbers</span>
+                  <span className={styles.skipArrow} aria-hidden="true">↓</span>
+                </a>
+                <ChatWidget inline />
+              </div>
             </div>
           </section>
 

@@ -38,9 +38,9 @@ export const HERO = {
   primaryCta: { label: "Hire me", href: "#contact" },
   secondaryCta: { label: "Work with me", href: "#work-plan" },
   stats: [
-    { value: "7+", label: "Years in pre-sales" },
-    { value: "24", label: "Markets reached" },
-    { value: "200M+", label: "Records mapped" },
+    { value: "7+", label: "Years in pre-sales", count: { to: 7, suffix: "+" } },
+    { value: "24", label: "Markets reached", count: { to: 24 } },
+    { value: "200M+", label: "Records mapped", count: { to: 200, suffix: "M+" } },
   ],
 } as const;
 
@@ -93,6 +93,7 @@ export interface LedgerRow {
   source: string;
   /** Set only where the figure is a single number that can honestly count up. */
   count?: { to: number; prefix?: string; suffix?: string; decimals?: number };
+  countRange?: { from: number; to: number; prefix?: string; suffix?: string };
 }
 
 export const LEDGER: LedgerRow[] = [
@@ -112,6 +113,7 @@ export const LEDGER: LedgerRow[] = [
     value: "18–25",
     label: "Qualified pipeline meetings per client seat, per month.",
     source: "6 tech verticals · The Sales Group",
+    countRange: { from: 18, to: 25 },
   },
   {
     value: "1.2%",
@@ -370,8 +372,8 @@ export const LINKEDIN = {
   body:
     "Verified Creator Analytics and Social Selling Index framework driving steady B2B and B2C inbound leads.",
   stats: [
-    { value: "10,000+", label: "Followers" },
-    { value: "2.6M+", label: "Impressions" },
+    { value: "10,000+", label: "Followers", count: { to: 10000, suffix: "+" } },
+    { value: "2.6M+", label: "Impressions", count: { to: 2.6, suffix: "M+", decimals: 1 } },
   ],
   chart: {
     title: "Audience momentum",

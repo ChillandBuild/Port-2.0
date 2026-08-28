@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 import { Brandmark } from "@/components/brand/Brandmark";
 import { ThemeToggle } from "./ThemeToggle";
 import { IDENTITY } from "@/lib/content";
-import { prefersReducedMotion, subscribeScroll } from "@/lib/scroll-store";
+import { prefersReducedMotion, scrollToId, subscribeScroll } from "@/lib/scroll-store";
 import styles from "./TopNav.module.css";
 
 // Homepage-qualified, so the bar works unchanged from an inner route like
@@ -53,6 +53,14 @@ export function TopNav({ forceGrounded = false }: TopNavProps) {
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
   };
 
+  // Same reasoning as toTop: on "/" already, drive the jump ourselves rather
+  // than trust native anchor scrolling across the world's 7.4-viewport spacer.
+  const jumpTo = (id: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/") return;
+    event.preventDefault();
+    scrollToId(id);
+  };
+
   useEffect(() => {
     if (forceGrounded) return;
     const nav = ref.current;
@@ -84,7 +92,11 @@ export function TopNav({ forceGrounded = false }: TopNavProps) {
                   {link.label}
                 </a>
               ) : (
-                <Link className={styles.link} href={link.href}>
+                <Link
+                  className={styles.link}
+                  href={link.href}
+                  onClick={link.href.startsWith("/#") ? jumpTo(link.href.slice(2)) : undefined}
+                >
                   {link.label}
                 </Link>
               )}

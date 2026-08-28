@@ -6,7 +6,13 @@ export function Positioning() {
     <section className={styles.section} id="about" aria-labelledby="about-heading">
       <div className={styles.rail}>
         <span className="mono">Re: what I actually do</span>
-        <span className={`mono ${styles.stamp}`}>{ABOUT.stamp}</span>
+        <span
+          className={`mono ${styles.stamp}`}
+          data-count="7"
+          data-count-suffix="+ years"
+        >
+          {ABOUT.stamp}
+        </span>
       </div>
 
       <div className={styles.grid}>
