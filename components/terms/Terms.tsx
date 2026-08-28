@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Link from "next/link";
 import { CONTACT, WORK_PLAN } from "@/lib/content";
 import styles from "./Terms.module.css";
 
