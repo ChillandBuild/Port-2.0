@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Link from "next/link";
 import { CONTACT, WORK_PLAN } from "@/lib/content";
 import styles from "./Terms.module.css";
 
@@ -41,6 +42,10 @@ export function Terms() {
           ))}
         </dl>
         <p className={styles.note}>{CONTACT.note}</p>
+        <Link className={`mono ${styles.sessionCta}`} href="/schedule">
+          Schedule a call
+          <span aria-hidden="true">→</span>
+        </Link>
 
         {/* The section states the offer; this is the one place on it that acts
             on that. It goes to /schedule rather than straight to LinkedIn so the
