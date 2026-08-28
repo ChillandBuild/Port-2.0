@@ -141,33 +141,6 @@
   text-wrap: pretty;
 }
 
-.sessionCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  justify-self: start;
-  min-height: 3rem;
-  padding: 0 1.5rem;
-  margin-top: 0.5rem;
-  font-size: var(--text-xs);
-  text-decoration: none;
-  color: var(--accent);
-  border: 1px solid var(--rule-strong);
-  transition:
-    background 140ms var(--ease-out-quint),
-    border-color 140ms var(--ease-out-quint),
-    translate 140ms var(--ease-out-quint);
-}
-
-.sessionCta:hover {
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-  border-color: var(--accent);
-}
-
-.sessionCta:active {
-  translate: 0 1px;
-}
-
 /* Same treatment as the hero's "Hire me" and the close's LinkedIn button: one
    button vocabulary across the page. `justify-self` because .session is a grid,
    so without it the button stretches the full column width. */
