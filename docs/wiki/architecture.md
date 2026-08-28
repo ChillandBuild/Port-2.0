@@ -16,6 +16,7 @@ subsystem gotchas — lives in `.agents/` (linked at the bottom).
 ```
 app/                  layout (fonts, metadata), the homepage, and the other routes
 app/api/submissions/  one shared POST endpoint for every form that reaches Sampath
+app/icon.svg …        site icons + manifest.ts (a flat Bricolage "S." mark)
 components/<area>/     one folder per page area, each with a colocated .module.css
 lib/content.ts        every string the page renders, typed
 lib/world*.ts         the custom rAF canvas "world" scene engine
@@ -30,6 +31,9 @@ styles/               tokens, shared type primitives, global reset
 
 `/privacy`, `/terms`, `/refunds` are three thin routes over one shell
 (`components/legal/LegalPage.tsx`) — editing the shell changes all three.
+
+Next also generates `/icon.svg`, `/apple-icon.png`, `/favicon.ico` and
+`/manifest.webmanifest` from the files in `app/` — see [Brand assets](#brand-assets).
 
 ## Two motion systems, on purpose
 
@@ -49,8 +53,17 @@ case-studies gate both POST there. The Supabase write is the source of truth and
 awaited; the Resend email is best-effort and never blocks the response. Both no-op
 cleanly when env vars are unset. See [getting-started.md](getting-started.md).
 
-> Note: `.agents/context/stack-and-rules.md` still describes the site as having
-> "no database, no backend API routes" — that predates this endpoint. Trust the code.
+## Brand assets
+
+The favicon is the nav wordmark cropped to one letter — a flat `S.` (dark `S`, accent
+full stop), no container. The `S` is traced from the real Bricolage Grotesque outline,
+so it matches the site's display type exactly. `app/icon.svg` recolours itself for dark
+browser chrome via `prefers-color-scheme`. Icon files use Next's metadata file
+conventions (`app/favicon.ico`, `app/icon.svg`, `app/apple-icon.png`); `app/manifest.ts`
+is a hand-authored web manifest and the PWA/maskable PNGs sit in `public/`.
+
+To regenerate the icons (if the wordmark treatment changes), see the "Site icons"
+section of `.agents/context/subsystem-notes.md`.
 
 ## Non-negotiables (verified, not aspirational)
 

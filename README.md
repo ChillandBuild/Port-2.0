@@ -32,11 +32,17 @@ All tokens live in [styles/tokens.css](styles/tokens.css). Nothing hardcodes a p
 ## Structure
 
 ```
-app/                 layout (fonts, metadata) and the homepage route
+app/                 layout (fonts, metadata), the homepage route, and the site icons
 components/<area>/   one folder per page area, each with a colocated CSS module
 lib/content.ts       every string the page renders, typed
 styles/              tokens, shared type primitives, global reset
 ```
+
+The favicon is the wordmark cropped to one letter — a flat `S.` traced from the real
+Bricolage outline, recolouring itself for dark browser chrome. Files follow Next's
+metadata conventions (`app/icon.svg`, `app/apple-icon.png`, `app/favicon.ico`,
+`app/manifest.ts`); regeneration is documented in
+[.agents/context/subsystem-notes.md](.agents/context/subsystem-notes.md).
 
 Components are server components by default. Client code is limited to the motion
 layer (`components/motion/ScrollFX.tsx`, the canvas world, the rotating greeting) and

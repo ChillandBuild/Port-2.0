@@ -54,3 +54,14 @@ in the Supabase dashboard, not via a migrations directory here.
   render the literal "hello." so there is zero hydration mismatch; cycling starts only after
   mount and only when motion is allowed. The `<h1>` keeps one stable accessible name and the
   rotating slot is `aria-hidden` | Preserves the reduced-motion and a11y invariants.
+- 2026-08-28 | Favicon is the wordmark cropped to one letter — a flat `S.` (ink `#0b1b2a`
+  S, accent `#5b21b6` full stop), no container | The nav wordmark already dropped its
+  monogram ([[subsystem-notes]] — `components/brand/Brandmark.tsx`); a favicon has no
+  room for the full name, so one letter carrying the signature stop is the smallest
+  honest mark. The `S` is traced from the live Bricolage Grotesque outline at wght 800,
+  not redrawn. `app/icon.svg` flips ink→bone under `prefers-color-scheme: dark` so it
+  survives dark browser chrome | Rejected: a violet knockout tile (more robust on any
+  tab colour, but not true to the flat wordmark); the bare accent period alone (reads
+  as a status light). Wired via Next file conventions — `app/favicon.ico`,
+  `app/icon.svg`, `app/apple-icon.png` — plus a hand-authored `app/manifest.ts`; the
+  PWA/maskable PNGs live in `public/`. [[stack-and-rules]] [[subsystem-notes]]

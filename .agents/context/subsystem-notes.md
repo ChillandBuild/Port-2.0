@@ -48,3 +48,25 @@ and never move genuinely sensitive content behind it.
 ## Legal pages share one shell (`components/legal/LegalPage.tsx`)
 `/privacy`, `/terms`, and `/refunds` are three thin routes over one presentational shell.
 Editing the shell changes all three at once — check the other two before restyling one.
+
+## Site icons (`app/icon.svg`, `app/apple-icon.png`, `app/favicon.ico`, `app/manifest.ts`)
+The favicon is a code-traced glyph, not a hand-drawn SVG: the `S` path is lifted from
+the real Bricolage Grotesque variable font instanced at wght 800, with the accent full
+stop as a second path. If the wordmark treatment changes, regenerate rather than nudging
+the path by hand — the build script is NOT in the repo (it lived in a scratch dir).
+Re-derive it: google/fonts `ofl/bricolagegrotesque` variable ttf → fontTools
+`instantiateVariableFont({opsz:40, wght:800, wdth:100})` → `SVGPathPen` on glyphs `S`
+and `.` → compose into a 512 viewBox (period tucked ~18 font-units after the S ink) →
+`sharp` for the PNGs and a PNG-in-ICO container at 16/32/48.
+Traps:
+- `app/icon.svg` carries a `@media (prefers-color-scheme: dark)` block — ink `#0b1b2a` /
+  dot `#5b21b6` on light, bone `#eef0ea` / `#8b5cf6` on dark. Keep both branches when
+  editing. Next serves it at `/icon.svg`.
+- `app/manifest.ts` references the PNGs by absolute `/…` path, so they MUST sit in
+  `public/`, not `app/`. An `app/`-only PNG will 404 from the manifest.
+- The maskable PNG deliberately carries the `#f5f3ff` ground (Android's adaptive mask
+  crops into something); the other icons are transparent. `apple-icon.png` is also
+  grounded — iOS should not get transparency.
+- Colours are the client's tokens (`--on-page`, `--accent`, `--surface-page`,
+  `--surface-chrome`). If the token values move, the icons and `manifest.ts` do not
+  update themselves. [[decisions-log]]

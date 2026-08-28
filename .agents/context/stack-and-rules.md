@@ -35,6 +35,11 @@
 - `app/` — layout (fonts, metadata), the homepage, and routes `/hire`, `/case-studies`,
   `/lead-generation`, `/schedule`, `/privacy`, `/terms`, `/refunds`
 - `app/api/submissions/route.ts` — the single POST backend (Supabase insert + Resend email)
+- `app/icon.svg`, `app/apple-icon.png`, `app/favicon.ico` — the site icon set (Next
+  metadata file conventions; a flat Bricolage `S.` mark). `app/manifest.ts` is the
+  hand-authored web manifest, colours from `tokens.css`. `public/icon-{192,512}.png` +
+  `public/icon-maskable-512.png` are the manifest's PWA icons. All are generated from
+  the Bricolage outline — see [[subsystem-notes]] to regenerate. [[decisions-log]]
 - `lib/supabase/`, `lib/email.ts`, `lib/submissions.ts` — submissions endpoint support
 - `components/<area>/` — one folder per page area (hero, world, range, posts, ledger,
   linkedin, history, education, estimator, contact, chrome, brand, about, etc.), each with
