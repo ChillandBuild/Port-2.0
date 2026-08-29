@@ -26,7 +26,7 @@ export function ScheduleAgenda() {
           .ladder is the positioned coordinate space both share — connectors.ts
           sums offsets up the chain to reach it. 720 is the width at which the
           items stop being a single column and become a journey worth tracing. */}
-      <div className={styles.ladder} data-connectors data-connectors-min="720">
+      <div className={styles.ladder} data-connector-shape="rule" data-connectors data-connectors-min="720">
         <ol className={styles.items}>
           {SCHEDULE.agenda.items.map((item) => (
             <li

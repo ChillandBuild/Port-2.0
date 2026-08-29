@@ -3,9 +3,16 @@ import { CONTACT, WORK_PLAN } from "@/lib/content";
 import styles from "./Terms.module.css";
 
 /**
- * The offer, plainly. Two ways in: a performance-linked engagement where the
- * spend starts at tool cost, and a single paid session. Set small on purpose —
- * this is the part that has to read as terms rather than as a pitch.
+ * The offer, plainly: a single paid session, terms stated up front. Set small
+ * on purpose — this is the part that has to read as terms rather than as a
+ * pitch.
+ *
+ * The phase-by-phase breakdown this section used to carry (WORK_PLAN.steps)
+ * moved to /schedule, which already restates the same phases with prices
+ * attached (ScheduleEngagement.tsx) — this stayed priceless and now just
+ * duplicated it one click upstream. WORK_PLAN.steps is unused here as a result,
+ * but stays in lib/content.ts: components/plan/WorkPlan.tsx and
+ * components/leadgen/LeadGenPage.tsx still render it.
  */
 export function Terms() {
   return (
@@ -18,16 +25,6 @@ export function Terms() {
           You control the spend, and the results arrive before the retainer does.
         </p>
       </div>
-
-      <ol className={styles.steps}>
-        {WORK_PLAN.steps.map((step) => (
-          <li className={styles.step} key={step.no} data-reveal>
-            <p className={`mono ${styles.stepNo}`}>Phase {step.no}</p>
-            <h3 className={styles.stepName}>{step.name}</h3>
-            <p className={styles.stepBody}>{step.description}</p>
-          </li>
-        ))}
-      </ol>
 
       <div className={styles.session} data-reveal data-reveal-children>
         <h3 className={styles.sessionHeading}>Or book the hour.</h3>

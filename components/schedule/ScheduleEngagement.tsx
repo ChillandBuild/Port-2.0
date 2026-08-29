@@ -2,18 +2,18 @@ import { SCHEDULE } from "@/lib/content";
 import styles from "./ScheduleEngagement.module.css";
 
 /**
- * The home page carries an abstract three-phase version of this strip
- * (components/terms/Terms.tsx). This is the /schedule version: four phases,
- * each with its price stated on it, because this is the page where somebody is
- * deciding whether to pay. The two arrays are deliberately separate — WORK_PLAN
- * stays priceless, SCHEDULE.engagement carries the numbers.
+ * The home page used to carry an abstract three-phase version of this strip
+ * (WORK_PLAN.steps, rendered by components/terms/Terms.tsx) — priceless, one
+ * click upstream of this priced one. It was cut from there for saying the same
+ * thing twice; this is now the only place the phase breakdown lives. WORK_PLAN
+ * itself stays in lib/content.ts — components/plan/WorkPlan.tsx and
+ * components/leadgen/LeadGenPage.tsx still render it — so SCHEDULE.engagement
+ * remains its own array here, not a shared one.
  *
- * It used to borrow Terms.module.css's grammar — hairline top rule wiping to
- * accent. It no longer does: from 1024px up this is a zig-zag of cards on a
- * ruled ground, connected by drawn lines with a node travelling the tip
- * (components/motion/connectors.ts). Terms.tsx is unchanged and still owns the
- * hairline strip; the two sections deliberately diverge now. Only the sibling
- * quietening to 0.62 survives.
+ * From 1024px up this is a zig-zag of cards on a ruled ground, connected by
+ * drawn lines with a node travelling the tip (components/motion/connectors.ts).
+ * Only the sibling quietening to 0.62 carries over from the plain hairline-rule
+ * grammar this used to share with Terms.module.css.
  */
 export function ScheduleEngagement() {
   return (

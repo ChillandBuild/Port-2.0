@@ -1,17 +1,22 @@
 /**
  * Scroll-drawn connectors.
  *
- * A line draws itself from one card to the next as its section scrolls, with a
- * dot riding the growing tip. When the dot lands, that card's target element
+ * A line draws itself from one item to the next as its section scrolls, with a
+ * dot riding the growing tip. When the dot lands, that item's target element
  * latches on — and stays on, because scrolling back up rewinds the line but you
  * do not un-reach a step you have reached.
  *
- * Two sections use this. The engagement ladder is a single row that alternates
- * sides, so every connector leaves one card's side edge and meets the next.
- * The agenda is a wrapped grid, so some connectors have to get from the end of
- * one row back to the start of the next; those route through the gutter between
- * the rows instead. Which of the two a connector is comes from the live layout,
- * not from an index, so a breakpoint change re-decides it for free.
+ * Two sections use this, and they want different geometry, named by the host via
+ * data-connector-shape:
+ *
+ *   "edge" (default) — the engagement ladder. One card per row, alternating
+ *   sides, so a connector leaves the side edge of A that faces B and meets the
+ *   facing edge of B. Long diagonal runs across open ground.
+ *
+ *   "rule" — the agenda. A wrapped grid whose items are columns of prose under a
+ *   hairline rule, so a connector is a shallow arc riding that rule band from one
+ *   item's midpoint to the next. Pairs that straddle a row break draw nothing:
+ *   see ruleSpan.
  *
  * Lives outside ScrollFX on purpose: ScrollFX is a router for the whole paper
  * half of the site, and this is a couple of sections' worth of geometry.
@@ -21,11 +26,11 @@ type Gsap = typeof import("gsap").gsap;
 type ScrollTriggerClass = typeof import("gsap/ScrollTrigger").ScrollTrigger;
 
 /** Fallback for a host that does not name its own breakpoint. Matches the
- *  four-up breakpoint in ScheduleEngagement.module.css: below it the phases
- *  stack, so there is no left-to-right journey to trace. */
+ *  breakpoint in ScheduleEngagement.module.css: below it the phases stack, so
+ *  there is no journey to trace. */
 const DEFAULT_MIN_WIDTH = 1024;
 
-/** Progress at which the destination card latches on. Deliberately not 1: the
+/** Progress at which the destination item latches on. Deliberately not 1: the
  *  target should light as the dot arrives, not a frame after it has stopped. */
 const ACTIVATE_AT = 0.9;
 
@@ -33,55 +38,31 @@ const ACTIVATE_AT = 0.9;
  *  two scrubbed tweens reads as a stutter. */
 const OVERLAP = 0.1;
 
-/** Where on a card's height the line leaves and arrives, as a fraction. Low on
- *  the card it leaves, high on the one it reaches — that asymmetry is what makes
- *  the diagonal read as descent rather than as a bracket. */
+/** "edge" shape. Where on a card's height the line leaves and arrives, as a
+ *  fraction. Low on the card it leaves, high on the one it reaches — that
+ *  asymmetry is what makes the diagonal read as descent rather than a bracket. */
 const EXIT_DEPTH = 0.72;
 const ENTRY_DEPTH = 0.22;
 
-/** Horizontal pull on the bezier handles, as a fraction of the run. Keeps the
- *  line close to straight with an eased departure and arrival. */
+/** "edge" shape. Horizontal pull on the bezier handles, as a fraction of the
+ *  run. Keeps the line close to straight with an eased departure and arrival. */
 const CURVE = 0.14;
 
-/** Ceiling on |Δy| per pixel of horizontal run for a same-row connector.
- *
- *  EXIT_DEPTH and ENTRY_DEPTH describe a descent, which is what they read as
- *  when the two cards are far apart — the engagement ladder's runs are ~650px
- *  wide against an 81px drop, so nothing there is clamped. Drop the same numbers
- *  into a three-up grid and the only horizontal room is the column gutter: a
- *  36px run against a 57px drop is a slope of 1.6, and the connector renders as
- *  a slash through the copy rather than as a link between two cards. Past this
- *  ceiling both depths are eased back toward their shared midpoint until the
- *  slope fits, which flattens a cramped connector without touching a roomy one.
- *
- *  Easing the depths can only move an anchor within its own card, so it cannot
- *  close the distance between two cards in different rows. A connector still
- *  over the ceiling once eased has been asked to cross rows down a column
- *  gutter, and is routed through the gutter between the rows instead. */
-const MAX_SLOPE = 0.55;
+/** "rule" shape. How far the arc rises above the rule band, in px, and the
+ *  handle pull that gets it there. The bow is what separates the connector from
+ *  the hairline it rides — draw it flat and it reads as the rule itself. */
+const BOW = 26;
+const RULE_CURVE = 0.35;
 
-/** Breathing room, in px, added around a card before testing whether a
- *  connector would run into it. A line that shaves a card's corner is as wrong
- *  as one that crosses its middle. */
+/** Vertical slack, in px, before two items count as being on different rows.
+ *  Items in one row share a top edge, so anything past a hairline of rounding is
+ *  a genuine row break. */
 const CLEARANCE = 8;
-
-/** Row-crossing connectors leave and arrive on horizontal edges, offset toward
- *  the direction of travel so the sweep starts and ends somewhere deliberate
- *  rather than dead-centre under the card. */
-const WRAP_LEAD = 0.7;
-const WRAP_TRAIL = 0.3;
-
-/** Handle pull for the row-crossing sweep. Much stronger than CURVE: the run is
- *  most of the section's width inside a gutter a few dozen pixels tall, and weak
- *  handles there produce a kinked line rather than a curve. */
-const WRAP_CURVE = 0.42;
 
 type Point = { x: number; y: number };
 
-type Rect = { x: number; y: number; w: number; h: number };
-
-/** The two points a connector spans, plus how it should be drawn between them. */
-type Span = { from: Point; to: Point; wrapped: boolean };
+/** The two points a connector spans. */
+type Span = { from: Point; to: Point };
 
 type Connector = {
   path: SVGPathElement;
@@ -92,14 +73,16 @@ type Connector = {
   fromChip: HTMLElement;
   toChip: HTMLElement;
   length: number;
+  /** Set by measure(): this pair has no drawable run at the current layout. */
+  dormant: boolean;
 };
 
 /**
  * Coordinates are summed up the offsetParent chain to the host rather than read
- * straight off the card, so the geometry does not depend on which ancestor
+ * straight off the element, so the geometry does not depend on which ancestor
  * happens to be positioned.
  *
- * offsetLeft/offsetTop, NOT getBoundingClientRect(): the cards carry data-reveal,
+ * offsetLeft/offsetTop, NOT getBoundingClientRect(): the items carry data-reveal,
  * so ScrollFX is tweening them from y:26. A rect read mid-reveal is 26px wrong
  * and the line detaches from its anchor. Offsets report the layout position and
  * ignore transforms, which removes the timing dependency outright instead of
@@ -120,154 +103,74 @@ function offsetWithin(el: HTMLElement, host: HTMLElement): Point {
   return { x, y };
 }
 
-function rectOf(el: HTMLElement, host: HTMLElement): Rect {
-  const at = offsetWithin(el, host);
-  return { x: at.x, y: at.y, w: el.offsetWidth, h: el.offsetHeight };
-}
-
 /**
- * Does the straight run from `from` to `to` enter `rect`?
- *
- * Liang–Barsky: clip the segment against each of the rectangle's four slabs in
- * turn, narrowing the surviving parameter range. Anything left when all four are
- * done is a stretch of the segment that lies inside.
+ * "edge" shape. Which side faces which is derived from live positions rather
+ * than from index, so the line always leaves the edge of A that points at B and
+ * never crosses either card's content.
  */
-function segmentHitsRect(from: Point, to: Point, rect: Rect): boolean {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const edges: Array<[number, number]> = [
-    [-dx, from.x - (rect.x - CLEARANCE)],
-    [dx, rect.x + rect.w + CLEARANCE - from.x],
-    [-dy, from.y - (rect.y - CLEARANCE)],
-    [dy, rect.y + rect.h + CLEARANCE - from.y],
-  ];
-
-  let enter = 0;
-  let exit = 1;
-  for (const [p, q] of edges) {
-    if (p === 0) {
-      // Parallel to this slab: outside it means the segment can never be inside.
-      if (q < 0) return false;
-      continue;
-    }
-    const t = q / p;
-    if (p < 0) {
-      if (t > exit) return false;
-      if (t > enter) enter = t;
-    } else {
-      if (t < enter) return false;
-      if (t < exit) exit = t;
-    }
-  }
-  return enter <= exit;
-}
-
-/**
- * Where a connector leaves card A and where it meets card B.
- *
- * By default: side edges. Which edge faces which is derived from live positions
- * rather than from index, so the line always leaves the edge of A that points at
- * B and never crosses either card's content. This is the engagement ladder's
- * whole geometry — its cards alternate sides down a column, and the side-edge
- * run between two of them is clear.
- *
- * Two things send a connector through the gutter between the rows instead,
- * leaving A's bottom edge and meeting B's top edge. Either the side-edge run
- * would cut through some third card — what happens getting from the end of a
- * three-up row back to the start of the next, where every card in between is in
- * the way. Or the run is too steep to be a link at all: at the two-up
- * breakpoint the same journey is a column gutter a couple of dozen pixels wide
- * against a drop of a whole card, and threading it diagonally reads as a stray
- * vertical stroke rather than as a line going somewhere.
- *
- * Deciding this from the live rectangles rather than from a row heuristic means
- * a layout with no wrap is never touched, and a layout that wraps differently at
- * another breakpoint re-decides on its own.
- */
-function spanBetween(a: HTMLElement, b: HTMLElement, host: HTMLElement, others: HTMLElement[]): Span {
+function edgeSpan(a: HTMLElement, b: HTMLElement, host: HTMLElement): Span {
   const aAt = offsetWithin(a, host);
   const bAt = offsetWithin(b, host);
   const aIsLeft = aAt.x < bAt.x;
-
-  const fromX = aIsLeft ? aAt.x + a.offsetWidth : aAt.x;
-  const toX = aIsLeft ? bAt.x : bAt.x + b.offsetWidth;
-
-  // Flatten the descent to whatever the horizontal run can carry. See MAX_SLOPE.
-  const midDepth = (EXIT_DEPTH + ENTRY_DEPTH) / 2;
-  const run = Math.abs(toX - fromX);
-  const rawDrop = Math.abs(
-    aAt.y + a.offsetHeight * EXIT_DEPTH - (bAt.y + b.offsetHeight * ENTRY_DEPTH)
-  );
-  const ease = rawDrop > 0 ? Math.min(1, (run * MAX_SLOPE) / rawDrop) : 1;
-
-  const sideFrom = {
-    x: fromX,
-    y: aAt.y + a.offsetHeight * (midDepth + (EXIT_DEPTH - midDepth) * ease),
+  return {
+    from: {
+      x: aIsLeft ? aAt.x + a.offsetWidth : aAt.x,
+      y: aAt.y + a.offsetHeight * EXIT_DEPTH,
+    },
+    to: {
+      x: aIsLeft ? bAt.x : bAt.x + b.offsetWidth,
+      y: bAt.y + b.offsetHeight * ENTRY_DEPTH,
+    },
   };
-  const sideTo = {
-    x: toX,
-    y: bAt.y + b.offsetHeight * (midDepth + (ENTRY_DEPTH - midDepth) * ease),
-  };
-
-  // The gutter route runs A's bottom edge into B's top edge, which only means
-  // anything when B genuinely begins on a lower row. Between two cards level
-  // with each other it would draw upwards through both of them, so this is a
-  // precondition on the whole branch rather than a tie-breaker inside it.
-  const rowsApart = bAt.y > aAt.y + CLEARANCE;
-
-  // The tolerance is not cosmetic: `ease` clamps the drop to exactly
-  // run * MAX_SLOPE, so an exact comparison decides this case on float noise in
-  // the last bit and flips connectors between the two routes at random widths.
-  const tooSteep = run === 0 || Math.abs(sideFrom.y - sideTo.y) > run * MAX_SLOPE + 0.5;
-
-  const wrapped =
-    rowsApart &&
-    (tooSteep ||
-      others.some((other) => segmentHitsRect(sideFrom, sideTo, rectOf(other, host))));
-
-  if (wrapped) {
-    const lead = aIsLeft ? WRAP_LEAD : WRAP_TRAIL;
-    const trail = aIsLeft ? WRAP_TRAIL : WRAP_LEAD;
-    return {
-      wrapped,
-      from: { x: aAt.x + a.offsetWidth * lead, y: aAt.y + a.offsetHeight },
-      to: { x: bAt.x + b.offsetWidth * trail, y: bAt.y },
-    };
-  }
-
-  return { wrapped, from: sideFrom, to: sideTo };
 }
 
-/** Handles are pulled horizontally only, so the line eases out of one card edge
- *  and into the next instead of arriving at an angle. Horizontal-only handles
- *  also keep a row-crossing sweep monotonic in y, which is what confines it to
- *  the gutter. Derived from the two points, so it survives any width the layout
- *  resolves to. */
-function pathFor({ from, to, wrapped }: Span): string {
-  const reach = (to.x - from.x) * (wrapped ? WRAP_CURVE : CURVE);
-  if (!wrapped) {
-    return `M ${from.x} ${from.y} C ${from.x + reach} ${from.y}, ${to.x - reach} ${to.y}, ${to.x} ${to.y}`;
-  }
+/**
+ * "rule" shape. Both anchors sit on the midpoint of an item's top rule, so the
+ * arc rides the band the hairlines already occupy and never enters the copy.
+ *
+ * Returns null when the two items are on different rows. Getting from the end of
+ * one row back to the start of the next means travelling the section's whole
+ * width backwards, and there is no route for that which does not cut across the
+ * grid — a sweep through the gutter reads as a slash through the middle of the
+ * section, which is the thing this shape exists to avoid. The pair draws nothing
+ * instead; reading order already carries the eye to the next row, and the items
+ * still latch (see paint()). Decided from live positions, so a breakpoint that
+ * wraps differently re-decides for free.
+ */
+function ruleSpan(a: HTMLElement, b: HTMLElement, host: HTMLElement): Span | null {
+  const aAt = offsetWithin(a, host);
+  const bAt = offsetWithin(b, host);
+  if (bAt.y > aAt.y + CLEARANCE) return null;
+  return {
+    from: { x: aAt.x + a.offsetWidth / 2, y: aAt.y },
+    to: { x: bAt.x + b.offsetWidth / 2, y: bAt.y },
+  };
+}
 
-  // Both handles sit on the gutter's centre line, so the sweep leaves the card
-  // it is under, settles into the empty band between the rows for the whole of
-  // its horizontal run, and only rises again at the far end. Handles level with
-  // their own endpoints instead would keep the curve pinned to the card edges
-  // for most of the run, where it clips the last line of body copy.
-  const gutter = (from.y + to.y) / 2;
-  return `M ${from.x} ${from.y} C ${from.x + reach} ${gutter}, ${to.x - reach} ${gutter}, ${to.x} ${to.y}`;
+/** Horizontal-only handles, so the line eases out of one anchor and into the
+ *  next instead of arriving at an angle. Derived from the two points, so it
+ *  survives any width the layout resolves to. */
+function edgePath({ from, to }: Span): string {
+  const reach = (to.x - from.x) * CURVE;
+  return `M ${from.x} ${from.y} C ${from.x + reach} ${from.y}, ${to.x - reach} ${to.y}, ${to.x} ${to.y}`;
+}
+
+/** Both handles are lifted by the same bow, so the arc leaves and meets the rule
+ *  level with it and peaks in the middle. */
+function rulePath({ from, to }: Span): string {
+  const reach = (to.x - from.x) * RULE_CURVE;
+  return `M ${from.x} ${from.y} C ${from.x + reach} ${from.y - BOW}, ${to.x - reach} ${to.y - BOW}, ${to.x} ${to.y}`;
 }
 
 /** The target is usually a child — the engagement ladder lights a price chip.
  *  A section can also nominate the anchor itself: the agenda lights the item's
- *  own top rule, which has no inner element to hang the state on. */
+ *  own number. */
 function chipOf(step: HTMLElement): HTMLElement | null {
   const inner = step.querySelector<HTMLElement>("[data-connector-target]");
   if (inner) return inner;
   return step.hasAttribute("data-connector-target") ? step : null;
 }
 
-/** Each host names the width below which its cards stop being a journey. */
 function minWidthOf(host: HTMLElement): string {
   const declared = Number(host.dataset.connectorsMin);
   const px = Number.isFinite(declared) && declared > 0 ? declared : DEFAULT_MIN_WIDTH;
@@ -287,6 +190,8 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
     return noop;
   }
 
+  const shape = host.dataset.connectorShape === "rule" ? "rule" : "edge";
+
   const connectors: Connector[] = [];
   for (let i = 0; i < paths.length; i += 1) {
     const fromChip = chipOf(steps[i]);
@@ -300,6 +205,7 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
       fromChip,
       toChip,
       length: 0,
+      dormant: false,
     });
   }
 
@@ -307,8 +213,19 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
 
   const measure = () => {
     for (const c of connectors) {
-      const others = steps.filter((step) => step !== c.from && step !== c.to);
-      c.path.setAttribute("d", pathFor(spanBetween(c.from, c.to, host, others)));
+      const span = shape === "rule" ? ruleSpan(c.from, c.to, host) : edgeSpan(c.from, c.to, host);
+      c.dormant = span === null;
+
+      if (!span) {
+        // No geometry at all, rather than a zero-length path: an empty `d` keeps
+        // getTotalLength() from reporting a stale length from the last layout.
+        c.path.removeAttribute("d");
+        c.length = 0;
+        c.dot.style.opacity = "0";
+        continue;
+      }
+
+      c.path.setAttribute("d", shape === "rule" ? rulePath(span) : edgePath(span));
       c.length = c.path.getTotalLength();
     }
   };
@@ -331,6 +248,32 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
     if (p >= ACTIVATE_AT) c.toChip.dataset.active = "true";
   };
 
+  /** Sub-ranges are shared out across drawable connectors only. Giving a dormant
+   *  pair a slice of the scroll would buy a stretch where the section is being
+   *  scrolled and nothing at all is moving. */
+  const paint = (t: number) => {
+    const live = connectors.filter((c) => !c.dormant);
+
+    if (live.length > 0) {
+      const span = live.length === 1 ? 1 : 1 / (live.length - (live.length - 1) * OVERLAP);
+      live.forEach((c, i) => {
+        const local = (t - i * span * (1 - OVERLAP)) / span;
+        render(c, local < 0 ? 0 : local > 1 ? 1 : local);
+      });
+    }
+
+    // A dormant pair still spans two real items, and the row break it straddles
+    // is not a reason for the item after it to stay dark — at the two-up
+    // breakpoint the last item is reached only across a break, so without this
+    // it would never light at all. Treated as instantaneous: the tail lights as
+    // soon as the head is lit. Document order, so a run of them chains.
+    for (const c of connectors) {
+      if (c.dormant && c.fromChip.dataset.active === "true") {
+        c.toChip.dataset.active = "true";
+      }
+    }
+  };
+
   const mm = gsap.matchMedia();
 
   mm.add({ wide: minWidthOf(host), reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
@@ -342,7 +285,7 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
     if (reduced) {
       // Fully drawn, dots parked, every target lit. Same contract as the rest of
       // ScrollFX: reduced motion loses the animation, never the content.
-      connectors.forEach((c) => render(c, 1));
+      paint(1);
       return;
     }
 
@@ -352,17 +295,10 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
     // is what makes this correct across a refresh: a tween that has already
     // completed stops firing onUpdate, so it could never correct its own dot
     // after ScrollTrigger invalidated and re-read its start value.
-    const span = 1 / (connectors.length - (connectors.length - 1) * OVERLAP);
     const drive = { t: 0 };
+    const repaint = () => paint(drive.t);
 
-    const paint = () => {
-      connectors.forEach((c, i) => {
-        const local = (drive.t - i * span * (1 - OVERLAP)) / span;
-        render(c, local < 0 ? 0 : local > 1 ? 1 : local);
-      });
-    };
-
-    paint();
+    repaint();
 
     const timeline = gsap.timeline({
       scrollTrigger: {
@@ -373,7 +309,7 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
         invalidateOnRefresh: true,
       },
     });
-    timeline.to(drive, { t: 1, ease: "none", duration: 1, onUpdate: paint });
+    timeline.to(drive, { t: 1, ease: "none", duration: 1, onUpdate: repaint });
 
     // A path `d` computed once assumes fixed endpoints, and these grids are
     // fluid. Recompute the curves, then let ScrollTrigger re-measure against them.
@@ -383,9 +319,11 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
       frame = requestAnimationFrame(() => {
         // Order matters: new curves first, then repaint at the progress the
         // ladder is actually at, then let ScrollTrigger re-measure. Without the
-        // middle step the dots keep coordinates from the old geometry.
+        // middle step the dots keep coordinates from the old geometry. measure()
+        // also re-decides which pairs are dormant, so a resize that rewraps the
+        // grid redistributes the sub-ranges on the next repaint.
         measure();
-        paint();
+        repaint();
         ScrollTrigger.refresh();
       });
     });
