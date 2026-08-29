@@ -13,6 +13,8 @@
 
 import { useEffect } from "react";
 
+import { initConnectors } from "./connectors";
+
 export function ScrollFX() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -24,6 +26,18 @@ export function ScrollFX() {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
+
+      // DrawSVG is only used by the engagement ladder on /schedule, so it is
+      // fetched only where that markup exists. Every other page pays nothing.
+      const ladder = document.querySelector("[data-connectors]");
+      if (ladder) {
+        const { DrawSVGPlugin } = await import("gsap/DrawSVGPlugin");
+        if (cancelled) return;
+        gsap.registerPlugin(DrawSVGPlugin);
+      }
+
+      // Owns its own matchMedia, so it is reverted explicitly rather than by ctx.
+      const revertConnectors = ladder ? initConnectors(gsap, ScrollTrigger) : () => {};
 
       const ctx = gsap.context(() => {
         // Entrances fire once. Content that re-hides on the way back up is a
@@ -205,6 +219,7 @@ export function ScrollFX() {
         window.removeEventListener("load", refresh);
         window.removeEventListener("scroll", queueRevealCheck);
         window.removeEventListener("resize", queueRevealCheck);
+        revertConnectors();
         ctx.revert();
       };
     })();

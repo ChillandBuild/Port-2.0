@@ -104,11 +104,35 @@
 }
 
 .tool {
+  display: inline-flex;
+  align-items: center;
   padding: 0.3rem 0.6rem;
   border: 1px solid var(--rule);
   color: var(--on-page-soft);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-meta);
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color 180ms var(--ease-out-expo),
+              border-color 180ms var(--ease-out-expo),
+              background 180ms var(--ease-out-expo),
+              transform 180ms var(--ease-out-expo);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tool:hover,
+.tool:focus-visible {
+  color: var(--on-page);
+  border-color: var(--rule-strong);
+  background: rgba(127, 127, 127, 0.08);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.tool:active {
+  transform: translateY(0);
+  opacity: 0.8;
 }
 
 @media (min-width: 860px) {

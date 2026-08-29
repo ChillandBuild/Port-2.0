@@ -37,8 +37,17 @@ export function PlatformArchitecture() {
             <p className={styles.description}>{group.description}</p>
             <ul className={styles.tools}>
               {group.tools.map((tool) => (
-                <li className={`mono ${styles.tool}`} key={tool}>
-                  {tool}
+                <li key={tool.name}>
+                  <a
+                    href={tool.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`mono ${styles.tool}`}
+                    title={`Visit ${tool.name} (opens in new tab)`}
+                    aria-label={`${tool.name} website`}
+                  >
+                    {tool.name}
+                  </a>
                 </li>
               ))}
             </ul>

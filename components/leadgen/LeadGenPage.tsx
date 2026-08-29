@@ -82,7 +82,22 @@ export function LeadGenPage() {
           {TOOL_GROUPS.map((group) => (
             <div className={styles.group} key={group.name}>
               <h3 className={styles.groupName}>{group.name}</h3>
-              <p className={styles.groupTools}>{group.tools.join(" · ")}</p>
+              <p className={styles.groupTools}>
+                {group.tools.map((tool, idx) => (
+                  <span key={tool.name}>
+                    {idx > 0 && " · "}
+                    <a
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.toolLink}
+                      title={`Visit ${tool.name}`}
+                    >
+                      {tool.name}
+                    </a>
+                  </span>
+                ))}
+              </p>
               <p className={styles.groupBody}>{group.description}</p>
             </div>
           ))}

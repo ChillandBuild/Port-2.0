@@ -36,18 +36,99 @@
   text-wrap: pretty;
 }
 
+/* The connector overlay's coordinate space. Must stay positioned: every .step
+   is measured against this box, and both overlays are positioned against it.
+   connectors.ts sums offsets up the chain to reach it, so an intervening
+   positioned element (.steps is one) no longer shifts the geometry. */
+.ladder {
+  position: relative;
+}
+
+/* Ground plane, behind the cards. Both rules paint from the same token family
+   as the page's hairlines, so the grid reads as structure rather than as
+   decoration bolted on. */
+.grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.grid path {
+  fill: none;
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+/* Ticks read a step stronger than the cells so the intersections register as
+   marks rather than as brighter crossings. */
+.gridTick {
+  stroke: var(--rule-strong);
+}
+
+.connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Endpoints sit on card edges, so nothing overflows now — but a curve whose
+     handles overshoot would be clipped without this. */
+  overflow: visible;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.connectorPath {
+  fill: none;
+  /* --accent-meta, not --accent: on this panel in dark, --accent measures
+     2.32:1 — under the 3:1 WCAG 1.4.11 floor for a graphic that carries
+     meaning. --accent-meta gives 6.56:1 light and 6.06:1 dark, and resolves to
+     the same violet as --accent on the light theme, so the specced surface is
+     unchanged. */
+  stroke: var(--accent-meta);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.connectorDot {
+  fill: var(--accent-meta);
+  /* The bloom is the whole point of the travelling node — it has to read as a
+     light source riding the line, not as a dot sitting on it. */
+  filter: drop-shadow(0 0 6px var(--accent-meta));
+  /* GSAP owns this from the first frame. Starting at 0 stops all three dots
+     flashing at the origin between paint and hydration. */
+  opacity: 0;
+}
+
+/* One column. The alternation and the room for a diagonal only arrive at the
+   wide breakpoint at the foot of this file; stacked, this is a plain list of
+   cards and the connectors are not rendered at all. */
 .steps {
   display: grid;
-  gap: clamp(1.5rem, 3vw, 2.25rem);
+  gap: clamp(1.5rem, 4vh, 2.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
+  position: relative;
+  z-index: 1;
 }
 
 .step {
   position: relative;
-  padding-top: 1rem;
-  border-top: 1px solid var(--rule-strong);
+  padding: 1.5rem 1.6rem 1.7rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 18px;
+  /* Tinted from the top-left corner the light would come from, over an opaque
+     base: the card has to sit ON the grid. Let the ground read through and the
+     lines crossing the copy look like a rendering fault. */
+  background:
+    linear-gradient(158deg, var(--accent-tint), transparent 72%),
+    var(--surface-page);
+  transition:
+    border-color 320ms var(--ease-out-expo),
+    box-shadow 320ms var(--ease-out-expo);
 }
 
 /* Reading one phase quietens the others. The ladder is sequential, so at any
@@ -73,20 +154,11 @@
   opacity: 1;
 }
 
-.step::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: -1px;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 460ms var(--ease-out-expo);
-}
-
-.step:hover::before {
-  transform: scaleX(1);
+/* The card lights its own edge rather than wiping a rule across the top — the
+   top rule the old grammar leaned on is now a full border. */
+.step:hover {
+  border-color: var(--accent-meta);
+  box-shadow: 0 0 28px -10px var(--accent);
 }
 
 .stepNo {
@@ -109,6 +181,20 @@
   background: var(--surface-page);
   color: var(--accent-meta);
   font-size: var(--text-xs);
+  transition:
+    background-color 320ms var(--ease-out-expo),
+    color 320ms var(--ease-out-expo);
+}
+
+/* Filled when the travelling dot lands on this phase. Latched on in
+   components/motion/connectors.ts and never unset — scrolling back up rewinds
+   the line, but you do not un-reach a step you have reached.
+
+   --accent, not --accent-meta: this is a fill, and it has to stay legible under
+   --accent-ink in both themes — 8.35:1 light, 6.61:1 dark. */
+.stepPrice[data-active="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .stepBody {
@@ -122,14 +208,33 @@
 
 /* Two up before four up: four columns of 42ch prose need more room than the
    three-column strip on the home page, which turns at 860px. */
-@media (min-width: 700px) {
-  .steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Stacked, there is no diagonal to trace, so the overlay is not rendered at
+   all. connectors.ts gates on the same 1024px query and builds nothing here. */
+@media (max-width: 1023.98px) {
+  .connectors,
+  .grid {
+    display: none;
   }
 }
 
+/* The zig-zag. Cards take under half the width so the diagonal has real room to
+   travel, and the generous gap is what gives the line its run — shrink it and
+   the connectors become stubs. */
 @media (min-width: 1024px) {
   .steps {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(3rem, 9vh, 5.5rem);
+  }
+
+  .step {
+    max-width: min(30rem, 44%);
+    padding: 1.7rem 1.9rem 1.9rem;
+  }
+
+  .step:nth-child(odd) {
+    justify-self: start;
+  }
+
+  .step:nth-child(even) {
+    justify-self: end;
   }
 }

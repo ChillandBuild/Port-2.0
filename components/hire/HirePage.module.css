@@ -83,6 +83,19 @@
   color: var(--accent);
 }
 
+.toolLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 140ms ease, opacity 140ms ease;
+}
+
+.toolLink:hover,
+.toolLink:focus-visible {
+  color: var(--on-page);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .groupBody {
   font-size: var(--text-sm);
   line-height: 1.6;

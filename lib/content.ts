@@ -379,6 +379,8 @@ export interface EstimatorTier {
   /** Applies when monthly volume is at or below this number. */
   upTo: number;
   label: string;
+  /** Concrete ramp length in months for projection table. */
+  rampMonths: number;
 }
 
 /**
@@ -404,28 +406,52 @@ export const ESTIMATOR = {
     cta: { label: "Say hello", href: "#contact" },
   },
   sectors: [
-    { key: "saas", label: "B2B SaaS growth", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },
+    { key: "saas", label: "B2B product based", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },
     { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350, costPerLead: 4 },
-    { key: "midmarket", label: "Mid-market & digital marketing", meetingRate: 0.14, baseToolCost: 500, costPerLead: 6 },
   ] as EstimatorSector[],
   mqlTiers: [
-    { upTo: 30, label: "45–90 days" },
-    { upTo: 70, label: "75–100 days" },
-    { upTo: 120, label: "90–120 days" },
-    { upTo: 180, label: "110–140 days" },
-    { upTo: 250, label: "130–160 days" },
-    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days" },
+    { upTo: 30, label: "45–90 days", rampMonths: 3 },
+    { upTo: 70, label: "75–100 days", rampMonths: 3 },
+    { upTo: 120, label: "90–120 days", rampMonths: 4 },
+    { upTo: 180, label: "110–140 days", rampMonths: 5 },
+    { upTo: 250, label: "130–160 days", rampMonths: 5 },
+    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days", rampMonths: 6 },
   ] as EstimatorTier[],
 };
+
+/**
+ * Back-loaded ramp curves keyed by ramp length in months.
+ * Each array sums to the fraction of target volume reached that month.
+ * Month 1 is always the lowest — domain warming, list building, sequence setup.
+ */
+const RAMP_CURVES: Record<number, number[]> = {
+  3: [0.30, 0.65, 1.00],
+  4: [0.20, 0.45, 0.75, 1.00],
+  5: [0.15, 0.30, 0.55, 0.80, 1.00],
+  6: [0.10, 0.25, 0.45, 0.65, 0.85, 1.00],
+};
+
+/** One row in the month-by-month projection table. */
+export interface ProjectionMonth {
+  month: number;
+  /** Whether this month is still ramping or at steady state. */
+  isRamp: boolean;
+  leads: number;
+  meetings: number;
+  toolCost: number;
+  cumulativeCost: number;
+}
 
 export interface EstimateResult {
   sector: EstimatorSector;
   /** Booked meetings / MQL leads per month, at steady state (min 1). */
   meetings: number;
-  /** Modelled monthly tool spend. */
+  /** Modelled monthly tool spend at steady state. */
   toolsCost: number;
   /** How long before output reaches the steady-state rate above. */
   rampLabel: string;
+  /** Month-by-month projection: ramp months + 2 steady-state months. */
+  projection: ProjectionMonth[];
 }
 
 /**
@@ -437,11 +463,42 @@ export interface EstimateResult {
 export function estimateOutcome(leads: number, sectorKey: string): EstimateResult {
   const sector = ESTIMATOR.sectors.find((s) => s.key === sectorKey) ?? ESTIMATOR.sectors[0];
   const tiers = ESTIMATOR.mqlTiers;
+  const tier = tiers.find((t) => leads <= t.upTo) ?? tiers[tiers.length - 1];
+
+  const steadyMeetings = Math.max(1, Math.round(leads * sector.meetingRate));
+  const steadyToolsCost = sector.baseToolCost + leads * sector.costPerLead;
+
+  // Build month-by-month projection
+  const rampMonths = tier.rampMonths;
+  const curve = RAMP_CURVES[rampMonths] ?? RAMP_CURVES[4];
+  const totalMonths = rampMonths + 2; // ramp + 2 steady-state months
+  const projection: ProjectionMonth[] = [];
+  let cumulativeCost = 0;
+
+  for (let i = 0; i < totalMonths; i++) {
+    const isRamp = i < rampMonths;
+    const fraction = isRamp ? curve[i] : 1.0;
+    const monthLeads = Math.round(leads * fraction);
+    const monthMeetings = Math.max(1, Math.round(monthLeads * sector.meetingRate));
+    const monthToolCost = sector.baseToolCost + monthLeads * sector.costPerLead;
+    cumulativeCost += monthToolCost;
+
+    projection.push({
+      month: i + 1,
+      isRamp,
+      leads: monthLeads,
+      meetings: monthMeetings,
+      toolCost: monthToolCost,
+      cumulativeCost,
+    });
+  }
+
   return {
     sector,
-    meetings: Math.max(1, Math.round(leads * sector.meetingRate)),
-    toolsCost: sector.baseToolCost + leads * sector.costPerLead,
-    rampLabel: (tiers.find((tier) => leads <= tier.upTo) ?? tiers[tiers.length - 1]).label,
+    meetings: steadyMeetings,
+    toolsCost: steadyToolsCost,
+    rampLabel: tier.label,
+    projection,
   };
 }
 

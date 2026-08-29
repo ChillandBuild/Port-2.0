@@ -297,6 +297,70 @@
   }
 }
 
+/* ── Projection table ── */
+
+.projectionWrap {
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.projectionHeading {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+  margin-bottom: 1rem;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.projectionTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.th {
+  text-align: left;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+
+.td {
+  padding: 0.55rem 0.75rem;
+  font-size: var(--text-sm);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.rampRow {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.steadyRow {
+  background: transparent;
+}
+
+.rampBadge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pill,
   .toolsLink,

@@ -3,8 +3,10 @@
 /**
  * Interactive estimator. Pick a market focus and a monthly lead volume; the
  * panel models steady-state booked meetings, the ramp to reach that rate, and
- * the tool spend behind it. Every output is a pure function of the two inputs — the same model
- * the earlier site shipped — and the panel labels itself as an estimate.
+ * the tool spend behind it. A month-by-month projection table below shows
+ * how leads, meetings, and costs evolve during the ramp and into steady state.
+ * Every output is a pure function of the two inputs and the panel labels
+ * itself as an estimate.
  */
 
 import { useId, useMemo, useState } from "react";
@@ -30,15 +32,14 @@ export function Estimator({
   const [leads, setLeads] = useState(volume.default);
   const sliderId = useId();
 
-  const results = useMemo(() => {
-    const { meetings, toolsCost, rampLabel } = estimateOutcome(leads, sectorKey);
-    return [
-      { label: "Meetings & MQL leads at steady state", value: `~${meetings} a month` },
-      { label: "Research cycle", value: ESTIMATOR.researchCycle },
-      { label: "Ramp to first MQL / steady state", value: rampLabel },
-      { label: "Estimated tools cost stack", value: `$${toolsCost.toLocaleString()} / mo` },
-    ];
-  }, [leads, sectorKey]);
+  const outcome = useMemo(() => estimateOutcome(leads, sectorKey), [leads, sectorKey]);
+
+  const results = useMemo(() => [
+    { label: "Meetings & MQL leads at steady state", value: `~${outcome.meetings} a month` },
+    { label: "Research cycle", value: ESTIMATOR.researchCycle },
+    { label: "Ramp to first MQL / steady state", value: outcome.rampLabel },
+    { label: "Estimated tools cost stack", value: `$${outcome.toolsCost.toLocaleString()} / mo` },
+  ], [outcome]);
 
   return (
     <section
@@ -117,6 +118,41 @@ export function Estimator({
             </a>
           </p>
         </dl>
+      </div>
+
+      {/* Month-by-month projection table */}
+      <div className={styles.projectionWrap} data-reveal>
+        <h3 className={`mono ${styles.projectionHeading}`}>Month-by-month projection</h3>
+        <div className={styles.tableScroll}>
+          <table className={styles.projectionTable} aria-live="polite">
+            <thead>
+              <tr>
+                <th className={`mono ${styles.th}`}>Month</th>
+                <th className={`mono ${styles.th}`}>Leads</th>
+                <th className={`mono ${styles.th}`}>Meetings</th>
+                <th className={`mono ${styles.th}`}>Tool cost</th>
+                <th className={`mono ${styles.th}`}>Cumulative cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {outcome.projection.map((row) => (
+                <tr
+                  key={row.month}
+                  className={row.isRamp ? styles.rampRow : styles.steadyRow}
+                >
+                  <td className={`tabular ${styles.td}`}>
+                    {row.month}
+                    {row.isRamp && <span className={`mono ${styles.rampBadge}`}>ramp</span>}
+                  </td>
+                  <td className={`tabular ${styles.td}`}>{row.leads.toLocaleString()}</td>
+                  <td className={`tabular ${styles.td}`}>~{row.meetings}</td>
+                  <td className={`tabular ${styles.td}`}>${row.toolCost.toLocaleString()}</td>
+                  <td className={`tabular ${styles.td}`}>${row.cumulativeCost.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );
