@@ -343,8 +343,15 @@
   /* .line clips its own rise-in entrance with overflow:hidden and a 0.06em
      floor, which is too tight to also hold the market label riding under the
      greeting — widen the box rather than let the label escape it and get
-     clipped. */
-  padding-bottom: 1.35em;
+     clipped. Widen it to cover the worst case, not by feel: every cycle
+     remounts both the word and the market label (see Greeting.tsx's `key`),
+     re-running their entrance dip each time, not just on first paint. Froze
+     that entrance at its lowest point (the `from` keyframe, +0.38em) for all
+     12 greetings and measured the real gap to this box's edge — the old
+     1.35em was leaving 85–91px of dead space under "Kia ora." at nowhere
+     near its worst case. This clears the frozen worst case by 20–37px across
+     920px, 1440px, and the width where --text-h1 hits its 7.5rem ceiling. */
+  padding-bottom: 0.5em;
 }
 
 /* The rotating greeting. No min-width: the hero is right-aligned, so a floor
