@@ -228,14 +228,52 @@ A performance-linked structure he offers to clients, in three phases:
 
 ## 10. Paid consulting offer
 
+The offer runs as two calls, then one of two ongoing tracks.
+
+### First call — free
+
+| | |
+| --- | --- |
+| Price | Free |
+| Duration | 30–45 minutes |
+| Format | Remote, online |
+| Scheduling | Indian Standard Time availability |
+
+Agenda covered on the first call:
+
+1. Whether the business is product-based or service-based.
+2. The company itself — what it sells, its size, how it sells today.
+3. The target region or regions.
+4. The industries and account types being targeted.
+5. Goals for the next 30, 60 and 90 days.
+
+### Second call — USD 350
+
 | | |
 | --- | --- |
 | Price | USD 350 |
 | Duration | 60 minutes |
 | Format | Remote, online |
 | Scheduling | Indian Standard Time availability |
+| Covers | Infrastructure setup, tool alignment, methodology |
 | Booking | Confirmed only after the appointment is accepted and payment received |
 | Payment | **Not yet live.** Payment link and slot selection become available after payment setup approval. |
+
+The USD 350 is a one-time setup cost. The engagement starts after this call.
+
+### Track A — performance-linked
+
+1. A 45-day research and build period follows the second call. ICP definition, account
+   research, prospect sourcing, and the outreach cadence built and launched.
+2. From day 45 onward: USD 50 per lead booked as a result of his work.
+3. If a lead converts and the deal closes, he is paid a commission on that deal. The
+   commission is agreed per deal and settled on the second call — no fixed published rate.
+
+### Track B — full-time
+
+The client can instead engage him full time on a monthly basis, in which case he runs the
+whole lead-generation function himself — research, sourcing, cadence, outreach and
+booking. The monthly rate is discussed on the call and is not published.
 
 Covers lead generation, outbound strategy, pre-sales and commercial pipeline work.
 No physical product; no shipping applies.
@@ -270,14 +308,18 @@ Multi-channel outbound cadences open qualified conversations, which move into en
 solution demos, then MQL delivery and a commercial proposal handoff.
 
 **What does it cost?**
-USD 350 for a single 60-minute remote consulting session, scheduled in IST.
+The first call is free (30–45 minutes, remote, IST). The second call is USD 350 for 60
+minutes and covers infrastructure setup, tool alignment and methodology. After that,
+either USD 50 per booked lead plus a per-deal commission, or a monthly full-time
+arrangement — see section 10.
 
 **Can I see past results?**
 Yes — see the figures in section 3 and the work history in section 4.
 
 **How do I book?**
-Payment setup is not yet approved, so booking currently happens by contacting him on
-LinkedIn or by phone.
+By submitting the form on the schedule page, or by contacting him on LinkedIn or by
+phone. Payment setup is not yet approved, so payment and slot-selection instructions are
+sent by email after the enquiry.
 
 ---
 
