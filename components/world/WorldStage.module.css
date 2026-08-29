@@ -322,7 +322,10 @@
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 300;
-  color: var(--accent);
+  /* accent-soft, not accent: plain accent fails WCAG AA (2.4:1) against the
+     dark-theme grounds this rides over (world, page, close) — soft clears
+     3:1 everywhere at this text's size while staying the same hue. */
+  color: var(--accent-soft);
   /* .line clips its own rise-in entrance with overflow:hidden and a 0.06em
      floor, which is too tight to also hold the market label riding under the
      greeting — widen the box rather than let the label escape it and get
@@ -648,7 +651,7 @@
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 300;
-  color: var(--accent);
+  color: var(--accent-soft);
   letter-spacing: -0.01em;
 }
 
