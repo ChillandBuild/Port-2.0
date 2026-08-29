@@ -361,6 +361,47 @@
   vertical-align: middle;
 }
 
+.explainerGrid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--rule);
+}
+
+.explainerCol {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.explainerTitle {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page);
+  margin: 0;
+}
+
+.explainerText {
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  margin: 0;
+}
+
+.explainerText strong {
+  color: var(--on-page);
+}
+
+@media (min-width: 768px) {
+  .explainerGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   .pill,
   .toolsLink,
