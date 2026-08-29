@@ -207,9 +207,9 @@
   justify-content: center;
   align-items: flex-end;
   text-align: right;
-  /* The chat bubble is now inline inside .skipGroup — no need to pad-bottom
-     to clear a fixed dock. Keep a modest floor so the actions row never
-     sits flush against the viewport edge. */
+  /* The fixed chat dock clears the actions row on its own (see
+     ChatWidget.module.css .dock bottom). Keep a modest floor so the
+     actions row never sits flush against the viewport edge. */
   padding-bottom: clamp(1rem, 2vh, 1.5rem);
 }
 
