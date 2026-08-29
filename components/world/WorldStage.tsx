@@ -457,12 +457,21 @@ export function WorldStage() {
             ))}
           </ol>
 
-          {/* Copy deferred until the growth section lands — left blank on purpose. */}
+          {/* The last beat of the world, and the only copy set in ink: it fades in
+              as the paper edge rises through it. The flat in/out framing is
+              deliberate — the second line is what gives the eight gates above
+              their weight, and it hands off to the ledger without stealing
+              Proof's "that was the method" line. */}
           <section className={`${styles.block} ${styles.lead} ${styles.arrival}`} data-cue="arrival">
             <p className={styles.marks} aria-hidden="true">
               <span />
               <span />
               <span />
+            </p>
+            <p className={styles.statement}>
+              Names in. Meetings out.
+              <br />
+              <span className={styles.between}>Everything hard happens in between.</span>
             </p>
           </section>
         </div>
