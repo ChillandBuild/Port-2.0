@@ -1,32 +1,14 @@
+/* Shares --surface-close with the form above it on purpose: the ask and its
+   fallback are one closing band, and the footer's darker ground is what ends
+   the page. */
 .section {
-  background: var(--surface-page);
-  color: var(--on-page);
+  background: var(--surface-close);
+  color: var(--on-close);
   padding: 0 var(--space-shell) var(--space-section);
-  max-width: 56rem;
-  margin: 0 auto;
   display: grid;
+  grid-template-columns: minmax(0, 68rem);
+  justify-content: center;
   gap: clamp(1.5rem, 4vh, 2.5rem);
-}
-
-.status {
-  padding: 1.1rem 1.4rem;
-  border: 1px dashed var(--rule-strong);
-  border-radius: 12px;
-  background: var(--surface-page-alt);
-}
-
-.statusEyebrow {
-  color: var(--accent);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-meta);
-  text-transform: uppercase;
-}
-
-.statusBody {
-  margin-top: 0.5rem;
-  font-size: var(--text-sm);
-  line-height: 1.6;
-  color: var(--on-page-soft);
 }
 
 .card {
@@ -34,11 +16,13 @@
   gap: 1.5rem;
   padding: clamp(1.5rem, 4vw, 2.25rem);
   background: var(--surface-panel);
+  color: var(--on-panel);
   border-radius: 16px;
+  max-width: 44rem;
 }
 
 .cardEyebrow {
-  color: var(--accent);
+  color: var(--accent-meta);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
@@ -109,12 +93,12 @@
 
 .linkItem {
   font-size: var(--text-sm);
-  color: var(--on-page-soft);
+  color: var(--on-close-soft);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color var(--duration-fast) var(--ease-out-expo);
 }
 
 .linkItem:hover {
-  color: var(--accent);
+  color: var(--accent-meta);
 }

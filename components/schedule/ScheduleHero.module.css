@@ -1,12 +1,17 @@
+/* Full-bleed ground with a centred measure. The section owns the background so
+   the page reads as stacked bands; the grid column, not a max-width on the
+   section, is what keeps the text off the viewport edges. */
 .hero {
   background: var(--surface-page);
   color: var(--on-page);
   padding: calc(var(--nav-h) + var(--space-section)) var(--space-shell) var(--space-section);
-  max-width: 56rem;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 60rem);
+  justify-content: center;
 }
 
 .back {
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -18,15 +23,16 @@
 }
 
 .back:hover {
-  color: var(--accent);
+  color: var(--accent-meta);
 }
 
 .eyebrow {
+  justify-self: start;
   display: inline-flex;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
   background: var(--accent-muted);
-  color: var(--accent);
+  color: var(--accent-meta);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
@@ -39,6 +45,7 @@
   font-size: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
   line-height: 1.06;
   letter-spacing: -0.02em;
+  max-width: 18ch;
   text-wrap: balance;
 }
 
@@ -46,46 +53,32 @@
   display: inline-block;
   padding: 0 0.28em;
   border-radius: 10px;
-  background: var(--accent-tint);
-  color: var(--accent);
-  font-style: italic;
-}
-
-.freeBadge {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin: clamp(1.75rem, 4vh, 2.5rem) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.freeBadge li {
-  padding: 0.4rem 1.1rem;
-  border-radius: 999px;
   background: var(--accent-muted);
-  color: var(--accent);
-  font-family: var(--font-serif);
+  color: var(--accent-meta);
   font-style: italic;
-  font-size: var(--text-base);
 }
 
 .sub {
-  margin-top: 1.25rem;
-  max-width: 46ch;
+  margin-top: 1.5rem;
+  max-width: 54ch;
   font-size: var(--text-lg);
   line-height: 1.6;
   color: var(--on-page-soft);
 }
 
+/* The one thing the hero has to land. Serif italic so it carries the same
+   voice as the headline's highlight rather than reading as a UI badge. */
 .sub strong {
-  color: var(--on-page);
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.15em;
+  color: var(--accent-meta);
 }
 
 .summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: 1px;
   margin: clamp(2rem, 5vh, 3rem) 0 0;
   background: var(--rule);
@@ -97,6 +90,7 @@
 .summaryItem {
   display: grid;
   gap: 0.35rem;
+  align-content: start;
   padding: 1.25rem 1.4rem;
   background: var(--surface-page-alt);
 }
@@ -105,21 +99,26 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-lg);
+  letter-spacing: -0.02em;
   color: var(--on-page);
 }
 
 .summaryItem dd {
   margin: 0;
   font-size: var(--text-sm);
+  line-height: 1.5;
   color: var(--on-page-soft);
 }
 
+/* --accent-tint equals --surface-page, so this cell reads as a lift only
+   because its siblings sit on --surface-page-alt. Do not move it onto a
+   --surface-page ground expecting it to still show. */
 .summaryItemFree {
   background: var(--accent-tint);
 }
 
 .summaryItemFree dt {
-  color: var(--accent);
+  color: var(--accent-meta);
 }
 
 @media (max-width: 640px) {

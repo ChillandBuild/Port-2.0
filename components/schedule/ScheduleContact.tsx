@@ -2,18 +2,14 @@ import { SCHEDULE } from "@/lib/content";
 import styles from "./ScheduleContact.module.css";
 
 /**
- * Booking isn't live yet (no payment link, no calendar), so this is the honest
- * state: a status line saying so, and the same fallback every other page on
- * the site uses — LinkedIn or the phone number.
+ * The fallback, now that the form above is the primary route in. The old
+ * "payment setup isn't approved" status box is gone — that sentence lives in
+ * the form's note, where somebody about to submit will actually read it,
+ * rather than as a banner above the fold.
  */
 export function ScheduleContact() {
   return (
     <section className={styles.section} aria-labelledby="schedule-contact-heading">
-      <div className={styles.status} role="status">
-        <p className={`mono ${styles.statusEyebrow}`}>{SCHEDULE.paymentStatus.eyebrow}</p>
-        <p className={styles.statusBody}>{SCHEDULE.paymentStatus.body}</p>
-      </div>
-
       <div className={`spot ${styles.card}`} data-spot data-reveal data-reveal-children>
         <div>
           <p className={`mono ${styles.cardEyebrow}`}>{SCHEDULE.fallback.eyebrow}</p>

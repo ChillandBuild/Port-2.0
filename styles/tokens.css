@@ -92,6 +92,12 @@
   --accent-ink: #f6f7f4;
   /* For CTA buttons and avatar/icon circles, per spec: dark to base, 135deg. */
   --accent-gradient: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  /* Accent used as TEXT rather than as a fill. On light grounds --accent is the
+     same colour; on dark it is not, because --accent (#6d28d9) measures ~2.4:1
+     against every dark surface and small meta type needs 4.5:1. Anything that
+     paints accent-coloured words — eyebrows, phase numbers, price chips — takes
+     this instead of --accent. Fills, borders and gradients keep --accent. */
+  --accent-meta: var(--accent);
 
   /* Hairlines, derived from the ink of the surface they sit on. */
   --rule: rgba(11, 27, 42, 0.14);
@@ -199,6 +205,8 @@
      old rose accent paired with. */
   --accent-ink: #f6f7f4;
   --accent-gradient: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  /* ~6.6:1 on the dark page grounds, where --accent manages ~2.4:1. */
+  --accent-meta: var(--accent-soft);
 
   --rule: rgba(238, 240, 234, 0.16);
   --rule-strong: rgba(238, 240, 234, 0.3);

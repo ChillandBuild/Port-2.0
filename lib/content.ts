@@ -27,7 +27,7 @@ export const NAV = [
   { label: "Case studies", href: "#track-record" },
   { label: "Hire me", href: "/hire" },
   { label: "Resume", href: IDENTITY.resume },
-  { label: "Schedule a call", href: "#contact" },
+  { label: "Schedule a call", href: "/schedule" },
 ] as const;
 
 export const HERO = {
@@ -185,31 +185,65 @@ export const SECTORS: Sector[] = [
   { tag: "Engineering", title: "Energy, utilities & engineering", description: "Technical proposal scoping and enterprise demos." },
 ];
 
+export interface ToolItem {
+  name: string;
+  url: string;
+}
+
 export interface ToolGroup {
   name: string;
-  tools: string[];
+  tools: ToolItem[];
   description: string;
 }
 
 export const TOOL_GROUPS: ToolGroup[] = [
   {
     name: "Prospecting & intent",
-    tools: ["Sales Nav", "Apollo", "ZoomInfo", "Crunchbase", "Lusha", "Cognism", "Hunter", "Lemlist"],
+    tools: [
+      { name: "Sales Nav", url: "https://business.linkedin.com/sales-solutions/sales-navigator" },
+      { name: "Apollo", url: "https://www.apollo.io" },
+      { name: "ZoomInfo", url: "https://www.zoominfo.com" },
+      { name: "Crunchbase", url: "https://www.crunchbase.com" },
+      { name: "Lusha", url: "https://www.lusha.com" },
+      { name: "Cognism", url: "https://www.cognism.com" },
+      { name: "Hunter", url: "https://hunter.io" },
+      { name: "Lemlist", url: "https://www.lemlist.com" },
+    ],
     description: "Executive lead discovery, buyer intent signals, direct dial and email verification, growth trigger tracking.",
   },
   {
     name: "CRM & pipeline OS",
-    tools: ["Salesforce", "HubSpot", "Pipedrive", "Zoho", "Close"],
+    tools: [
+      { name: "Salesforce", url: "https://www.salesforce.com" },
+      { name: "HubSpot", url: "https://www.hubspot.com" },
+      { name: "Pipedrive", url: "https://www.pipedrive.com" },
+      { name: "Zoho", url: "https://www.zoho.com/crm/" },
+      { name: "Close", url: "https://www.close.com" },
+    ],
     description: "Pipeline data hygiene, automated lead routing, deal stage tracking, and executive reporting.",
   },
   {
     name: "n8n & agentic AI",
-    tools: ["n8n Workflows", "Agentic AI Tools", "Clay", "Instantly.ai", "Smartlead", "PhantomBuster"],
+    tools: [
+      { name: "n8n Workflows", url: "https://n8n.io" },
+      { name: "Agentic AI Tools", url: "https://claude.ai" },
+      { name: "Clay", url: "https://www.clay.com" },
+      { name: "Instantly.ai", url: "https://instantly.ai" },
+      { name: "Smartlead", url: "https://smartlead.ai" },
+      { name: "PhantomBuster", url: "https://phantombuster.com" },
+    ],
     description: "Workflow automation, agentic lead enrichment, personalised outreach, and deliverability infrastructure.",
   },
   {
     name: "Intelligence & pre-sales",
-    tools: ["Finquest AI", "PitchBook", "CB Insights", "Gong.io", "Draup AI", "Chorus"],
+    tools: [
+      { name: "Finquest AI", url: "https://finquest.com" },
+      { name: "PitchBook", url: "https://pitchbook.com" },
+      { name: "CB Insights", url: "https://www.cbinsights.com" },
+      { name: "Gong.io", url: "https://www.gong.io" },
+      { name: "Draup AI", url: "https://draup.com" },
+      { name: "Chorus", url: "https://www.zoominfo.com/products/chorus" },
+    ],
     description: "Mid-market M&A database mapping, deal intelligence, call analytics, and proposal engineering.",
   },
 ];
@@ -509,37 +543,166 @@ export const CONTACT = {
   secondaryCta: { label: "Call +91 99949 69699", href: IDENTITY.phoneHref },
 } as const;
 
-/** The dedicated /schedule page. Two-call model: a free strategy call, then a
- * paid setup session — sourced from the live Portfolio/schedule/index.html,
- * which supersedes the single-session offer this site launched with. */
+/**
+ * The dedicated /schedule page. The offer is a ladder, and the page states it
+ * in the order a buyer meets it: a free discovery call with a published
+ * agenda, a paid second call that starts the engagement, then one of two
+ * ongoing tracks. Source of record is SITE-CONTENT.md §10.
+ *
+ * The commission rate and the full-time monthly rate are deliberately absent —
+ * both are agreed per client on the call, so publishing a number here would be
+ * inventing one.
+ */
 export const SCHEDULE = {
   eyebrow: "Strategy calendar",
   headline: ["You bring the idea. I'll bring the ", "plan", "."],
-  freeBadge: ["Free", "Free", "Free"],
+  chip: "First call is free",
   sub: {
-    lead: "First call is free",
-    rest: " — 30 to 45 minutes to unpack your pipeline and strategy.",
+    lead: "30 to 45 minutes, no charge",
+    rest: " — enough to see whether your pipeline is worth building and whether I'm the one to build it.",
   },
   summary: [
-    { title: "First call — free", detail: "30–45 min · Strategy & pipeline deep-dive", free: true },
-    { title: "USD 350 — 1 hour setup", detail: "Infrastructure · Tool alignment · Methodology" },
+    { title: "First call — free", detail: "30–45 min · Discovery & pipeline fit", free: true },
+    { title: "Second call — USD 350", detail: "1 hour · Setup, tools, methodology" },
     { title: "Remote (IST)", detail: "Video call, Indian Standard Time" },
-    { title: "After approval", detail: "Payment link & scheduling instructions" },
   ],
-  paymentStatus: {
-    eyebrow: "Payment & calendar setup",
-    body: "Payment link will be added after approval. A live booking button and slot selector will appear here once account setup is approved.",
+
+  agenda: {
+    eyebrow: "Call one",
+    heading: "What the free call covers.",
+    body:
+      "Five questions, asked in this order. By the end of them I can tell you whether outbound is the right spend for you — including when the answer is no.",
+    items: [
+      {
+        no: "01",
+        name: "Product or service",
+        description: "What you actually sell decides the cadence. A product demo and a service consult are not the same outreach.",
+      },
+      {
+        no: "02",
+        name: "The company",
+        description: "Size, sales motion, who closes today, and what has already been tried on the outbound side.",
+      },
+      {
+        no: "03",
+        name: "Target region",
+        description: "NA, EU, APAC or MENA. Buying norms, timing and tone shift with each one.",
+      },
+      {
+        no: "04",
+        name: "Industries & ICP",
+        description: "Which verticals and account types are worth the list, and which ones quietly waste it.",
+      },
+      {
+        no: "05",
+        name: "30 / 60 / 90 day goals",
+        description: "What has to be true in three months. This is what the whole engagement gets measured against.",
+      },
+    ],
   },
+
+  engagement: {
+    eyebrow: "The ladder",
+    heading: "Tools first. Pay when leads land.",
+    standfirst:
+      "You control the spend, and the results arrive before the retainer does. Four steps, in order, with the cost of each stated up front.",
+    phases: [
+      {
+        no: "01",
+        name: "Free discovery call",
+        price: "No charge",
+        description: "30–45 minutes on your pipeline, your region and your 30/60/90 goals. You leave with a read on it either way.",
+      },
+      {
+        no: "02",
+        name: "Setup session",
+        price: "USD 350 · one time",
+        description: "One hour. Infrastructure, tool alignment and methodology. The mandatory tool stack is activated at direct cost — no markup, no retainer.",
+      },
+      {
+        no: "03",
+        name: "Research & build",
+        price: "45 days · included",
+        description: "ICP definition, account research, prospect sourcing, and a multi-channel cadence built and launched. Nothing further is billed in this window.",
+      },
+      {
+        no: "04",
+        name: "Leads flow",
+        price: "USD 50 per booked lead",
+        description: "From day 45, you pay per lead booked off my work — plus a commission if that lead converts. Payment is linked to conversion, not activity.",
+      },
+    ],
+  },
+
+  tracks: {
+    eyebrow: "After the setup call",
+    heading: "Two ways to run it.",
+    body: "Pick the one that fits how you want the function owned. Both start from the same two calls.",
+    items: [
+      {
+        kind: "Track A",
+        name: "Performance-linked",
+        rate: "USD 50 / booked lead",
+        featured: true,
+        body: "You pay for outcomes. My upside only exists if your pipeline moves, which keeps the incentive pointed the same way as yours.",
+        points: [
+          "45-day research and build window, included",
+          "USD 50 per lead booked from day 45 onward",
+          "Commission on any deal that closes — agreed per deal, set on the setup call",
+          "No monthly retainer",
+        ],
+      },
+      {
+        kind: "Track B",
+        name: "Full-time",
+        rate: "Monthly · rate on request",
+        featured: false,
+        body: "I run the lead-generation function as part of your team rather than alongside it — the same work, owned end to end, on a monthly arrangement.",
+        points: [
+          "Research, sourcing, cadence, outreach and booking, all in-house",
+          "Reporting and pipeline ownership as a team member",
+          "Monthly rate discussed on the call, scoped to the mandate",
+          "No per-lead or commission billing",
+        ],
+      },
+    ],
+  },
+
+  form: {
+    eyebrow: "Book the free call",
+    heading: "Four fields. Then we talk.",
+    body:
+      "Enough to check you're real and get back to you with IST slots. Everything else is what the call itself is for — no questionnaire.",
+    nameLabel: "Your name",
+    namePlaceholder: "Sampath Kumar",
+    nameInvalid: "Please add your name.",
+    emailLabel: "Work email",
+    emailPlaceholder: "you@company.com",
+    emailInvalid: "That email doesn't look right.",
+    domainLabel: "Company domain",
+    domainPlaceholder: "company.com",
+    domainInvalid: "Please use a domain, like company.com.",
+    phoneLabel: "Phone (optional)",
+    phonePlaceholder: "+91 99949 69699",
+    submit: "Request the free call",
+    sending: "Sending…",
+    success:
+      "Got it. You'll hear back from me with IST slots for the free call. Payment setup isn't live yet, so scheduling and payment instructions for the second call come by email once the first one is done.",
+    error: "That didn't send. Try again, or reach me on LinkedIn below.",
+    note:
+      "Payment setup isn't approved yet, so there's no live calendar or payment link on this page. The free call is arranged by email.",
+  },
+
   fallback: {
-    eyebrow: "Direct contact & LinkedIn",
-    heading: "Start a conversation with Sampath",
-    body: "Connect via LinkedIn or phone. First call is free (30–45 min). Second call is USD 350 for one hour — infrastructure setup, tool alignment and methodology deep-dive.",
+    eyebrow: "Direct contact",
+    heading: "Or skip the form.",
+    body: "Reach me on LinkedIn or by phone. Same free first call, same terms — the form just means I have your details written down.",
     primaryCta: { label: "Connect on LinkedIn", href: IDENTITY.linkedin },
-    secondaryCta: { label: "View case studies", href: "/#history" },
+    secondaryCta: { label: `Call ${IDENTITY.phone}`, href: IDENTITY.phoneHref },
   },
   links: [
-    { label: "Explore lead-gen background", href: "/#range" },
-    { label: "Review case studies", href: "/#history" },
+    { label: "How the lead generation works", href: "/lead-generation" },
+    { label: "Review case studies", href: "/case-studies" },
   ],
 } as const;
 
@@ -828,7 +991,7 @@ export const HIRE = {
     eyebrow: "The 8-second version",
     availability: "Open to full-time roles and fractional / contract engagements.",
     timezone: "Coimbatore, India · GMT+5:30 — replies land across IST, GMT and PT hours.",
-    stackNote: "Runs on: " + TOOL_GROUPS.flatMap((group) => group.tools).slice(0, 6).join(" · ") + " and more",
+    stackNote: "Runs on: " + TOOL_GROUPS.flatMap((group) => group.tools.map((t) => t.name)).slice(0, 6).join(" · ") + " and more",
     resumeCta: { label: "Resume", href: IDENTITY.resume },
     contactCta: { label: "Message on LinkedIn", href: IDENTITY.linkedin },
   },

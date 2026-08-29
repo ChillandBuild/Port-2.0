@@ -5,7 +5,7 @@ import type { SubmissionPayload, SubmissionSource, Lane } from "@/lib/submission
 export const runtime = "nodejs";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SOURCES: SubmissionSource[] = ["hire-form", "case-studies-gate"];
+const SOURCES: SubmissionSource[] = ["hire-form", "case-studies-gate", "schedule-call"];
 const LANES: Lane[] = ["hiring", "buying"];
 
 function isSubmissionPayload(body: unknown): body is SubmissionPayload {

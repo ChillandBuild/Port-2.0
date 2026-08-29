@@ -1,0 +1,139 @@
+.section {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+  padding: var(--space-section) var(--space-shell);
+  display: grid;
+  grid-template-columns: minmax(0, 68rem);
+  justify-content: center;
+}
+
+.eyebrow {
+  color: var(--accent-meta);
+}
+
+.head {
+  max-width: 46rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+.heading {
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 1rem;
+  max-width: 54ch;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  text-wrap: pretty;
+}
+
+/* Five items refuse to divide into a tidy grid, so they don't try: two columns
+   with the fifth running full width reads as a deliberate stack rather than as
+   a row with a hole in it. */
+.items {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.item {
+  position: relative;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+/* The dim lives on an inner element, never on .item itself. .item carries
+   data-reveal, and GSAP's reveal tween writes opacity to it — a CSS opacity
+   transition on the same node makes ScrollTrigger.refresh() (fired on
+   document.fonts.ready) re-read a mid-transition value as the tween's end
+   state, which freezes the phase at ~0.35 opacity forever. Verified: with the
+   transition on .item, five list items never reached opacity 1. */
+.itemInner {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  transition: opacity 260ms var(--ease-out-expo);
+}
+
+.items:hover .itemInner {
+  opacity: 0.62;
+}
+
+.items .item:hover .itemInner {
+  opacity: 1;
+}
+
+.item::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 460ms var(--ease-out-expo);
+}
+
+.item:hover::before {
+  transform: scaleX(1);
+}
+
+.itemNo {
+  color: var(--accent-meta);
+}
+
+.itemName {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.itemBody {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-page);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+
+@media (min-width: 720px) {
+  .items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .item:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .item:last-child .itemBody {
+    max-width: 60ch;
+  }
+}
+
+@media (min-width: 1100px) {
+  .items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .item:last-child {
+    grid-column: auto;
+  }
+
+  .item:last-child .itemBody {
+    max-width: 44ch;
+  }
+}

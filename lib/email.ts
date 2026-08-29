@@ -4,6 +4,7 @@ import type { SubmissionPayload } from "@/lib/submissions";
 const SOURCE_LABEL: Record<SubmissionPayload["source"], string> = {
   "hire-form": "Hire page — wants a teardown",
   "case-studies-gate": "Case studies — unlocked",
+  "schedule-call": "Schedule — wants the free first call",
 };
 
 function formatLines(payload: SubmissionPayload): string {

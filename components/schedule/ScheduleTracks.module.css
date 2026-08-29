@@ -1,0 +1,134 @@
+.section {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: var(--space-section) var(--space-shell);
+  display: grid;
+  grid-template-columns: minmax(0, 68rem);
+  justify-content: center;
+}
+
+.eyebrow {
+  color: var(--accent-meta);
+}
+
+.head {
+  max-width: 46rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+.heading {
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 14ch;
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 1rem;
+  max-width: 52ch;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  text-wrap: pretty;
+}
+
+.cards {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: start;
+}
+
+.card {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  padding: clamp(1.5rem, 3.5vw, 2.25rem);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+}
+
+/* Track A is the default path, so it gets the heavier ground and the accent
+   edge. --accent-tint is the same value as --surface-page and would vanish
+   here, which is why this lifts on --surface-panel instead. */
+.cardFeatured {
+  background: var(--surface-panel);
+  border-color: var(--accent);
+  color: var(--on-panel);
+}
+
+.kind {
+  color: var(--accent-meta);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.rate {
+  justify-self: start;
+  margin-top: 0.15rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  font-size: var(--text-xs);
+}
+
+.cardBody {
+  margin-top: 0.6rem;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+.cardFeatured .cardBody {
+  color: var(--on-panel-soft);
+}
+
+.points {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.point {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* A rule, not a bullet glyph — the page's whole vocabulary is hairlines. */
+.point::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.75rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+@media (min-width: 860px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

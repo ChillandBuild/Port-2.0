@@ -1,0 +1,135 @@
+.section {
+  background: var(--surface-panel);
+  color: var(--on-panel);
+  padding: var(--space-section) var(--space-shell);
+  display: grid;
+  grid-template-columns: minmax(0, 74rem);
+  justify-content: center;
+}
+
+.eyebrow {
+  color: var(--accent-meta);
+}
+
+.head {
+  max-width: 48rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.heading {
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin-top: 1.1rem;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-panel-soft);
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+
+.steps {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+/* Reading one phase quietens the others. The ladder is sequential, so at any
+   moment exactly one of the four should be the one you are on. 0.62 is the
+   floor — below it the ink drops under 4.5:1 on this ground.
+
+   The dim is on .stepInner, never on .step: .step carries data-reveal, and a
+   CSS opacity transition on the same node that GSAP's reveal tween writes to
+   makes ScrollTrigger.refresh() re-read a mid-transition value as the end
+   state, freezing the phase permanently faded. */
+.stepInner {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  transition: opacity 260ms var(--ease-out-expo);
+}
+
+.steps:hover .stepInner {
+  opacity: 0.62;
+}
+
+.steps .step:hover .stepInner {
+  opacity: 1;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 460ms var(--ease-out-expo);
+}
+
+.step:hover::before {
+  transform: scaleX(1);
+}
+
+.stepNo {
+  color: var(--accent-meta);
+}
+
+.stepName {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+/* The number is the point of this page, so it gets its own line and its own
+   chip rather than being folded into the prose below it. */
+.stepPrice {
+  justify-self: start;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--surface-page);
+  color: var(--accent-meta);
+  font-size: var(--text-xs);
+}
+
+.stepBody {
+  margin-top: 0.15rem;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-panel);
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+
+/* Two up before four up: four columns of 42ch prose need more room than the
+   three-column strip on the home page, which turns at 860px. */
+@media (min-width: 700px) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
