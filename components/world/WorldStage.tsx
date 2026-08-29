@@ -27,7 +27,6 @@ import {
   readPalette,
   type Palette,
 } from "@/lib/world-render";
-import { RunReadout } from "./RunReadout";
 import { prefersReducedMotion, registerWorld, scrollToId, subscribeScroll } from "@/lib/scroll-store";
 import { subscribeTheme } from "@/lib/theme";
 import styles from "./WorldStage.module.css";
@@ -327,8 +326,6 @@ export function WorldStage() {
         <div className={styles.grain} aria-hidden="true" />
         <div className={styles.scrim} aria-hidden="true" />
 
-        <RunReadout />
-
         <div className={styles.copy} ref={copyRef} data-world-copy>
           <section className={`${styles.block} ${styles.heroAnchor}`} data-cue="hero" aria-labelledby="hero-heading">
             <p className={`mono ${styles.eyebrow}`}>Pre Sales Head · Lead Generation</p>
@@ -434,9 +431,9 @@ export function WorldStage() {
 
           <section className={`${styles.block} ${styles.centre}`} data-cue="cost">
             <p className={styles.statement}>
-              Writing to all of them is not outbound.
+              More names is not a strategy.
               <br />
-              It is noise with a logo on it.
+              The right names, followed up, is.
             </p>
           </section>
 
@@ -463,21 +460,12 @@ export function WorldStage() {
             ))}
           </ol>
 
+          {/* Copy deferred until the growth section lands — left blank on purpose. */}
           <section className={`${styles.block} ${styles.lead} ${styles.arrival}`} data-cue="arrival">
-            {/* The three marks that survived the run, carried onto the paper, so
-                the number in the sentence is the thing that was just watched. */}
             <p className={styles.marks} aria-hidden="true">
               <span />
               <span />
               <span />
-            </p>
-            <p className={styles.statement}>
-              Two hundred and forty contacts in.
-              <br />
-              Three meetings out.
-            </p>
-            <p className={`mono ${styles.note}`}>
-              Simulated cadence, real method. The verified figures are below.
             </p>
           </section>
         </div>

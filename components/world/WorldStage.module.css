@@ -646,18 +646,6 @@
   color: var(--on-page);
 }
 
-.arrival .note {
-  color: var(--on-page-soft);
-}
-
-.note {
-  margin-top: 1.5rem;
-  font-size: var(--text-meta);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--on-world-soft);
-}
-
 .runHeading {
   font-family: var(--font-display);
   font-size: clamp(1.9rem, 1rem + 3vw, 3.6rem);

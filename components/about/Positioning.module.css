@@ -8,24 +8,10 @@
   padding: var(--space-section) var(--space-shell);
 }
 
-.rail {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 1.35rem;
-  border-bottom: 1px solid var(--rule-panel);
-  color: var(--on-panel-soft);
-}
-
-.stamp {
-  color: var(--accent);
-}
-
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: var(--space-gap);
-  padding-top: clamp(2rem, 4vw, 3.25rem);
 }
 
 .lead {

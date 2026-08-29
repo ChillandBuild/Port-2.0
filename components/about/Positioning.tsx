@@ -4,17 +4,6 @@ import styles from "./Positioning.module.css";
 export function Positioning() {
   return (
     <section className={styles.section} id="about" aria-labelledby="about-heading">
-      <div className={styles.rail}>
-        <span className="mono">Re: what I actually do</span>
-        <span
-          className={`mono ${styles.stamp}`}
-          data-count="7"
-          data-count-suffix="+ years"
-        >
-          {ABOUT.stamp}
-        </span>
-      </div>
-
       <div className={styles.grid}>
         <div className={styles.lead}>
           <p className={`mono ${styles.eyebrow}`}>{ABOUT.eyebrow}</p>
