@@ -155,10 +155,20 @@
 }
 
 /* The card lights its own edge rather than wiping a rule across the top — the
-   top rule the old grammar leaned on is now a full border. */
-.step:hover {
+   top rule the old grammar leaned on is now a full border.
+   [data-active="true"] is latched by components/motion/connectors.ts the
+   moment the travelling dot lands on this card, so the glow is not only a
+   pointer response — it is how arrival reads without a mouse anywhere near it.
+   Two shadow layers: a tight bright rim hugging the border, and a wide soft
+   bloom behind it — one layer alone read as either a hard outline or a vague
+   haze, not a card that has visibly lit up. */
+.step:hover,
+.step[data-active="true"] {
   border-color: var(--accent-meta);
-  box-shadow: 0 0 28px -10px var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent-meta),
+    0 0 20px 2px var(--accent-meta),
+    0 0 64px 4px var(--accent);
 }
 
 .stepNo {

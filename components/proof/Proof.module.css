@@ -136,6 +136,10 @@
   font-weight: 800;
   font-size: var(--text-h3);
   letter-spacing: -0.035em;
+  /* Same treatment as .value above: the ledger figures on the left are the
+     one accent colour on this page, and the inbound stats are the same kind
+     of number. Left unset before, they fell back to the body ink. */
+  color: var(--accent);
 }
 
 .inboundLabel {

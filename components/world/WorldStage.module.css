@@ -207,10 +207,24 @@
   justify-content: center;
   align-items: flex-end;
   text-align: right;
-  /* The fixed chat dock clears the actions row on its own (see
-     ChatWidget.module.css .dock bottom). Keep a modest floor so the
-     actions row never sits flush against the viewport edge. */
-  padding-bottom: clamp(1rem, 2vh, 1.5rem);
+  /* This assumed the fixed chat dock (ChatWidget.module.css .dock) cleared the
+     actions row on its own and only needed a modest floor underneath. Measured
+     instead: the dock's bubble sits in the band [dock's bottom clamp, that
+     clamp + the bubble's own ~38px height] above the viewport edge, and both
+     it and this column are right-anchored, so nothing but padding-bottom kept
+     them apart. On a 700–800px-tall viewport — an ordinary laptop window, not
+     an edge case — that gap ran 11 to 48px short and "Skip to the numbers"
+     rendered under the bubble.
+
+     justify-content: center below means padding-bottom is not 1:1 with the
+     clearance it buys: raising it from 16px to 88px moved the content's edge
+     up only 36px, because the box is centering the column in whatever room
+     padding-bottom leaves it, and half of any change lands as slack on the
+     opposite side rather than as clearance here. The floor below is set from
+     that measured ~2:1 ratio for a 12px margin at 700px, the shortest
+     reasonable desktop height — not a second guess. Same fix already applied
+     to the mobile block below at the first sign of this exact clash. */
+  padding-bottom: clamp(8.5rem, 11vh, 10rem);
 }
 
 .heroAnchor .headline,

@@ -244,8 +244,20 @@ function initLadder(gsap: Gsap, ScrollTrigger: ScrollTriggerClass, host: HTMLEle
 
     // Latched, never unset. The `from` chip is already lit for every connector
     // but the first, so this is idempotent rather than special-cased.
-    if (p > 0) c.fromChip.dataset.active = "true";
-    if (p >= ACTIVATE_AT) c.toChip.dataset.active = "true";
+    //
+    // The card itself (c.from/c.to) is latched alongside its chip, not only the
+    // chip: on the engagement ladder the chip is a descendant of the card, so a
+    // card-level glow keyed to :hover alone never fires on arrival — the pointer
+    // is not there. Where chip and card are the same element (the agenda), this
+    // is a harmless repeat of the same write.
+    if (p > 0) {
+      c.fromChip.dataset.active = "true";
+      c.from.dataset.active = "true";
+    }
+    if (p >= ACTIVATE_AT) {
+      c.toChip.dataset.active = "true";
+      c.to.dataset.active = "true";
+    }
   };
 
   /** Sub-ranges are shared out across drawable connectors only. Giving a dormant
