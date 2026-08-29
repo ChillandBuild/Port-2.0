@@ -361,12 +361,65 @@
   vertical-align: middle;
 }
 
+.explainerDetails {
+  margin-top: 1.5rem;
+  border-top: 1px dashed var(--rule);
+  padding-top: 1rem;
+}
+
+.explainerSummary {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  font-weight: 500;
+  transition: color 150ms ease;
+  outline: none;
+}
+
+.explainerSummary::-webkit-details-marker {
+  display: none;
+}
+
+.explainerSummary:hover,
+.explainerSummary:focus-visible {
+  color: var(--on-page);
+}
+
+.explainerSummary::before {
+  content: "→";
+  display: inline-block;
+  font-family: var(--font-mono);
+  transition: transform 180ms ease;
+}
+
+.explainerDetails[open] .explainerSummary::before {
+  transform: rotate(90deg);
+}
+
 .explainerGrid {
   display: grid;
   gap: 1.5rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px dashed var(--rule);
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  animation: slideDown 240ms var(--ease-out-expo) forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .explainerCol {

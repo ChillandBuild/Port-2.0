@@ -154,27 +154,32 @@ export function Estimator({
           </table>
         </div>
 
-        <div className={styles.explainerGrid}>
-          <div className={styles.explainerCol}>
-            <h4 className={`mono ${styles.explainerTitle}`}>The Cost Formula</h4>
-            <p className={styles.explainerText}>
-              Tool cost consists of a <strong>fixed base subscription</strong> (${outcome.sector.baseToolCost}/mo for domains, inboxes, Sales Nav, and sending tools) + 
-              a <strong>variable sourcing charge</strong> (${outcome.sector.costPerLead}/lead for premium credit lookups, validation, and AI personalization via Clay).
-            </p>
+        <details className={styles.explainerDetails}>
+          <summary className={`mono ${styles.explainerSummary}`}>
+            How the math works
+          </summary>
+          <div className={styles.explainerGrid}>
+            <div className={styles.explainerCol}>
+              <h4 className={`mono ${styles.explainerTitle}`}>The Cost Formula</h4>
+              <p className={styles.explainerText}>
+                Tool cost consists of a <strong>fixed base subscription</strong> (${outcome.sector.baseToolCost}/mo for domains, inboxes, Sales Nav, and sending tools) + 
+                a <strong>variable sourcing charge</strong> (${outcome.sector.costPerLead}/lead for premium credit lookups, validation, and AI personalization via Clay).
+              </p>
+            </div>
+            <div className={styles.explainerCol}>
+              <h4 className={`mono ${styles.explainerTitle}`}>The Ramp-up Logic</h4>
+              <p className={styles.explainerText}>
+                New sending domains must warm up gradually. Senders scale slowly (e.g., starting at 10%–20% of target volume) to build IP reputation and protect deliverability health, preventing your emails from landing in spam folders.
+              </p>
+            </div>
+            <div className={styles.explainerCol}>
+              <h4 className={`mono ${styles.explainerTitle}`}>Conversion Rate</h4>
+              <p className={styles.explainerText}>
+                The model assumes a steady-state meeting booking rate of <strong>{Math.round(outcome.sector.meetingRate * 100)}%</strong> for the <em>{outcome.sector.label}</em> sector. Real-world conversions depend on message quality, timing, and ICP definition.
+              </p>
+            </div>
           </div>
-          <div className={styles.explainerCol}>
-            <h4 className={`mono ${styles.explainerTitle}`}>The Ramp-up Logic</h4>
-            <p className={styles.explainerText}>
-              New sending domains must warm up gradually. Senders scale slowly (e.g., starting at 10%–20% of target volume) to build IP reputation and protect deliverability health, preventing your emails from landing in spam folders.
-            </p>
-          </div>
-          <div className={styles.explainerCol}>
-            <h4 className={`mono ${styles.explainerTitle}`}>Conversion Rate</h4>
-            <p className={styles.explainerText}>
-              The model assumes a steady-state meeting booking rate of <strong>{Math.round(outcome.sector.meetingRate * 100)}%</strong> for the <em>{outcome.sector.label}</em> sector. Real-world conversions depend on message quality, timing, and ICP definition.
-            </p>
-          </div>
-        </div>
+        </details>
       </div>
     </section>
   );
