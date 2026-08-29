@@ -46,6 +46,10 @@
   padding: 0;
   list-style: none;
   counter-reset: none;
+  /* Shares .ladder's stacking context with the connector overlay. The cards sit
+     under the lines, which only ever run through the gutters between them. */
+  position: relative;
+  z-index: 1;
 }
 
 .item {
@@ -135,5 +139,64 @@
 
   .item:last-child .itemBody {
     max-width: 44ch;
+  }
+}
+
+/* The connector overlay's coordinate space. Must stay positioned: every .item
+   is measured relative to this element, and connectors.ts sums offsets up the
+   chain to reach it, so an intervening positioned ancestor would silently
+   become the origin instead. */
+.ladder {
+  position: relative;
+}
+
+/* Built and driven by components/motion/connectors.ts. Hidden by default and
+   turned on at the same 720px the items stop being one column — below that
+   there is no journey to trace, and connectors.ts gates on the identical query
+   via data-connectors-min, so nothing is built here either. */
+.connectors {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The row-crossing sweep rides the gutter between rows; a handle that
+     overshoots it would be clipped without this. */
+  overflow: visible;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.connectorPath {
+  fill: none;
+  /* --accent-meta, not --accent: this line carries meaning, so it owes WCAG
+     1.4.11's 3:1 against the panel. Same choice, same reasoning as the
+     engagement ladder — see ScheduleEngagement.module.css. */
+  stroke: var(--accent-meta);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.connectorDot {
+  fill: var(--accent-meta);
+  /* The bloom is the whole point of the travelling node — it has to read as a
+     light source riding the line, not as a dot sitting on it. */
+  filter: drop-shadow(0 0 6px var(--accent-meta));
+  /* GSAP owns this from the first frame. Starting at 0 stops every dot flashing
+     at its origin between paint and hydration. */
+  opacity: 0;
+}
+
+/* The arrival. Written by connectors.ts when the dot lands and never unset —
+   scrolling back up rewinds the line, but you do not un-ask a question you have
+   reached. Lands on the same scaleX(1) the hover state uses, so the two agree
+   rather than fight. */
+.item[data-active="true"]::before {
+  transform: scaleX(1);
+}
+
+@media (min-width: 720px) {
+  .connectors {
+    display: block;
   }
 }

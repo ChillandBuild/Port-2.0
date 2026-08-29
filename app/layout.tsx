@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BackToTop } from "@/components/chrome/BackToTop";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import { Bricolage_Grotesque, DM_Mono, Great_Vibes, Inter_Tight, Newsreader } from "next/font/google";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "@/styles/global.css";
@@ -78,6 +79,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         {children}
         <BackToTop />
+        {/* The bot owns the bottom-right on every page, opposite BackToTop's
+            bottom-left. Mounted once here rather than per page so there is a
+            single conversation, not one per route. */}
+        <ChatWidget />
       </body>
     </html>
   );

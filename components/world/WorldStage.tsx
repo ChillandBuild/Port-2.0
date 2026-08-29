@@ -19,7 +19,6 @@ import { HERO, PIPELINE } from "@/lib/content";
 import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/world";
 import { CLUSTERS, COHORT, FIELD } from "@/lib/world-instance";
 import { Greeting } from "./Greeting";
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import {
   drawWorld,
   landingProgress,
@@ -373,8 +372,11 @@ export function WorldStage() {
             </dl>
 
             <div className={styles.actions}>
-              {/* Primary action pair: matching button geometry for crisp baseline alignment */}
-              <div className={styles.actionRowPrimary}>
+              {/* One line: the two calls to action and the jump link read as a
+                  single row of choices rather than as a primary pair with an
+                  afterthought under it. The assistant is no longer among them —
+                  it is the page-wide dock mounted in app/layout.tsx. */}
+              <div className={styles.actionRow}>
                 <a
                   className={styles.primary}
                   href="#history"
@@ -395,10 +397,6 @@ export function WorldStage() {
                 >
                   Work with me
                 </a>
-              </div>
-
-              {/* Secondary actions: fast jump link and interactive assistant */}
-              <div className={styles.actionRowSecondary}>
                 <a
                   className={styles.skipLink}
                   href="#proof"
@@ -410,7 +408,6 @@ export function WorldStage() {
                   <span>Skip to the numbers</span>
                   <span className={styles.skipArrow} aria-hidden="true">↓</span>
                 </a>
-                <ChatWidget inline />
               </div>
             </div>
           </section>

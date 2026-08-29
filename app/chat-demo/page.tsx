@@ -1,4 +1,3 @@
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Chat demo — Port 2.0" };
@@ -42,8 +41,6 @@ export default function ChatDemoPage() {
           Widget code: <code>components/chat/ChatWidget.tsx</code> · Brain: <code>app/api/chat/route.ts</code> (mock, swap for Vercel AI SDK later) · Prompts from <code>lib/content.ts:1</code>
         </p>
       </div>
-
-      <ChatWidget />
     </main>
   );
 }

@@ -16,25 +16,18 @@
   border-bottom: 1px solid transparent;
 }
 
-/* The ground the bar never used to have. Ungrounded it is a top-anchored veil
-   that feathers out by the bar's lower edge, so the links read on the hero
-   photograph without a fill spilling onto the screen below. */
+/* Nothing at all over the hero: no veil, no blur, no feathered edge. The first
+   screen is the photograph, and the wordmark and links sit straight on it —
+   both carry their own colour on either theme, so they hold without a ground
+   under them. The element still exists because the grounded state below fades
+   its background in; ungrounded it is simply empty. */
 .nav::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    var(--nav-veil) 0%,
-    color-mix(in srgb, var(--nav-veil) 52%, transparent) 58%,
-    transparent 100%
-  );
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  background: transparent;
   transition: background 320ms var(--ease-out-expo);
 }
 
@@ -48,13 +41,11 @@
 
 .nav[data-grounded="true"]::before {
   background: color-mix(in srgb, var(--surface-page) 82%, transparent);
-  -webkit-mask-image: none;
-  mask-image: none;
 }
 
 .home {
-  /* No card: the cursive mark floats straight on the photograph, with the nav
-     veil as its ground. The mark carries its own colour on both themes. */
+  /* No card and, over the hero, no veil either: the cursive mark floats straight
+     on the photograph. The mark carries its own colour on both themes. */
   display: inline-flex;
   text-decoration: none;
   border-radius: 8px;
