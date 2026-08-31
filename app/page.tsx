@@ -12,7 +12,6 @@ import { ScrollFX } from "@/components/motion/ScrollFX";
 import { PlatformArchitecture } from "@/components/stack/PlatformArchitecture";
 import { Terms } from "@/components/terms/Terms";
 import { WorldStage } from "@/components/world/WorldStage";
-import { PipelineCards } from "@/components/world/PipelineCards";
 
 /**
  * "Worldfall": a photograph settles into one continuous drawn world, the world
@@ -33,7 +32,6 @@ export default function HomePage() {
 
       <main id="main">
         <WorldStage />
-        <PipelineCards />
         <Proof />
         <Positioning />
         <History />
