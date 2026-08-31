@@ -15,8 +15,8 @@ export function History() {
           Seven years of doing exactly this.
         </h2>
         <p className={styles.standfirst}>
-          Global reach across the United States, United Kingdom, UAE, Singapore,
-          Australia and Canada — the employer, the work and the numbers, in order.
+          Global market specialist with deep expertise across the United States, United Kingdom, UAE, Singapore,
+          Australia, Canada, and Europe — the employer, the work and the numbers, in order.
         </p>
       </div>
 

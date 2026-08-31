@@ -80,7 +80,7 @@ export const DRAFT = {
   subject: "Worth twenty minutes?",
   body: [
     "I map private companies for a living — 200M+ of them — and route the ones that fit your thesis into your calendar, not your inbox.",
-    "An engineer's head, a salesperson's calendar. If the fit is wrong I'll say so on the call.",
+    "An engineer's head, a pre-salesperson's calendar. If the fit is wrong I'll say so on the call.",
   ],
   replyLabel: "Lead-to-meeting lift",
   replyValue: "+35%",
@@ -139,12 +139,12 @@ export const ABOUT = {
   stamp: "7+ years",
   exchange: {
     asked: "How does an engineer end up in sales?",
-    answered: "An engineer's head, a salesperson's calendar.",
+    answered: "An engineer's head, a pre-salesperson's calendar.",
   },
   facts: [
-    { label: "Diploma", value: "Diploma in Mechanical Engineering, Sree Narayana Guru Polytechnic College" },
-    { label: "Engineering", value: "B.E. Mechanical, Sri Krishna College of Technology · 2020" },
-    { label: "Business", value: "MBA Marketing, Amrita Vishwa Vidyapeetham · 2026" },
+    { label: "Diploma", value: "Diploma in Mechanical Engineering, Sree Narayana Guru Polytechnic College · 2016" },
+    { label: "Engineering", value: "Bachelor of Engineering in Mechanical Engineering, Sri Krishna College of Technology · 2020" },
+    { label: "Business", value: "Master of Business Administration with a specialization in Marketing, Amrita Vishwa Vidyapeetham · 2026" },
   ],
 } as const;
 
@@ -156,7 +156,7 @@ export interface Stage {
 
 export const PIPELINE: Stage[] = [
   { no: "01", name: "Understand ICP", description: "Segment the market, map the buyer journey, define who's actually worth reaching." },
-  { no: "02", name: "Research", description: "Account and market intelligence from Draup, ZoomInfo, Crunchbase, and direct web research." },
+  { no: "02", name: "Research", description: "Deep account and market intelligence from intent platforms, firmographic databases, and direct web research." },
   { no: "03", name: "Prospect", description: "Source contacts and verify them through multi-stage checks before they ever get an email." },
   { no: "04", name: "Outreach", description: "Multi-channel cadences across cold email and LinkedIn, monitored for SPF, DKIM and DMARC health." },
   { no: "05", name: "Qualification", description: "Track hand-raiser quality, not just volume, and report it back to sales and research." },
@@ -176,7 +176,7 @@ export interface Sector {
 export const SECTORS: Sector[] = [
   { tag: "SaaS", title: "B2B & B2C SaaS", description: "High-velocity growth across IT and SaaS platforms.", core: true },
   { tag: "Markets", title: "Service-based private markets", description: "Global account expansion and deal origination.", core: true },
-  { tag: "Services", title: "Digital marketing conciliation and translation", description: "Performance-driven outreach for MarTech agencies and localisation firms.", core: true },
+  { tag: "Services", title: "Digital marketing localisation and translation", description: "Performance-driven outreach for MarTech agencies and localisation firms.", core: true },
   { tag: "Staffing", title: "Staffing & recruiting", description: "Fractional pre-sales and BDR talent acceleration." },
   { tag: "Health", title: "MediTech, pharma & healthcare", description: "B2B lead gen across MedTech startups, pharma, and hospital networks." },
   { tag: "Finance", title: "Banking, finance & BPO", description: "Financial service pipelines and back-end solutions." },

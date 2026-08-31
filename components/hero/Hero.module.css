@@ -109,6 +109,7 @@
 }
 
 .lede {
+  text-align: left;
   margin-top: 1.75rem;
   max-width: 34ch;
   font-size: var(--text-base);

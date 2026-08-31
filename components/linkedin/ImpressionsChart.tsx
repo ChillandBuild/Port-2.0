@@ -28,7 +28,7 @@ export function ImpressionsChart() {
         <span className={`mono ${styles.subtitle}`}>{LINKEDIN.chart.subtitle}</span>
       </figcaption>
 
-      <div className={styles.plot}>
+      <div className={styles.plot} data-chart-draw>
         <svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
           role="img"
@@ -53,15 +53,16 @@ export function ImpressionsChart() {
             />
           ))}
 
-          <path d={area} fill="url(#impressions-fill)" />
-          <path d={line} className={styles.line} />
-          <circle cx={markerPoint.x} cy={markerPoint.y} r="4" className={styles.dot} />
+          <path d={area} fill="url(#impressions-fill)" data-chart-area />
+          <path d={line} className={styles.line} data-chart-line />
+          <circle cx={markerPoint.x} cy={markerPoint.y} r="4" className={styles.dot} data-chart-dot />
         </svg>
 
         <span
           className={`mono ${styles.marker}`}
           style={{ left: `${(markerPoint.x / WIDTH) * 100}%`, top: `${(markerPoint.y / HEIGHT) * 100}%` }}
           aria-hidden="true"
+          data-chart-marker
         >
           {marker.label} ↗
         </span>

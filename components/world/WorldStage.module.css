@@ -229,6 +229,8 @@
 
 .heroAnchor .headline,
 .heroAnchor .lede {
+  text-align: left;
+
   margin-left: auto;
 }
 
@@ -241,6 +243,8 @@
 }
 
 .heroAnchor .lede {
+  text-align: left;
+
   margin-top: clamp(0.3rem, 1.6vh, 1.15rem);
   font-size: var(--text-sm);
 }
@@ -795,6 +799,8 @@
 
   .heroAnchor .headline,
   .heroAnchor .lede {
+  text-align: left;
+
     margin-left: 0;
   }
 
@@ -970,6 +976,8 @@
 
   .heroAnchor .headline,
   .heroAnchor .lede {
+  text-align: left;
+
     margin-left: 0;
   }
 

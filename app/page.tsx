@@ -10,7 +10,6 @@ import { Range } from "@/components/range/Range";
 import { Reply } from "@/components/reply/Reply";
 import { ScrollFX } from "@/components/motion/ScrollFX";
 import { PlatformArchitecture } from "@/components/stack/PlatformArchitecture";
-import { Terms } from "@/components/terms/Terms";
 import { WorldStage } from "@/components/world/WorldStage";
 
 /**
@@ -22,7 +21,7 @@ import { WorldStage } from "@/components/world/WorldStage";
  * evidence right before it — Positioning before History, Range before
  * Estimator — instead of alternating between the two the whole way down.
  * Education is folded into Positioning's fact list. The featured-posts rail
- * is the last stop before the footer.
+ * precedes the closing CTA before the footer.
  */
 export default function HomePage() {
   return (
@@ -38,9 +37,8 @@ export default function HomePage() {
         <Range />
         <PlatformArchitecture />
         <Estimator />
-        <Terms />
-        <Reply />
         <FeaturedPosts />
+        <Reply />
       </main>
 
       <Footer />

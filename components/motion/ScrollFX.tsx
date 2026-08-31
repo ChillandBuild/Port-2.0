@@ -65,9 +65,9 @@ export function ScrollFX() {
           const obj = { n: 0 };
           gsap.to(obj, {
             n: target,
-            duration: reduced ? 0 : 1.6,
+            duration: reduced ? 0 : 2.5,
             ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+            scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "restart none none reverse" },
             onUpdate: () => {
               el.textContent = `${prefix}${obj.n.toLocaleString("en-US", {
                 minimumFractionDigits: decimals,
@@ -87,15 +87,49 @@ export function ScrollFX() {
           gsap.to(obj, {
             a: from,
             b: to,
-            duration: reduced ? 0 : 1.6,
+            duration: reduced ? 0 : 2.5,
             ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 92%", once: true },
+            scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "restart none none reverse" },
             onUpdate: () => {
               el.textContent = `${prefix}${Math.round(obj.a)}–${Math.round(obj.b)}${suffix}`;
             },
           });
         });
 
+        // The chart draws itself in on every pass, same as the counters beside it.
+        gsap.utils.toArray<HTMLElement>("[data-chart-draw]").forEach((wrap) => {
+          const linePath = wrap.querySelector<SVGPathElement>("[data-chart-line]");
+          const areaPath = wrap.querySelector<SVGPathElement>("[data-chart-area]");
+          const dot = wrap.querySelector<SVGElement>("[data-chart-dot]");
+          const marker = wrap.querySelector<HTMLElement>("[data-chart-marker]");
+          if (!linePath) return;
+          const length = linePath.getTotalLength();
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: wrap,
+              start: "top 85%",
+              toggleActions: "restart none none reverse",
+            },
+          });
+          tl.fromTo(
+            linePath,
+            { strokeDasharray: length, strokeDashoffset: length },
+            { strokeDashoffset: 0, duration: reduced ? 0 : 1.4, ease: "power2.out" },
+          )
+            .fromTo(
+              areaPath,
+              { opacity: 0 },
+              { opacity: 1, duration: reduced ? 0 : 0.8, ease: "power1.out" },
+              reduced ? 0 : "-=0.9",
+            )
+            .fromTo(
+              [dot, marker].filter(Boolean),
+              { opacity: 0, scale: 0.6 },
+              { opacity: 1, scale: 1, duration: reduced ? 0 : 0.5, ease: "back.out(2)" },
+              reduced ? 0 : "-=0.3",
+            );
+        });
 
         // Lateral travel reads as breadth. Vertical reads as argument.
         if (!reduced) {
