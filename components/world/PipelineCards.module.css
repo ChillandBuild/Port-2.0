@@ -1,0 +1,288 @@
+/* ── Pipeline Cards — glassmorphism card grid ── */
+
+.section {
+  position: relative;
+  padding: var(--space-section) var(--space-shell);
+  overflow: hidden;
+}
+
+/* ── Subtle grid overlay ── */
+.gridBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.dark .gridBg {
+  opacity: 0.06;
+  background-image:
+    linear-gradient(rgba(109, 40, 217, 1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(109, 40, 217, 1) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.light .gridBg {
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(91, 33, 182, 1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 33, 182, 1) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  color: var(--accent-soft);
+  margin-bottom: 0.5rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 1rem + 3vw, 3.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 0 0 0.75rem;
+}
+
+.dark .heading { color: #f0ecff; }
+.light .heading { color: var(--on-page); }
+
+.body {
+  font-size: var(--text-base);
+  line-height: 1.62;
+  margin: 0;
+}
+
+.dark .body { color: var(--on-world-soft); }
+.light .body { color: var(--on-page-soft); }
+
+/* ═══ MASONRY GRID ═══ */
+.masonry {
+  column-count: 3;
+  column-gap: 1.25rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══ GLASSMORPHISM CARD ═══ */
+.card {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: default;
+  position: relative;
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    box-shadow 0.4s var(--ease-out-expo);
+}
+
+/* ── Dark glassmorphism ── */
+.dark .card {
+  background: linear-gradient(145deg, rgba(15, 15, 40, 0.8) 0%, rgba(30, 20, 60, 0.65) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(139, 92, 246, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    145deg,
+    rgba(167, 139, 250, 0.35) 0%,
+    rgba(139, 92, 246, 0.08) 40%,
+    rgba(139, 92, 246, 0.05) 60%,
+    rgba(167, 139, 250, 0.25) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dark .card:hover::before {
+  background: linear-gradient(
+    145deg,
+    rgba(167, 139, 250, 0.55) 0%,
+    rgba(139, 92, 246, 0.15) 40%,
+    rgba(139, 92, 246, 0.1) 60%,
+    rgba(167, 139, 250, 0.45) 100%
+  );
+}
+
+.dark .card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(139, 92, 246, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ── Light glassmorphism ── */
+.light .card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.65) 0%, rgba(245, 243, 255, 0.5) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(91, 33, 182, 0.12);
+  box-shadow:
+    0 4px 24px rgba(46, 16, 101, 0.08),
+    0 0 0 1px rgba(91, 33, 182, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.light .card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    145deg,
+    rgba(91, 33, 182, 0.2) 0%,
+    rgba(91, 33, 182, 0.05) 40%,
+    rgba(91, 33, 182, 0.03) 60%,
+    rgba(91, 33, 182, 0.15) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.light .card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 16px 48px rgba(46, 16, 101, 0.12),
+    0 0 60px rgba(91, 33, 182, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ── Card visual / illustration area ── */
+.visual {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark .visual {
+  background: linear-gradient(135deg, rgba(30, 20, 60, 0.6) 0%, rgba(10, 10, 30, 0.8) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.light .visual {
+  background: linear-gradient(135deg, rgba(237, 233, 254, 0.5) 0%, rgba(245, 243, 255, 0.7) 100%);
+  border: 1px solid rgba(91, 33, 182, 0.08);
+}
+
+.icon {
+  width: 65%;
+  height: 65%;
+  color: var(--accent-soft);
+  opacity: 0.7;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.card:hover .icon {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Tall cards get taller visuals */
+.tall .visual {
+  aspect-ratio: 4 / 5;
+}
+
+.tall .icon {
+  width: 55%;
+  height: 55%;
+}
+
+/* ── Card text ── */
+.cardEyebrow {
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  color: var(--accent-soft);
+  margin: 0 0 0.5rem;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 0.5rem + 1vw, 1.4rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+.dark .cardTitle { color: #f0ecff; }
+.light .cardTitle { color: var(--on-page); }
+
+.cardDesc {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  max-width: 30ch;
+  margin: 0;
+}
+
+.dark .cardDesc { color: rgba(240, 236, 255, 0.55); }
+.light .cardDesc { color: var(--on-page-soft); }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 900px) {
+  .masonry { column-count: 2; }
+}
+
+@media (max-width: 600px) {
+  .masonry { column-count: 1; }
+  .card { min-height: 160px; }
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .icon {
+    transition: none;
+  }
+}

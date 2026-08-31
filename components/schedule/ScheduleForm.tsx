@@ -12,6 +12,7 @@
 
 import { useId, useState } from "react";
 import { SCHEDULE } from "@/lib/content";
+import { ScheduleCalendar } from "./ScheduleCalendar";
 import styles from "./ScheduleForm.module.css";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,6 +25,7 @@ export function ScheduleForm() {
   const [email, setEmail] = useState("");
   const [domain, setDomain] = useState("");
   const [phone, setPhone] = useState("");
+  const [slot, setSlot] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const formId = useId();
@@ -49,6 +51,9 @@ export function ScheduleForm() {
           // route trims to null anyway, but an absent key keeps the payload
           // honest about what was actually filled in.
           ...(phone.trim() ? { phone: phone.trim() } : {}),
+          // The calendar slot has no dedicated column, so it rides along to
+          // the email notification only — the Supabase insert is untouched.
+          ...(slot ? { slot } : {}),
         }),
       });
       if (!response.ok) throw new Error("Request failed");
@@ -74,6 +79,7 @@ export function ScheduleForm() {
         </p>
       ) : (
         <form className={styles.form} onSubmit={submit} noValidate>
+          <ScheduleCalendar selected={slot} onSelect={setSlot} />
           <div className={styles.fields}>
             <label className={styles.field}>
               <span className={`mono ${styles.label}`}>{SCHEDULE.form.nameLabel}</span>

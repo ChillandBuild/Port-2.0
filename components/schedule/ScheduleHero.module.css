@@ -121,6 +121,36 @@
   color: var(--accent-meta);
 }
 
+.cta {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--accent-ink);
+  background: var(--accent-gradient);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition:
+    background 140ms var(--ease-out-quint),
+    transform 140ms var(--ease-out-quint);
+}
+
+.cta:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 @media (max-width: 640px) {
   .headline {
     font-size: clamp(2rem, 1.4rem + 5vw, 2.75rem);

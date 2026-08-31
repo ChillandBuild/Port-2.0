@@ -1,0 +1,218 @@
+.calendar {
+  width: 100%;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule-strong);
+  border-radius: 12px;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.label {
+  color: var(--accent-meta);
+}
+
+.placeholder {
+  min-height: 16rem;
+  border-radius: 8px;
+  background: var(--surface-page);
+  border: 1px dashed var(--rule);
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.month {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-base);
+  letter-spacing: -0.01em;
+  color: var(--on-page);
+}
+
+.navButton {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-base);
+  color: var(--on-page);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    border-color 140ms var(--ease-out-expo),
+    color 140ms var(--ease-out-expo);
+}
+
+.navButton:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-meta);
+}
+
+.navButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.navButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.grid {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.weekdays,
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--on-page-soft);
+}
+
+.day,
+.dayEmpty {
+  aspect-ratio: 1;
+  min-width: 0;
+}
+
+.day {
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--on-page);
+  background: var(--surface-page);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 140ms var(--ease-out-expo),
+    background 140ms var(--ease-out-expo),
+    color 140ms var(--ease-out-expo);
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.day:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.daySelected {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+/* Fully-booked days and weekends stay on the grid as quiet closed doors. */
+.dayFull {
+  color: var(--on-page-soft);
+  background: transparent;
+  border-color: var(--rule);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--on-page);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    border-color 140ms var(--ease-out-expo),
+    background 140ms var(--ease-out-expo),
+    color 140ms var(--ease-out-expo);
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.slotSelected {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+/* Booked chips keep their footprint and strike through — visible scarcity. */
+.slot:disabled {
+  color: var(--on-page-soft);
+  background: transparent;
+  border-color: var(--rule);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.booked {
+  font-size: 0.6rem;
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.hint {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--on-page-soft);
+}
+
+.picked {
+  font-size: var(--text-sm);
+  color: var(--on-page);
+}
+
+.picked strong {
+  color: var(--accent-meta);
+}
+
+.clear {
+  margin-left: 0.6rem;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--on-page-soft);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clear:hover {
+  color: var(--accent-meta);
+}

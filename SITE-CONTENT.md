@@ -236,8 +236,8 @@ The offer runs as two calls, then one of two ongoing tracks.
 | --- | --- |
 | Price | Free |
 | Duration | 30–45 minutes |
-| Format | Remote, online |
-| Scheduling | Indian Standard Time availability |
+| Format | Remote — Google Meet or the client's preferred video platform |
+| Scheduling | Pick a slot in the on-page calendar; confirmed by email |
 
 Agenda covered on the first call:
 
@@ -246,34 +246,35 @@ Agenda covered on the first call:
 3. The target region or regions.
 4. The industries and account types being targeted.
 5. Goals for the next 30, 60 and 90 days.
+6. Whether the business is B2B or B2C — this changes the channels, the message and the length of the cycle.
 
 ### Second call — USD 350
 
 | | |
 | --- | --- |
 | Price | USD 350 |
-| Duration | 60 minutes |
-| Format | Remote, online |
-| Scheduling | Indian Standard Time availability |
-| Covers | Infrastructure setup, tool alignment, methodology |
-| Booking | Confirmed only after the appointment is accepted and payment received |
-| Payment | **Not yet live.** Payment link and slot selection become available after payment setup approval. |
+| Type | One-time setup |
+| Format | Remote — Google Meet or the client's preferred video platform |
+| Covers | Infrastructure setup, tool estimation, methodology, process flow |
+| Booking | Confirmed by email after the form is submitted; payment for this call is arranged separately |
 
 The USD 350 is a one-time setup cost. The engagement starts after this call.
 
 ### Track A — performance-linked
 
-1. A 45-day research and build period follows the second call. ICP definition, account
+1. A 30–45–90 day research and build window follows the second call. ICP definition, account
    research, prospect sourcing, and the outreach cadence built and launched.
-2. From day 45 onward: USD 50 per lead booked as a result of his work.
-3. If a lead converts and the deal closes, he is paid a commission on that deal. The
-   commission is agreed per deal and settled on the second call — no fixed published rate.
+2. MQL: USD 50 per meeting booked as a result of his work.
+3. SQL: when a meeting turns into a closed deal, he is paid a commission on that deal. The
+   commission is agreed per deal and settled on the setup call — no fixed published rate.
 
 ### Track B — full-time
 
-The client can instead engage him full time on a monthly basis, in which case he runs the
-whole lead-generation function himself — research, sourcing, cadence, outreach and
-booking. The monthly rate is discussed on the call and is not published.
+The client can instead engage him full time on an annual CTC basis, paid as monthly
+compensation, in which case he runs the whole lead-generation function himself — research,
+sourcing, cadence, outreach and booking. His execution and experience work on the client's
+plan and tool stack to bring the client exposure and leads. The CTC is discussed on the
+call and is not published.
 
 Covers lead generation, outbound strategy, pre-sales and commercial pipeline work.
 No physical product; no shipping applies.

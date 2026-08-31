@@ -587,15 +587,15 @@ export const CONTACT = {
   eyebrow: "Reply",
   heading: "Start a conversation. I'll say hello first.",
   body:
-    "First call is free — 30 to 45 minutes to unpack your pipeline and strategy. Sessions run against IST availability.",
+    "First call is free — 30 to 45 minutes to unpack your pipeline and strategy. Booked over a video call, wherever you are.",
   terms: [
     { label: "First call", value: "Free, 30–45 min" },
-    { label: "Second call", value: "USD 350, 1 hour" },
-    { label: "Format", value: "Remote, IST hours" },
+    { label: "Second call", value: "USD 350, one-time setup" },
+    { label: "Format", value: "Remote — video call" },
     { label: "Booking", value: "After approval" },
   ],
   note:
-    "A payment link and IST slot selector appear here once payment setup is approved. Until then, reach me on LinkedIn or by phone.",
+    "Payment setup is still in progress — pick a slot and book the free call on the schedule page, or reach me on LinkedIn or by phone.",
   primaryCta: { label: "Connect on LinkedIn", href: IDENTITY.linkedin },
   secondaryCta: { label: "Call +91 99949 69699", href: IDENTITY.phoneHref },
 } as const;
@@ -614,21 +614,22 @@ export const SCHEDULE = {
   eyebrow: "Strategy calendar",
   headline: ["You bring the idea. I'll bring the ", "plan", "."],
   chip: "First call is free",
+  cta: { label: "Pick a free slot", href: "#book" },
   sub: {
     lead: "30 to 45 minutes, no charge",
     rest: " — enough to see whether your pipeline is worth building and whether I'm the one to build it.",
   },
   summary: [
-    { title: "First call — free", detail: "30–45 min · Discovery & pipeline fit", free: true },
-    { title: "Second call — USD 350", detail: "1 hour · Setup, tools, methodology" },
-    { title: "Remote (IST)", detail: "Video call, Indian Standard Time" },
+    { title: "First call — free", detail: "30–45 min · Discovery, pipeline fit & strategy", free: true },
+    { title: "Second call — USD 350", detail: "One-time setup · Infrastructure, tool estimation, methodology, process flow" },
+    { title: "Remote", detail: "Video call — Google Meet or your preferred platform" },
   ],
 
   agenda: {
     eyebrow: "Call one",
     heading: "What the free call covers.",
     body:
-      "Five questions, asked in this order. By the end of them I can tell you whether outbound is the right spend for you — including when the answer is no.",
+      "Six questions, asked in this order. By the end of them I can tell you whether outbound is the right spend for you — including when the answer is no.",
     items: [
       {
         no: "01",
@@ -638,7 +639,7 @@ export const SCHEDULE = {
       {
         no: "02",
         name: "The company",
-        description: "Size, sales motion, who closes today, and what has already been tried on the outbound side.",
+        description: "Size, sales, sales motion, who closes today, and what has already been tried on the outbound side.",
       },
       {
         no: "03",
@@ -655,6 +656,11 @@ export const SCHEDULE = {
         name: "30 / 60 / 90 day goals",
         description: "What has to be true in three months. This is what the whole engagement gets measured against.",
       },
+      {
+        no: "06",
+        name: "B2B or B2C",
+        description: "Who you sell to changes the channels, the message and the length of the cycle. B2B and B2C outbound are built differently.",
+      },
     ],
   },
 
@@ -668,25 +674,29 @@ export const SCHEDULE = {
         no: "01",
         name: "Free discovery call",
         price: "No charge",
-        description: "30–45 minutes on your pipeline, your region and your 30/60/90 goals. You leave with a read on it either way.",
+        description:
+          "A free 30–45 minute call where we talk through your product, your ideal customers and your next 90 days of goals. You'll walk away with a clear picture of how I can help — continuing is entirely your choice.",
       },
       {
         no: "02",
-        name: "Setup session",
+        name: "One-time setup",
         price: "USD 350 · one time",
-        description: "One hour. Infrastructure, tool alignment and methodology. The mandatory tool stack is activated at direct cost — no markup, no retainer.",
+        description:
+          "Infrastructure setup, tool estimation, methodology and process flow. The mandatory tool stack is activated at direct cost — no markup, no retainer.",
       },
       {
         no: "03",
         name: "Research & build",
-        price: "45 days · included",
-        description: "ICP definition, account research, prospect sourcing, and a multi-channel cadence built and launched. Nothing further is billed in this window.",
+        price: "30–45–90 days · included",
+        description:
+          "ICP definition, account research, prospect sourcing, and a multi-channel cadence built and launched. Nothing further is billed in this window.",
       },
       {
         no: "04",
         name: "Leads flow",
-        price: "USD 50 per booked lead",
-        description: "From day 45, you pay per lead booked off my work — plus a commission if that lead converts. Payment is linked to conversion, not activity.",
+        price: "USD 50 per booked meeting",
+        description:
+          "You pay USD 50 for each meeting booked off my work (MQL), plus a commission when that meeting turns into a closed deal (SQL). Payment is linked to outcomes, not activity.",
       },
     ],
   },
@@ -699,26 +709,27 @@ export const SCHEDULE = {
       {
         kind: "Track A",
         name: "Performance-linked",
-        rate: "USD 50 / booked lead",
+        rate: "USD 50 / booked meeting",
         featured: true,
         body: "You pay for outcomes. My upside only exists if your pipeline moves, which keeps the incentive pointed the same way as yours.",
         points: [
-          "45-day research and build window, included",
-          "USD 50 per lead booked from day 45 onward",
-          "Commission on any deal that closes — agreed per deal, set on the setup call",
+          "30–45–90 day research and build window, included",
+          "MQL — USD 50 per meeting booked",
+          "SQL — commission when the deal closes, agreed per deal on the setup call",
           "No monthly retainer",
         ],
       },
       {
         kind: "Track B",
         name: "Full-time",
-        rate: "Monthly · rate on request",
+        rate: "Annual CTC · monthly compensation",
         featured: false,
-        body: "I run the lead-generation function as part of your team rather than alongside it — the same work, owned end to end, on a monthly arrangement.",
+        body: "I run the lead-generation function as part of your team rather than alongside it — the same work, owned end to end, on an annual arrangement.",
         points: [
           "Research, sourcing, cadence, outreach and booking, all in-house",
           "Reporting and pipeline ownership as a team member",
-          "Monthly rate discussed on the call, scoped to the mandate",
+          "Your plan, your tools — my execution and experience, working to bring you exposure and leads",
+          "Compensation structured as an annual CTC, paid monthly — scoped to the mandate on the call",
           "No per-lead or commission billing",
         ],
       },
@@ -729,7 +740,7 @@ export const SCHEDULE = {
     eyebrow: "Book the free call",
     heading: "Four fields. Then we talk.",
     body:
-      "Enough to check you're real and get back to you with IST slots. Everything else is what the call itself is for — no questionnaire.",
+      "Pick a slot, leave enough to check you're real, and I'll get back to you with a confirmation. Everything else is what the call itself is for — no questionnaire.",
     nameLabel: "Your name",
     namePlaceholder: "Sampath Kumar",
     nameInvalid: "Please add your name.",
@@ -744,10 +755,10 @@ export const SCHEDULE = {
     submit: "Request the free call",
     sending: "Sending…",
     success:
-      "Got it. You'll hear back from me with IST slots for the free call. Payment setup isn't live yet, so scheduling and payment instructions for the second call come by email once the first one is done.",
+      "Got it. You'll hear back from me confirming the slot you picked. Payment setup isn't live yet, so payment instructions for the second call come by email once the first one is done.",
     error: "That didn't send. Try again, or reach me on LinkedIn below.",
     note:
-      "Payment setup isn't approved yet, so there's no live calendar or payment link on this page. The free call is arranged by email.",
+      "Pick a slot above and send the form — you'll get a confirmation by email. Payment for the second call is arranged separately.",
   },
 
   fallback: {
@@ -1099,8 +1110,8 @@ export const HIRE = {
       body: WORK_PLAN.body,
       rateLabel: "Strategy call",
       rateValue: "Free · 30–45 min",
-      sessionLabel: "Setup session",
-      sessionValue: "USD 350 · 1 hour",
+      sessionLabel: "One-time setup",
+      sessionValue: "USD 350 · one time",
     },
   },
   stackIntro: {

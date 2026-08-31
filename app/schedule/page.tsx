@@ -13,7 +13,7 @@ import { ScheduleTracks } from "@/components/schedule/ScheduleTracks";
 export const metadata: Metadata = {
   title: "Schedule a Call — Sampath Kumar",
   description:
-    "Book a free 30–45 minute strategy call with Sampath Kumar. Then a USD 350 one-hour setup session, a 45-day research window, and USD 50 per booked lead. IST (Indian Standard Time) availability.",
+    "Book a free 30–45 minute strategy call with Sampath Kumar. Then a USD 350 one-time setup, a 30–45–90 day research window, USD 50 per booked meeting, and commission on closed deals. Remote — video call.",
 };
 
 /**

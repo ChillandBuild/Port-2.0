@@ -17,6 +17,7 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (b.companyDomain !== undefined && typeof b.companyDomain !== "string") return false;
   if (b.lane !== undefined && !LANES.includes(b.lane as Lane)) return false;
   if (b.phone !== undefined && typeof b.phone !== "string") return false;
+  if (b.slot !== undefined && typeof b.slot !== "string") return false;
   return true;
 }
 

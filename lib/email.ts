@@ -13,6 +13,7 @@ function formatLines(payload: SubmissionPayload): string {
   if (payload.companyDomain) lines.push(`Company domain: ${payload.companyDomain}`);
   if (payload.lane) lines.push(`Lane: ${payload.lane === "hiring" ? "Hiring for a role" : "Buying outbound"}`);
   if (payload.phone) lines.push(`Phone: ${payload.phone}`);
+  if (payload.slot) lines.push(`Requested slot: ${payload.slot}`);
   return lines.join("\n");
 }
 
