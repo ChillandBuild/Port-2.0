@@ -68,11 +68,3 @@
 .primary:active {
   filter: brightness(0.92);
 }
-
-.sign {
-  margin-top: clamp(2.5rem, 6vh, 4rem);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: var(--text-xl);
-  color: var(--on-close-soft);
-}

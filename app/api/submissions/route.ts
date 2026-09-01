@@ -15,9 +15,12 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (typeof b.email !== "string" || !EMAIL_RE.test(b.email.trim())) return false;
   if (b.name !== undefined && typeof b.name !== "string") return false;
   if (b.companyDomain !== undefined && typeof b.companyDomain !== "string") return false;
+  if (b.companyName !== undefined && typeof b.companyName !== "string") return false;
   if (b.lane !== undefined && !LANES.includes(b.lane as Lane)) return false;
   if (b.phone !== undefined && typeof b.phone !== "string") return false;
   if (b.slot !== undefined && typeof b.slot !== "string") return false;
+  // Phone is the one field the schedule form treats as mandatory, not optional.
+  if (b.source === "schedule-call" && !(typeof b.phone === "string" && b.phone.trim())) return false;
   return true;
 }
 
@@ -48,6 +51,7 @@ export async function POST(request: Request): Promise<Response> {
       email: payload.email.trim(),
       name: payload.name?.trim() || null,
       company_domain: payload.companyDomain?.trim() || null,
+      company_name: payload.companyName?.trim() || null,
       lane: payload.lane ?? null,
       phone: payload.phone?.trim() || null,
     });

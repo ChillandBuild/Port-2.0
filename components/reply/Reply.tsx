@@ -28,8 +28,6 @@ export function Reply() {
             Connect on LinkedIn
           </a>
         </div>
-
-        <p className={styles.sign}>{IDENTITY.tagline}</p>
       </div>
     </section>
   );

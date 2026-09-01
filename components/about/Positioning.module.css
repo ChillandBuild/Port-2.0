@@ -87,8 +87,15 @@
 }
 
 .factValue {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
   color: var(--on-panel);
   font-size: var(--text-base);
+}
+
+.factSchool {
+  color: var(--on-panel-soft);
 }
 
 @media (max-width: 900px) {

@@ -16,14 +16,13 @@ import { ScheduleCalendar } from "./ScheduleCalendar";
 import styles from "./ScheduleForm.module.css";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const DOMAIN_RE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 export function ScheduleForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [domain, setDomain] = useState("");
+  const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
   const [slot, setSlot] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -34,7 +33,7 @@ export function ScheduleForm() {
     event.preventDefault();
     if (name.trim().length < 1) return setFieldError(SCHEDULE.form.nameInvalid);
     if (!EMAIL_RE.test(email.trim())) return setFieldError(SCHEDULE.form.emailInvalid);
-    if (!DOMAIN_RE.test(domain.trim())) return setFieldError(SCHEDULE.form.domainInvalid);
+    if (phone.replace(/\D/g, "").length < 7) return setFieldError(SCHEDULE.form.phoneInvalid);
     setFieldError(null);
     setStatus("submitting");
 
@@ -46,11 +45,11 @@ export function ScheduleForm() {
           source: "schedule-call",
           name: name.trim(),
           email: email.trim(),
-          companyDomain: domain.trim(),
+          phone: phone.trim(),
           // Omitted rather than sent empty: the column is nullable and the
           // route trims to null anyway, but an absent key keeps the payload
           // honest about what was actually filled in.
-          ...(phone.trim() ? { phone: phone.trim() } : {}),
+          ...(company.trim() ? { companyName: company.trim() } : {}),
           // The calendar slot has no dedicated column, so it rides along to
           // the email notification only — the Supabase insert is untouched.
           ...(slot ? { slot } : {}),
@@ -111,17 +110,16 @@ export function ScheduleForm() {
               />
             </label>
             <label className={styles.field}>
-              <span className={`mono ${styles.label}`}>{SCHEDULE.form.domainLabel}</span>
+              <span className={`mono ${styles.label}`}>{SCHEDULE.form.companyLabel}</span>
               <input
                 className={styles.input}
                 type="text"
-                name="domain"
-                id={`${formId}-domain`}
-                autoComplete="url"
-                value={domain}
-                onChange={(event) => setDomain(event.target.value)}
-                placeholder={SCHEDULE.form.domainPlaceholder}
-                aria-invalid={fieldError === SCHEDULE.form.domainInvalid}
+                name="company"
+                id={`${formId}-company`}
+                autoComplete="organization"
+                value={company}
+                onChange={(event) => setCompany(event.target.value)}
+                placeholder={SCHEDULE.form.companyPlaceholder}
               />
             </label>
             <label className={styles.field}>
@@ -136,6 +134,7 @@ export function ScheduleForm() {
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder={SCHEDULE.form.phonePlaceholder}
+                aria-invalid={fieldError === SCHEDULE.form.phoneInvalid}
               />
             </label>
           </div>

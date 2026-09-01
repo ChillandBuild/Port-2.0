@@ -13,6 +13,7 @@ export interface SubmissionPayload {
   email: string;
   name?: string;
   companyDomain?: string;
+  companyName?: string;
   lane?: Lane;
   phone?: string;
   /** Schedule page only — the slot picked in the calendar, e.g. "Tue, Sep 2 · 11:00". */

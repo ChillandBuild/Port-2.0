@@ -11,6 +11,7 @@ function formatLines(payload: SubmissionPayload): string {
   const lines = [`Source: ${SOURCE_LABEL[payload.source]}`, `Email: ${payload.email}`];
   if (payload.name) lines.push(`Name: ${payload.name}`);
   if (payload.companyDomain) lines.push(`Company domain: ${payload.companyDomain}`);
+  if (payload.companyName) lines.push(`Company: ${payload.companyName}`);
   if (payload.lane) lines.push(`Lane: ${payload.lane === "hiring" ? "Hiring for a role" : "Buying outbound"}`);
   if (payload.phone) lines.push(`Phone: ${payload.phone}`);
   if (payload.slot) lines.push(`Requested slot: ${payload.slot}`);

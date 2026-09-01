@@ -26,7 +26,10 @@ export function Positioning() {
             {ABOUT.facts.map((fact) => (
               <div className={styles.fact} key={fact.label}>
                 <dt className="mono">{fact.label}</dt>
-                <dd className={styles.factValue}>{fact.value}</dd>
+                <dd className={styles.factValue}>
+                  <span className={styles.factDegree}>{fact.degree}</span>
+                  <span className={styles.factSchool}>{fact.school}</span>
+                </dd>
               </div>
             ))}
           </dl>

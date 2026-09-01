@@ -142,9 +142,21 @@ export const ABOUT = {
     answered: "An engineer's head, a pre-salesperson's calendar.",
   },
   facts: [
-    { label: "Diploma", value: "Diploma in Mechanical Engineering, Sree Narayana Guru Polytechnic College · 2016" },
-    { label: "Engineering", value: "Bachelor of Engineering in Mechanical Engineering, Sri Krishna College of Technology · 2020" },
-    { label: "Business", value: "Master of Business Administration with a specialization in Marketing, Amrita Vishwa Vidyapeetham · 2026" },
+    {
+      label: "Diploma",
+      degree: "Diploma in Mechanical Engineering",
+      school: "Sree Narayana Guru Polytechnic College · 2016",
+    },
+    {
+      label: "Engineering",
+      degree: "Bachelor of Engineering in Mechanical Engineering",
+      school: "Sri Krishna College of Technology · 2020",
+    },
+    {
+      label: "Business",
+      degree: "Master of Business Administration with a specialization in Marketing",
+      school: "Amrita Vishwa Vidyapeetham · 2026",
+    },
   ],
 } as const;
 
@@ -744,14 +756,14 @@ export const SCHEDULE = {
     nameLabel: "Your name",
     namePlaceholder: "Sampath Kumar",
     nameInvalid: "Please add your name.",
-    emailLabel: "Work email",
+    emailLabel: "Email",
     emailPlaceholder: "you@company.com",
     emailInvalid: "That email doesn't look right.",
-    domainLabel: "Company domain",
-    domainPlaceholder: "company.com",
-    domainInvalid: "Please use a domain, like company.com.",
-    phoneLabel: "Phone (optional)",
+    companyLabel: "Company name (optional)",
+    companyPlaceholder: "Acme Inc.",
+    phoneLabel: "Phone",
     phonePlaceholder: "+91 99949 69699",
+    phoneInvalid: "Enter a valid phone number.",
     submit: "Request the free call",
     sending: "Sending…",
     success:
