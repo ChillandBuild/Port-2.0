@@ -42,3 +42,7 @@ next-env.d.ts
 
 # local debug scratch (screenshots, one-off scripts)
 /lab/
+
+# third-party tool state
+/.freebuff/
+/.zcode/

@@ -1,5 +1,5 @@
-import { getSupabaseAdmin } from "@/lib/supabase/admin";
-import { sendSubmissionNotification } from "@/lib/email";
+import { getSupabaseAdmin } from "@/lib/backend/supabase/admin";
+import { sendSubmissionNotification } from "@/lib/backend/email";
 import type { SubmissionPayload, SubmissionSource, Lane } from "@/lib/submissions";
 
 export const runtime = "nodejs";

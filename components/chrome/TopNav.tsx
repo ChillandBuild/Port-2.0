@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 import { Brandmark } from "@/components/brand/Brandmark";
 import { ThemeToggle } from "./ThemeToggle";
 import { IDENTITY } from "@/lib/content";
-import { scrollToId, subscribeScroll } from "@/lib/scroll-store";
+import { scrollToId, subscribeScroll } from "@/lib/frontend/scroll-store";
 import styles from "./TopNav.module.css";
 
 // Homepage-qualified, so the bar works unchanged from an inner route like

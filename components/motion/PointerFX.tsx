@@ -10,7 +10,7 @@
  */
 
 import { useEffect } from "react";
-import { registerPointerTargets, supportsPointerFX, type PointerTarget } from "@/lib/pointer";
+import { registerPointerTargets, supportsPointerFX, type PointerTarget } from "@/lib/frontend/pointer";
 
 export function PointerFX() {
   useEffect(() => {

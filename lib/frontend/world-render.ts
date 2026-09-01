@@ -13,7 +13,7 @@ import {
   type Cluster,
   type Contact,
   type FieldPoint,
-} from "@/lib/world";
+} from "@/lib/frontend/world";
 
 export interface Palette {
   groundNear: string;

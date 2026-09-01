@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { prefersReducedMotion } from "@/lib/scroll-store";
+import { prefersReducedMotion } from "@/lib/frontend/scroll-store";
 import styles from "./BackToTop.module.css";
 
 /** The scroll past which the arrow earns its place on screen. */

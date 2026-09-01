@@ -15,11 +15,9 @@
   repeatable CI check. Consider promoting a `lab/a11y.mjs`-style script into a real
   regression test if this project grows. The six new routes have not been through the
   320/375/768/1024/1440/1920 overflow + axe sweep that the homepage has.
-- `lab/` has accumulated many one-off debug scripts and screenshots (dbg-*, final*, v2-*,
-  reduced*, etc.) with no cleanup pass — see [[subsystem-notes]]. Not urgent, but will
-  keep growing unless pruned periodically.
-- `true/` at repo root is an empty **directory** (not a file, as an earlier note said) —
-  almost certainly a stray from a shell redirect. Safe to delete; confirm first.
+- `lab/` (gitignored, throwaway Playwright QA scratch) was wiped 2026-09-01 — had grown
+  to 414MB/895 screenshots across ~50 dated iteration folders with no cleanup pass. Will
+  accumulate again since it's the standing QA pattern — prune periodically, no fixed cadence.
 - The `ScrollFX` data-attribute contract is untyped and unverified — a renamed attribute
   fails silently. See [[subsystem-notes]].
 - `app/layout.tsx` `metadataBase` is still the placeholder `https://sampathkumar.example`.

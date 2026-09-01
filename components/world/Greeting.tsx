@@ -15,7 +15,7 @@
 
 import { useEffect, useState } from "react";
 import { GREETING_MS, GREETINGS } from "@/lib/content";
-import { prefersReducedMotion } from "@/lib/scroll-store";
+import { prefersReducedMotion } from "@/lib/frontend/scroll-store";
 import styles from "./WorldStage.module.css";
 
 export function Greeting() {

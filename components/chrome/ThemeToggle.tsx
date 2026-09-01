@@ -9,7 +9,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { currentTheme, setTheme, subscribeTheme, watchSystemTheme, type Theme } from "@/lib/theme";
+import { currentTheme, setTheme, subscribeTheme, watchSystemTheme, type Theme } from "@/lib/frontend/theme";
 import styles from "./ThemeToggle.module.css";
 
 export function ThemeToggle() {
@@ -18,6 +18,9 @@ export function ThemeToggle() {
   const [theme, setLocal] = useState<Theme>("light");
 
   useEffect(() => {
+    // Deliberate post-mount correction from the server-rendered default to the real
+    // theme, see comment above.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocal(currentTheme());
     const unsubscribe = subscribeTheme(setLocal);
     const unwatch = watchSystemTheme();

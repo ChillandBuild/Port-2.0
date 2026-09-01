@@ -9,10 +9,16 @@
 - Testing/QA: no unit test framework configured. Visual/E2E verification runs through
   ad-hoc `lab/*.mjs` scripts using `playwright-core` (screenshot-driven, not an assertion suite)
 - Hosting: Vercel (`.vercel/project.json` present, linked project)
-- Backend: one route only — `app/api/submissions/route.ts` (POST). Backs the `/hire`
-  capture form and records case-studies-gate emails. Writes to a Supabase `submissions`
-  table (`@supabase/supabase-js`, service-role key); sends a best-effort Resend
-  notification. Both steps no-op cleanly when their env vars are unset. No auth.
+- Backend: two routes, both under `app/api/` (Next.js App Router requires this — routes
+  cannot live in a separate top-level folder without breaking file-based routing).
+  - `app/api/submissions/route.ts` (POST) — backs the `/hire` capture form, the
+    `/schedule` form, and the case-studies-gate email. Writes to a Supabase `submissions`
+    table (`@supabase/supabase-js`, service-role key); sends a best-effort Resend
+    notification. Both steps no-op cleanly when their env vars are unset. No auth.
+  - `app/api/chat/route.ts` (POST) — the chat widget's backend. No LLM, no DB: a
+    keyword-matched rule engine (`replyFor()`) answering only from `lib/content.ts`
+    (`ESTIMATOR` data included). Explicitly a placeholder — its own comment says to
+    "swap this fetch handler for Vercel AI SDK + OpenAI later; the widget stays identical."
 - Everything else is static / server-rendered. Env keys: `SUPABASE_URL`,
   `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, `HIRE_NOTIFY_TO`
   (see `docs/wiki/getting-started.md`).
@@ -30,6 +36,8 @@
 - axe-core WCAG 2.1 A+AA must stay at 0 violations.
 - `SITE-CONTENT.md` is facts-only and must never be treated as a design/UI instruction
   source — section structure, headlines, and layout are separate decisions.
+- The homepage (`app/page.tsx`) must keep all existing sections (Companies, Education,
+  Tools, etc.) — client requirement. Do not move sections to sub-pages as a "cleanup."
 
 ## File Map
 - `app/` — layout (fonts, metadata), the homepage, and routes `/hire`, `/case-studies`,
@@ -40,13 +48,21 @@
   hand-authored web manifest, colours from `tokens.css`. `public/icon-{192,512}.png` +
   `public/icon-maskable-512.png` are the manifest's PWA icons. All are generated from
   the Bricolage outline — see [[subsystem-notes]] to regenerate. [[decisions-log]]
-- `lib/supabase/`, `lib/email.ts`, `lib/submissions.ts` — submissions endpoint support
+- `lib/` splits by layer, imports verified by grep before the split (2026-09-01):
+  - `lib/backend/` — server-only, imported only from `app/api/*`: `supabase/admin.ts`,
+    `email.ts` (Resend notification)
+  - `lib/frontend/` — client-only: `world.ts`, `world-instance.ts`, `world-render.ts`
+    (the canvas/rAF world engine, paired with `components/world/WorldStage.tsx`),
+    `pointer.ts` (one shared pointer rAF loop), `scroll-store.ts` (one shared scroll rAF
+    loop), `theme.ts` (light/dark state)
+  - `lib/content.ts`, `lib/submissions.ts` stay at `lib/` root — genuinely shared: both
+    are imported by frontend components AND by an `app/api/*` route handler (content.ts
+    by `app/api/chat/route.ts`'s `ESTIMATOR` data; submissions.ts's `SubmissionPayload`
+    type by both `ScheduleForm`/`LaneContext` and `app/api/submissions/route.ts`) —
+    moving either into `frontend/` or `backend/` would misdescribe it.
 - `components/<area>/` — one folder per page area (hero, world, range, posts, ledger,
   linkedin, history, education, estimator, contact, chrome, brand, about, etc.), each with
   a colocated `.module.css`
-- `lib/content.ts` — every string the page renders, typed
-- `lib/world*.ts` + `components/world/WorldStage.tsx` — the custom canvas/rAF "world" scene
-  engine, separate from GSAP-driven sections
 - `styles/` — tokens, shared type primitives, global reset
 - `lab/` — throwaway Playwright-driven screenshot/debug scripts used for visual QA during
   development (not a maintained test suite — expect drift/dead scripts here)

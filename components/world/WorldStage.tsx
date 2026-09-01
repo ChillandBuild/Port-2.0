@@ -16,8 +16,8 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import heroImage from "@/public/assets/hero-image.png";
 import { HERO, PIPELINE } from "@/lib/content";
-import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/world";
-import { CLUSTERS, COHORT, FIELD } from "@/lib/world-instance";
+import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/frontend/world";
+import { CLUSTERS, COHORT, FIELD } from "@/lib/frontend/world-instance";
 import { Greeting } from "./Greeting";
 import {
   drawWorld,
@@ -25,9 +25,9 @@ import {
   LANDING_FROM,
   readPalette,
   type Palette,
-} from "@/lib/world-render";
-import { prefersReducedMotion, registerWorld, scrollToId, subscribeScroll } from "@/lib/scroll-store";
-import { subscribeTheme } from "@/lib/theme";
+} from "@/lib/frontend/world-render";
+import { prefersReducedMotion, registerWorld, scrollToId, subscribeScroll } from "@/lib/frontend/scroll-store";
+import { subscribeTheme } from "@/lib/frontend/theme";
 import styles from "./WorldStage.module.css";
 
 /** Length of the travel, in viewport-heights. The peak owns most of it. */

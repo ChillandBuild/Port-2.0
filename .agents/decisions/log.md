@@ -65,3 +65,28 @@ in the Supabase dashboard, not via a migrations directory here.
   as a status light). Wired via Next file conventions — `app/favicon.ico`,
   `app/icon.svg`, `app/apple-icon.png` — plus a hand-authored `app/manifest.ts`; the
   PWA/maskable PNGs live in `public/`. [[stack-and-rules]] [[subsystem-notes]]
+- 2026-08-29 (commits `5b4f5a7`, `98bfb8f`) | Made the estimator's math explainer
+  collapsible | Reduces default vertical weight of `components/estimator/Estimator.tsx`
+  without dropping the explainer content.
+- 2026-08-31 (commit `fd0803e`, reverted `f44dd86`, re-landed `01fad9f`) | Schedule page
+  layout changes | A `PipelineCards` addition landed on the schedule page by accident and
+  was reverted same-day; the intended schedule-page changes were re-applied separately.
+- 2026-09-01 (commit `1d4fd31`) | Schedule form: company domain field swapped for optional
+  company name, phone made mandatory (client + server), "Work email" simplified to
+  "Email" | Reduces friction reported on the schedule form. Also: results counters and
+  the impressions chart (`components/ledger/`, driven via ScrollFX's `[data-count]`
+  contract, see [[subsystem-notes]]) now replay every scroll pass at a slower pace
+  instead of firing once on page load; About section degree/institution now render on
+  separate lines instead of wrapping as one sentence.
+- 2026-09-01 (commit `53df3e1`) | Estimator explainer collapse reworked further |
+  Follow-up pass on the 08-29 collapsible change (`components/estimator/Estimator.tsx`,
+  `.module.css`).
+- 2026-09-01 | Split `lib/` into `lib/frontend/` and `lib/backend/`, content.ts/
+  submissions.ts stayed at root as shared | User asked to organize files as
+  frontend/backend. A full service split (separate deploy, like a project with its own
+  `backend/` + `frontend/` + `android/`) was considered and rejected — this site has one
+  API consumer (its own frontend) and two lightweight route handlers, not independent
+  clients or heavy compute; splitting would add deploy/CORS overhead with no upside.
+  `app/` and `app/api/` stayed put — Next.js App Router requires routes to live there.
+  Verified with `git grep` for every import before moving, then `tsc --noEmit` + `next
+  build` after. [[stack-and-rules]]

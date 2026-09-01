@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BackToTop } from "@/components/chrome/BackToTop";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { Bricolage_Grotesque, DM_Mono, Great_Vibes, Inter_Tight, Newsreader } from "next/font/google";
-import { THEME_BOOT_SCRIPT } from "@/lib/theme";
+import { THEME_BOOT_SCRIPT } from "@/lib/frontend/theme";
 import "@/styles/global.css";
 
 const bricolage = Bricolage_Grotesque({
