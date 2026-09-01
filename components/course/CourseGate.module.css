@@ -1,0 +1,154 @@
+/* The course paywall (CourseGate) and its unlock form. Rendered by
+   app/course/layout.tsx in place of course content whenever the access
+   cookie does not resolve to a live enrollment. */
+
+.gate {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: calc(var(--nav-h) + var(--space-section)) var(--space-shell) var(--space-section);
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  color: var(--accent);
+}
+
+.heading {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 1.25rem;
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+}
+
+.panel {
+  margin-top: clamp(2rem, 4vh, 3rem);
+  padding: 1.5rem 1.5rem 1.75rem;
+  max-width: 30rem;
+  background: var(--surface-panel);
+  color: var(--on-panel);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-panel-soft);
+}
+
+.input {
+  min-height: 3rem;
+  padding: 0 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-panel);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.submit {
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out-quint);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.error {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: #b3564d;
+}
+
+.rule {
+  height: 1px;
+  margin: 1.5rem 0 1.25rem;
+  background: var(--rule);
+}
+
+.enrollNote {
+  font-size: var(--text-sm);
+  color: var(--on-panel-soft);
+}
+
+.buy {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  margin-top: 0.9rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--rule-strong);
+  color: var(--on-panel);
+  transition:
+    transform 140ms var(--ease-out-quint),
+    background 140ms var(--ease-out-quint);
+}
+
+.buy:hover {
+  background: color-mix(in srgb, var(--on-panel) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+.backNote {
+  margin-top: 1.75rem;
+  font-size: var(--text-sm);
+  color: var(--on-page-soft);
+}
+
+.backLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

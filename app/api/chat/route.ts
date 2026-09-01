@@ -94,10 +94,12 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
     const raw = Number((q.match(/(\d+)\s*leads/) ?? [])[1] ?? ESTIMATOR.volume.default);
     const volume = Math.min(ESTIMATOR.volume.max, Math.max(ESTIMATOR.volume.min, raw));
     const sectorKey = q.includes("service") ? "services" : q.includes("mid-market") ? "midmarket" : "saas";
-    const { sector, meetings, toolsCost, rampLabel } = estimateOutcome(volume, sectorKey);
+    const isExisting = q.includes("existing") || q.includes("mature") || q.includes("already");
+    const setupKey = isExisting ? "existing" : "new";
+    const { sector, setup, meetings, toolsCost, rampLabel } = estimateOutcome(volume, sectorKey, setupKey);
     return {
       text:
-        `Model, not a quote — for ${volume} leads/mo in ${sector.label}:\n\n• ~${meetings} meetings/mo at steady state (${Math.round(sector.meetingRate * 100)}% rate)\n• ${rampLabel} to ramp to that rate (below it until then)\n• $${toolsCost.toLocaleString()}/mo tool spend ($${sector.baseToolCost} base + $${sector.costPerLead}/lead)\n• Research cycle: ${ESTIMATOR.researchCycle}\n\nReal number comes from a scoping call.`,
+        `Model, not a quote — for ${volume} leads/mo in ${sector.label} (${setup.label}):\n\n• ~${meetings} meetings/mo at steady state (${Math.round(sector.meetingRate * 100)}% rate)\n• Timeline: ${rampLabel}\n• Flat tool stack: $${toolsCost.toLocaleString()}/mo\n• Research cycle: ${ESTIMATOR.researchCycle}\n\nReal number comes from a scoping call.`,
       chips: ["Try 50/mo", "Try 200/mo", "Service sector"],
       ctas: [
         { label: "Open estimator → /schedule#estimator", href: "/schedule#estimator" },

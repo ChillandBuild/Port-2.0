@@ -1,19 +1,18 @@
 "use client";
 
 /**
- * Interactive estimator. Pick a market focus and a monthly lead volume; the
- * panel models steady-state booked meetings, the ramp to reach that rate, and
- * the tool spend behind it. A month-by-month projection table below shows
- * how leads, meetings, and costs evolve during the ramp and into steady state.
- * Every output is a pure function of the two inputs and the panel labels
- * itself as an estimate.
+ * Interactive estimator. Pick an infrastructure setup, a market focus, and a
+ * monthly lead volume; the panel models steady-state booked meetings, the
+ * 30–45 day research phase, the deliverability ramp (for new setups), and the
+ * flat tool spend behind them. A month-by-month projection table shows how leads,
+ * meetings, and costs evolve from research to steady state.
  */
 
 import { useId, useMemo, useState } from "react";
-import { ESTIMATOR, estimateOutcome } from "@/lib/content";
+import { ESTIMATOR, type EstimatorSetupKey, estimateOutcome } from "@/lib/content";
 import styles from "./Estimator.module.css";
 
-const { volume, sectors } = ESTIMATOR;
+const { volume, sectors, setups } = ESTIMATOR;
 
 interface EstimatorProps {
   /** Lets the schedule page re-pitch the same model against booking, rather
@@ -28,18 +27,25 @@ export function Estimator({
   heading = ESTIMATOR.heading,
   body = ESTIMATOR.body,
 }: EstimatorProps = {}) {
+  const [setupKey, setSetupKey] = useState<EstimatorSetupKey>(setups[0].key);
   const [sectorKey, setSectorKey] = useState(sectors[0].key);
   const [leads, setLeads] = useState(volume.default);
   const sliderId = useId();
 
-  const outcome = useMemo(() => estimateOutcome(leads, sectorKey), [leads, sectorKey]);
+  const outcome = useMemo(
+    () => estimateOutcome(leads, sectorKey, setupKey),
+    [leads, sectorKey, setupKey]
+  );
 
-  const results = useMemo(() => [
-    { label: "Meetings & MQL leads at steady state", value: `~${outcome.meetings} a month` },
-    { label: "Research cycle", value: ESTIMATOR.researchCycle },
-    { label: "Ramp to first MQL / steady state", value: outcome.rampLabel },
-    { label: "Estimated tools cost stack", value: `$${outcome.toolsCost.toLocaleString()} / mo` },
-  ], [outcome]);
+  const results = useMemo(
+    () => [
+      { label: "Meetings & MQL leads at steady state", value: `~${outcome.meetings} a month` },
+      { label: "Initial research cycle", value: ESTIMATOR.researchCycle },
+      { label: "Timeline to steady state", value: outcome.rampLabel },
+      { label: "Flat monthly tool stack cost", value: `$${outcome.toolsCost.toLocaleString()} / mo` },
+    ],
+    [outcome]
+  );
 
   return (
     <section
@@ -58,6 +64,25 @@ export function Estimator({
 
       <div className={styles.panel} data-reveal>
         <div className={styles.controls}>
+          <div className={styles.group}>
+            <p className={`mono ${styles.label}`} id={`${sliderId}-setup`}>
+              Domain &amp; inbox infrastructure
+            </p>
+            <div className={styles.sectors} role="group" aria-labelledby={`${sliderId}-setup`}>
+              {setups.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  className={styles.pill}
+                  aria-pressed={s.key === setupKey}
+                  onClick={() => setSetupKey(s.key)}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className={styles.group}>
             <p className={`mono ${styles.label}`} id={`${sliderId}-sector`}>
               Target market focus
@@ -139,14 +164,29 @@ export function Estimator({
                 {outcome.projection.map((row) => (
                   <tr
                     key={row.month}
-                    className={row.isRamp ? styles.rampRow : styles.steadyRow}
+                    className={
+                      row.phase === "research"
+                        ? styles.researchRow
+                        : row.phase === "ramp"
+                        ? styles.rampRow
+                        : styles.steadyRow
+                    }
                   >
                     <td className={`tabular ${styles.td}`}>
                       {row.month}
-                      {row.isRamp && <span className={`mono ${styles.rampBadge}`}>ramp</span>}
+                      {row.phase === "research" && (
+                        <span className={`mono ${styles.researchBadge}`}>research</span>
+                      )}
+                      {row.phase === "ramp" && (
+                        <span className={`mono ${styles.rampBadge}`}>ramp</span>
+                      )}
                     </td>
-                    <td className={`tabular ${styles.td}`}>{row.leads.toLocaleString()}</td>
-                    <td className={`tabular ${styles.td}`}>~{row.meetings}</td>
+                    <td className={`tabular ${styles.td}`}>
+                      {row.phase === "research" ? "—" : row.leads.toLocaleString()}
+                    </td>
+                    <td className={`tabular ${styles.td}`}>
+                      {row.phase === "research" ? "—" : `~${row.meetings}`}
+                    </td>
                     <td className={`tabular ${styles.td}`}>${row.toolCost.toLocaleString()}</td>
                     <td className={`tabular ${styles.td}`}>${row.cumulativeCost.toLocaleString()}</td>
                   </tr>
@@ -162,22 +202,21 @@ export function Estimator({
           </summary>
           <div className={styles.explainerGrid}>
             <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>The Cost Formula</h4>
+              <h4 className={`mono ${styles.explainerTitle}`}>Flat Tool Spend</h4>
               <p className={styles.explainerText}>
-                Tool cost consists of a <strong>fixed base subscription</strong> (${outcome.sector.baseToolCost}/mo for domains, inboxes, Sales Nav, and sending tools) + 
-                a <strong>variable sourcing charge</strong> (${outcome.sector.costPerLead}/lead for premium credit lookups, validation, and AI personalization via Clay).
+                Tool cost is a <strong>flat monthly subscription</strong> (${outcome.toolsCost}/mo for domains, inboxes, Sales Navigator, and sending infrastructure) with <strong>zero per-lead markups</strong>.
               </p>
             </div>
             <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>The Ramp-up Logic</h4>
+              <h4 className={`mono ${styles.explainerTitle}`}>Month 1 Research Phase</h4>
               <p className={styles.explainerText}>
-                New sending domains must warm up gradually. Senders scale slowly (e.g., starting at 10%–20% of target volume) to build IP reputation and protect deliverability health, preventing your emails from landing in spam folders.
+                Every campaign dedicates the first <strong>30–45 days</strong> to deep market research, ICP mapping, account list validation, and copy calibration before active outreach begins.
               </p>
             </div>
             <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>Conversion Rate</h4>
+              <h4 className={`mono ${styles.explainerTitle}`}>Ramp vs Steady State</h4>
               <p className={styles.explainerText}>
-                The model assumes a steady-state meeting booking rate of <strong>{Math.round(outcome.sector.meetingRate * 100)}%</strong> for the <em>{outcome.sector.label}</em> sector. Real-world conversions depend on message quality, timing, and ICP definition.
+                <strong>Existing setups</strong> launch at 100% capacity in Month 2. <strong>New setups</strong> follow a gradual deliverability warmup curve across subsequent months to protect mailbox health and inbox placement.
               </p>
             </div>
           </div>

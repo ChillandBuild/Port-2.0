@@ -378,6 +378,11 @@
   background: color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
+.researchRow {
+  background: color-mix(in srgb, var(--accent-ink) 3%, transparent);
+  opacity: 0.9;
+}
+
 .steadyRow {
   background: transparent;
 }
@@ -391,6 +396,19 @@
   text-transform: uppercase;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.researchBadge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.65rem;
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+  background: color-mix(in srgb, var(--on-page-soft) 14%, transparent);
   border-radius: 999px;
   vertical-align: middle;
 }

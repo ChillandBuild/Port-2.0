@@ -56,6 +56,34 @@ npm run build   # production build
 npm start       # serve the production build
 ```
 
+## The paid course (`/course`)
+
+The lead-generation course is sold off `/lead-generation`, delivered behind a
+server-side paywall at `/course`, and valid for 30 days from payment.
+
+- **Payments** — Razorpay Payment Page (`RAZORPAY_PAYMENT_PAGE_URL`, international
+  enabled in the Razorpay dashboard). Its `payment.captured` webhook hits
+  `/api/webhooks/razorpay`; the HMAC signature is verified against
+  `RAZORPAY_WEBHOOK_SECRET` before anything is trusted.
+- **Access** — the webhook writes an `email` + `access_code` + `expires_at`
+  (`paid_at` + 30 days) row to the Supabase `course_access` table
+  ([supabase/course_access.sql](supabase/course_access.sql) — run once in the
+  dashboard), and Resend emails the buyer their code.
+- **Gating** — `app/lead-generation/page.tsx` re-validates the httpOnly access
+  cookie against Supabase on every request, so expiry needs no scheduled job.
+  Fail-closed: if Supabase is unreachable, the gate stays shut. The page never
+  gates in a layout — App Router renders page children even when a layout
+  doesn't mount them, which would leak content into the RSC payload.
+- **Content** — the full document lives in
+  [content/lead-generation.md](content/lead-generation.md) (source of record)
+  and is transcribed into typed structured data in `lib/guide/`; the
+  documentation experience (sticky nav, search, timeline, tables, metric
+  cards) is rendered by `components/guide/`. `/course` redirects there.
+
+Required env vars for the course (in addition to the Supabase + Resend ones):
+`RAZORPAY_PAYMENT_PAGE_URL`, `RAZORPAY_WEBHOOK_SECRET`, and optionally
+`NEXT_PUBLIC_SITE_URL` (used in the access-code email).
+
 ## Verified
 
 - Zero horizontal overflow at 320 / 375 / 768 / 1024 / 1440 / 1920

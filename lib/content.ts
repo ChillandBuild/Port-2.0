@@ -537,15 +537,22 @@ export const ROLES: Role[] = [
    rows in ABOUT.facts instead — a full section was doing a fact list's job,
    and it repeated the "engineer into sales" point Positioning already makes. */
 
+export type EstimatorSetupKey = "new" | "existing";
+
+export interface EstimatorSetupOption {
+  key: EstimatorSetupKey;
+  label: string;
+  tag: string;
+  description: string;
+}
+
 export interface EstimatorSector {
   key: string;
   label: string;
   /** Share of monthly lead volume that becomes a booked meeting / MQL. */
   meetingRate: number;
-  /** Fixed monthly tool spend before per-lead enrichment cost. */
+  /** Flat monthly tool spend (domains, inboxes, Sales Nav, sending tools). */
   baseToolCost: number;
-  /** Added tool cost per lead in the monthly volume. */
-  costPerLead: number;
 }
 
 export interface EstimatorTier {
@@ -557,19 +564,18 @@ export interface EstimatorTier {
 }
 
 /**
- * A model, not a claim. The rates below are the same ones the earlier site
- * shipped; they describe the method on this page, not a guaranteed outcome, and
- * the component labels itself as an estimate wherever it renders.
+ * A model, not a claim. The rates below describe the outbound method on this page,
+ * not a guaranteed outcome, and the component labels itself as an estimate wherever it renders.
  */
 export const ESTIMATOR = {
   eyebrow: "Interactive estimator",
   heading: "Estimate pipeline outcomes for your target market.",
   body:
-    "Set a market focus and a target monthly lead volume to model projected meeting conversions, the research cycle, and the tool spend behind them.",
+    "Set an infrastructure setup, a market focus, and a target monthly lead volume to model projected meeting conversions, the research cycle, and the flat tool spend behind them.",
   volume: { min: 30, max: 400, step: 10, default: 120, unit: "leads / mo" },
-  researchCycle: "30 days, held constant",
+  researchCycle: "30–45 days (required for all campaigns)",
   note:
-    "A model, not a quote. The monthly figure is a steady-state rate — the ramp row is how long it takes to reach it, and months inside that window run below it. The conversion rates track the method on this page; a real number comes out of a scoping call.",
+    "A model, not a quote. Month 1 is dedicated to market research, ICP mapping, list validation, and copy calibration for all setups. Existing setups scale immediately in Month 2; new domains ramp gradually to protect deliverability health. The conversion rates track the method on this page; a real number comes out of a scoping call.",
   toolsLink: { label: "See the stack behind the cost", href: "/#range" },
   /** Surfaced right under the modelled numbers, where interest in a real
    *  answer peaks — the same free first call CONTACT and SCHEDULE describe,
@@ -578,9 +584,23 @@ export const ESTIMATOR = {
     text: "First call is free — 30 to 45 minutes to go through your numbers.",
     cta: { label: "Book the call", href: "#book" },
   },
+  setups: [
+    {
+      key: "new" as EstimatorSetupKey,
+      label: "New setup",
+      tag: "Needs domain & mail warmup",
+      description: "Fresh domain & inboxes require a gradual deliverability warmup curve after the 30–45d research phase.",
+    },
+    {
+      key: "existing" as EstimatorSetupKey,
+      label: "Existing setup",
+      tag: "Domain & inboxes ready",
+      description: "Mature inboxes are already warmed; launches at 100% steady-state capacity right after the 30–45d research phase.",
+    },
+  ] as EstimatorSetupOption[],
   sectors: [
-    { key: "saas", label: "B2B product based", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },
-    { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350, costPerLead: 4 },
+    { key: "saas", label: "B2B product based", meetingRate: 0.15, baseToolCost: 450 },
+    { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350 },
   ] as EstimatorSector[],
   mqlTiers: [
     { upTo: 30, label: "45–90 days", rampMonths: 3 },
@@ -594,8 +614,7 @@ export const ESTIMATOR = {
 
 /**
  * Back-loaded ramp curves keyed by ramp length in months.
- * Each array sums to the fraction of target volume reached that month.
- * Month 1 is always the lowest — domain warming, list building, sequence setup.
+ * Each array sums to the fraction of target volume reached that month after the research phase.
  */
 const RAMP_CURVES: Record<number, number[]> = {
   3: [0.30, 0.65, 1.00],
@@ -604,10 +623,14 @@ const RAMP_CURVES: Record<number, number[]> = {
   6: [0.10, 0.25, 0.45, 0.65, 0.85, 1.00],
 };
 
+export type MonthPhase = "research" | "ramp" | "steady";
+
 /** One row in the month-by-month projection table. */
 export interface ProjectionMonth {
   month: number;
-  /** Whether this month is still ramping or at steady state. */
+  /** Phase of the month: 'research' (Month 1 for all), 'ramp' (warmup for new), or 'steady'. */
+  phase: MonthPhase;
+  /** Whether this month is in ramp/warmup (for backward compatibility). */
   isRamp: boolean;
   leads: number;
   meetings: number;
@@ -617,48 +640,101 @@ export interface ProjectionMonth {
 
 export interface EstimateResult {
   sector: EstimatorSector;
+  setup: EstimatorSetupOption;
   /** Booked meetings / MQL leads per month, at steady state (min 1). */
   meetings: number;
-  /** Modelled monthly tool spend at steady state. */
+  /** Modelled flat monthly tool spend. */
   toolsCost: number;
   /** How long before output reaches the steady-state rate above. */
   rampLabel: string;
-  /** Month-by-month projection: ramp months + 2 steady-state months. */
+  /** Month-by-month projection: Month 1 research + ramp (if new) or steady-state months. */
   projection: ProjectionMonth[];
 }
 
 /**
  * The one estimator model. Both the interactive panel and the chat route call
  * this — do not re-implement the arithmetic anywhere else. Output is a pure
- * function of monthly lead volume and sector key; an unknown key falls back to
- * the first sector.
+ * function of monthly lead volume, sector key, and setup key.
  */
-export function estimateOutcome(leads: number, sectorKey: string): EstimateResult {
+export function estimateOutcome(
+  leads: number,
+  sectorKey: string,
+  setupKey: EstimatorSetupKey = "new"
+): EstimateResult {
   const sector = ESTIMATOR.sectors.find((s) => s.key === sectorKey) ?? ESTIMATOR.sectors[0];
+  const setup = ESTIMATOR.setups.find((s) => s.key === setupKey) ?? ESTIMATOR.setups[0];
   const tiers = ESTIMATOR.mqlTiers;
   const tier = tiers.find((t) => leads <= t.upTo) ?? tiers[tiers.length - 1];
 
   const steadyMeetings = Math.max(1, Math.round(leads * sector.meetingRate));
-  const steadyToolsCost = sector.baseToolCost + leads * sector.costPerLead;
+  const steadyToolsCost = sector.baseToolCost;
 
-  // Build month-by-month projection
-  const rampMonths = tier.rampMonths;
-  const curve = RAMP_CURVES[rampMonths] ?? RAMP_CURVES[4];
-  const totalMonths = rampMonths + 2; // ramp + 2 steady-state months
   const projection: ProjectionMonth[] = [];
   let cumulativeCost = 0;
 
-  for (let i = 0; i < totalMonths; i++) {
-    const isRamp = i < rampMonths;
-    const fraction = isRamp ? curve[i] : 1.0;
+  if (setupKey === "existing") {
+    // Existing setup: Month 1 is 30-45d Research, Month 2..6 are immediate steady state (100%)
+    const totalMonths = 6;
+    for (let i = 0; i < totalMonths; i++) {
+      const monthNumber = i + 1;
+      const isResearch = monthNumber === 1;
+      const phase: MonthPhase = isResearch ? "research" : "steady";
+      const monthLeads = isResearch ? 0 : leads;
+      const monthMeetings = isResearch ? 0 : steadyMeetings;
+      const monthToolCost = steadyToolsCost;
+      cumulativeCost += monthToolCost;
+
+      projection.push({
+        month: monthNumber,
+        phase,
+        isRamp: false,
+        leads: monthLeads,
+        meetings: monthMeetings,
+        toolCost: monthToolCost,
+        cumulativeCost,
+      });
+    }
+
+    return {
+      sector,
+      setup,
+      meetings: steadyMeetings,
+      toolsCost: steadyToolsCost,
+      rampLabel: "30–45 days (Research only)",
+      projection,
+    };
+  }
+
+  // New setup: Month 1 is 30-45d Research, Month 2..N is deliverability ramp curve, followed by steady-state months
+  const rampMonths = tier.rampMonths;
+  const curve = RAMP_CURVES[rampMonths] ?? RAMP_CURVES[4];
+
+  // Month 1: Research (0 outreach leads, 0 meetings)
+  cumulativeCost += steadyToolsCost;
+  projection.push({
+    month: 1,
+    phase: "research",
+    isRamp: false,
+    leads: 0,
+    meetings: 0,
+    toolCost: steadyToolsCost,
+    cumulativeCost,
+  });
+
+  // Months 2 to totalMonths: Ramp and steady state
+  for (let i = 0; i < rampMonths + 1; i++) {
+    const monthNumber = i + 2;
+    const fraction = i < rampMonths ? curve[i] : 1.0;
+    const phase: MonthPhase = fraction < 1.0 ? "ramp" : "steady";
     const monthLeads = Math.round(leads * fraction);
     const monthMeetings = Math.max(1, Math.round(monthLeads * sector.meetingRate));
-    const monthToolCost = sector.baseToolCost + monthLeads * sector.costPerLead;
+    const monthToolCost = steadyToolsCost;
     cumulativeCost += monthToolCost;
 
     projection.push({
-      month: i + 1,
-      isRamp,
+      month: monthNumber,
+      phase,
+      isRamp: phase === "ramp",
       leads: monthLeads,
       meetings: monthMeetings,
       toolCost: monthToolCost,
@@ -668,9 +744,10 @@ export function estimateOutcome(leads: number, sectorKey: string): EstimateResul
 
   return {
     sector,
+    setup,
     meetings: steadyMeetings,
     toolsCost: steadyToolsCost,
-    rampLabel: tier.label,
+    rampLabel: `${tier.label} (30–45d research + mailbox warmup)`,
     projection,
   };
 }
