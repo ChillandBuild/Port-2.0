@@ -389,10 +389,10 @@ export function WorldStage() {
                 </a>
                 <a
                   className={styles.ghost}
-                  href="#estimator"
+                  href="#range"
                   onClick={(event) => {
                     event.preventDefault();
-                    scrollToId("estimator");
+                    scrollToId("range");
                   }}
                 >
                   Work with me
@@ -428,9 +428,9 @@ export function WorldStage() {
 
           <section className={`${styles.block} ${styles.centre}`} data-cue="cost">
             <p className={styles.statement}>
-              More names is not a strategy.
+              More leads is not a strategy.
               <br />
-              The right names, followed up, is.
+              The right leads, followed up, is.
             </p>
           </section>
 
@@ -469,7 +469,7 @@ export function WorldStage() {
               <span />
             </p>
             <p className={styles.statement}>
-              Names in. Meetings out.
+              Leads in. Meetings out.
               <br />
               <span className={styles.between}>Everything hard happens in between.</span>
             </p>

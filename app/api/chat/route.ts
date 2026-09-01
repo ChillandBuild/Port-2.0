@@ -63,7 +63,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
   if (q.includes("work history") || q.includes("experience") || q.includes("finquest") || q.includes("ecosmob") || q.includes("uplers") || q.includes("alore") || q.includes("zinnov")) {
     return {
       text:
-        "6 roles, most recent first:\n\n• Finquest (Senior Lead Gen Mgr) Jul 2024–Sep 2025, Bengaluru — M&A origination across NA/EU/APAC, 200M+ mapped, +35% lift.\n• The Sales Group Jan–Jun 2024, Toronto (remote) — fractional SDR leadership, 18–25 meetings/seat/mo.\n• Uplers & Mavlers May–Dec 2023 — cross-border outreach, bounce <1.5%.\n• Ecosmob Jun 2022–Apr 2023 — telecom SaaS, 300+ MQLs/yr.\n• Alore Apr 2021–May 2022 — research & QA.\n• Zinnov & Draup Jul 2020–Mar 2021 — first sales role, +30% velocity.",
+        "7 roles, most recent first:\n\n• Emotii (Senior Lead Gen Specialist) Mar 2026–present, Bengaluru — multi-channel outreach, +25% pipeline.\n• Finquest (Senior Lead Gen Mgr) Jul 2024–Sep 2025, Bengaluru — M&A origination across NA/EU/APAC, 200M+ mapped, +35% lift.\n• The Sales Group Jan–Jun 2024, Toronto (remote) — fractional SDR leadership, 18–25 meetings/seat/mo.\n• Uplers & Mavlers May–Dec 2023 — cross-border outreach, bounce <1.5%.\n• Ecosmob Jun 2022–Apr 2023 — telecom SaaS, 300+ MQLs/yr.\n• Alore Apr 2021–May 2022 — research & QA.\n• Zinnov & Draup (Lead Gen Executive) Jun 2019–Jul 2021 — first sales role, +30% velocity.",
       chips: ["Show proof", "Which sectors?", "Education?"],
       ctas: [{ label: "Full history → /#history", href: "/#history" }],
     };
@@ -100,7 +100,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
         `Model, not a quote — for ${volume} leads/mo in ${sector.label}:\n\n• ~${meetings} meetings/mo at steady state (${Math.round(sector.meetingRate * 100)}% rate)\n• ${rampLabel} to ramp to that rate (below it until then)\n• $${toolsCost.toLocaleString()}/mo tool spend ($${sector.baseToolCost} base + $${sector.costPerLead}/lead)\n• Research cycle: ${ESTIMATOR.researchCycle}\n\nReal number comes from a scoping call.`,
       chips: ["Try 50/mo", "Try 200/mo", "Service sector"],
       ctas: [
-        { label: "Open estimator → /#work-plan", href: "/#work-plan" },
+        { label: "Open estimator → /schedule#estimator", href: "/schedule#estimator" },
         { label: "Schedule scoping call", href: "/schedule", solid: true },
       ],
     };

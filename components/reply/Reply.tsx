@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IDENTITY } from "@/lib/content";
 import styles from "./Reply.module.css";
 
@@ -27,6 +28,9 @@ export function Reply() {
           >
             Connect on LinkedIn
           </a>
+          <Link className={styles.ghost} href="/schedule" data-magnet="0.22">
+            Schedule a call
+          </Link>
         </div>
       </div>
     </section>

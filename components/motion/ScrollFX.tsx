@@ -96,7 +96,11 @@ export function ScrollFX() {
           });
         });
 
-        // The chart draws itself in on every pass, same as the counters beside it.
+        // The chart's ground (area, marker, dot) reveals once per scroll pass;
+        // the line itself keeps redrawing on a loop, so the section reads as
+        // something still running rather than a finished picture. Two tweens,
+        // not one timeline: a single looping timeline would re-flash the area
+        // and the marker on every repeat.
         gsap.utils.toArray<HTMLElement>("[data-chart-draw]").forEach((wrap) => {
           const linePath = wrap.querySelector<SVGPathElement>("[data-chart-line]");
           const areaPath = wrap.querySelector<SVGPathElement>("[data-chart-area]");
@@ -113,22 +117,42 @@ export function ScrollFX() {
             },
           });
           tl.fromTo(
+            areaPath,
+            { opacity: 0 },
+            { opacity: 1, duration: reduced ? 0 : 0.8, ease: "power1.out" },
+          ).fromTo(
+            [dot, marker].filter(Boolean),
+            { opacity: 0, scale: 0.6 },
+            { opacity: 1, scale: 1, duration: reduced ? 0 : 0.5, ease: "back.out(2)" },
+            reduced ? 0 : "-=0.3",
+          );
+
+          // Reduced motion gets the finished line and no loop at all — a
+          // perpetual redraw is precisely what the preference exists to stop.
+          if (reduced) {
+            gsap.set(linePath, { strokeDasharray: "none", strokeDashoffset: 0 });
+            return;
+          }
+
+          // toggleActions pauses the loop whenever the chart is off screen, so
+          // an unbounded rAF tween never runs against nothing.
+          gsap.fromTo(
             linePath,
             { strokeDasharray: length, strokeDashoffset: length },
-            { strokeDashoffset: 0, duration: reduced ? 0 : 1.4, ease: "power2.out" },
-          )
-            .fromTo(
-              areaPath,
-              { opacity: 0 },
-              { opacity: 1, duration: reduced ? 0 : 0.8, ease: "power1.out" },
-              reduced ? 0 : "-=0.9",
-            )
-            .fromTo(
-              [dot, marker].filter(Boolean),
-              { opacity: 0, scale: 0.6 },
-              { opacity: 1, scale: 1, duration: reduced ? 0 : 0.5, ease: "back.out(2)" },
-              reduced ? 0 : "-=0.3",
-            );
+            {
+              strokeDashoffset: 0,
+              duration: 1.8,
+              ease: "power1.inOut",
+              repeat: -1,
+              repeatDelay: 0.9,
+              scrollTrigger: {
+                trigger: wrap,
+                start: "top 92%",
+                end: "bottom top",
+                toggleActions: "play pause resume pause",
+              },
+            },
+          );
         });
 
         // Lateral travel reads as breadth. Vertical reads as argument.

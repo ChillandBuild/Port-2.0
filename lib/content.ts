@@ -273,7 +273,7 @@ export interface Role {
 export const ROLES: Role[] = [
   {
     company: "Emotii",
-    title: "Lead Generation Manager",
+    title: "Senior Lead Generation Specialist",
     dates: "Mar 2026 – Present",
     place: "Bengaluru, India",
     summary: [
@@ -357,7 +357,7 @@ export const ROLES: Role[] = [
   },
   {
     company: "Zinnov & Draup",
-    title: "Lead Generation Specialist",
+    title: "Lead Generation Executive",
     dates: "Jun 2019 – Jul 2021",
     place: "Coimbatore, India",
     summary: [
@@ -409,13 +409,13 @@ export const ESTIMATOR = {
   researchCycle: "30 days, held constant",
   note:
     "A model, not a quote. The monthly figure is a steady-state rate — the ramp row is how long it takes to reach it, and months inside that window run below it. The conversion rates track the method on this page; a real number comes out of a scoping call.",
-  toolsLink: { label: "See the stack behind the cost", href: "#range" },
+  toolsLink: { label: "See the stack behind the cost", href: "/#range" },
   /** Surfaced right under the modelled numbers, where interest in a real
    *  answer peaks — the same free first call CONTACT and SCHEDULE describe,
    *  said again at the moment it's most likely to be acted on. */
   freeCallNote: {
     text: "First call is free — 30 to 45 minutes to go through your numbers.",
-    cta: { label: "Say hello", href: "#contact" },
+    cta: { label: "Book the call", href: "#book" },
   },
   sectors: [
     { key: "saas", label: "B2B product based", meetingRate: 0.15, baseToolCost: 450, costPerLead: 5 },

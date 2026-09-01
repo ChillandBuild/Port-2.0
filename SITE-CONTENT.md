@@ -86,6 +86,16 @@ used accurately or dropped.
 Employers are named, sourced from the LinkedIn profile (`Portfolio/linkedin-profile.md`).
 Ordered below most recent first.
 
+**Emotii** — Senior Lead Generation Specialist
+Mar 2026 – Present · Bengaluru, India
+Manages market research and multi-channel outreach campaigns, increasing the lead pipeline
+by 25%. Builds targeted outbound strategies on aged LinkedIn accounts and Waalaxy
+automation, compliant with GDPR and CAN-SPAM. Oversees cold email campaigns, monitoring
+SPF, DKIM and DMARC records to keep account health intact. Works across Clay, Mailchimp,
+HubSpot, Smartlead, Instantly and Buying Leads. Delivers market research on prospecting,
+candidate sourcing, salary benchmarking and competitive analysis, and designs monthly and
+daily production plans against OKRs.
+
 **Finquest** — Senior Lead Generation Manager
 Jul 2024 – Sep 2025 · Bengaluru, India
 Outbound lead generation for proprietary mid-market M&A deal origination across North
@@ -129,8 +139,8 @@ campaigns across North America, the UK and Australia. Client communication and
 appointment setting; oversaw lead assignment and QA workflows across research, outreach
 and sales, with daily and monthly bounce and lead reporting.
 
-**Zinnov & Draup** — Lead Generation Specialist / Pre-Sales Lead
-Jul 2020 – Mar 2021 · Coimbatore, India
+**Zinnov & Draup** — Lead Generation Executive / Pre-Sales Lead
+Jun 2019 – Jul 2021 · Coimbatore, India
 His first sales role. Solution consulting across IT and non-IT domains in the Digital &
 Analytics portfolio, with product depth in core HR, workforce management, talent
 acquisition, reskilling and diversity. Lead generation and validation through targeted
@@ -434,7 +444,7 @@ Resolved. Do not re-open these.
 | Client satisfaction scores | **Both dropped.** Neither 9.2/10 nor 8.6/10 is used. |
 | Current status | Most recent listed role ran to Sep 2025. He is currently working with clients. |
 | LinkedIn analytics | **Cannot be connected.** No live data source exists. |
-| Employer names | **Named**, from the LinkedIn profile: Finquest, The Sales Group, Uplers & Mavlers, Ecosmob Technologies, Alore (Growth OS), Zinnov & Draup. The earlier "Client A–F" anonymisation is retired. |
+| Employer names | **Named**, from the LinkedIn profile: Emotii, Finquest, The Sales Group, Uplers & Mavlers, Ecosmob Technologies, Alore (Growth OS), Zinnov & Draup. The earlier "Client A–F" anonymisation is retired. |
 | Photograph | A placeholder stands in until he supplies the real one. |
 | Priority | Hired full-time > USD 350 session > performance model. |
 
