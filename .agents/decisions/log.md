@@ -81,6 +81,17 @@ in the Supabase dashboard, not via a migrations directory here.
 - 2026-09-01 (commit `53df3e1`) | Estimator explainer collapse reworked further |
   Follow-up pass on the 08-29 collapsible change (`components/estimator/Estimator.tsx`,
   `.module.css`).
+- 2026-09-01 | Removed 7 tracked files that were never part of the app: 3 Claude
+  Design canvas exports (`Main.dc.html`, `ThePeriod.dc.html`, `TileConcept.dc.html`),
+  `canvas.json`, a 2.4MB `sampath-kumar-favicon.html`, and two AI-tool state dirs
+  accidentally committed (`.freebuff/`, `.zcode/plans/`). Also wiped `lab/` (414MB,
+  gitignored QA scratch, see [[active-backlog]]) and `.next/` (163MB build cache) from
+  disk — both regenerate, neither was tracked | `git grep` confirmed nothing in
+  `app/`/build referenced any of the 7 files before removing them. `.gitignore` gained
+  `/.freebuff/` and `/.zcode/` so the tool-state files don't return. `.git` itself is
+  ~232MB (real history weight, likely from these same large files being committed then
+  later removed in past sessions) — left alone, fixing it needs a history rewrite
+  (`git gc`/filter-repo) which wasn't asked for. [[active-backlog]]
 - 2026-09-01 | Split `lib/` into `lib/frontend/` and `lib/backend/`, content.ts/
   submissions.ts stayed at root as shared | User asked to organize files as
   frontend/backend. A full service split (separate deploy, like a project with its own
@@ -90,3 +101,23 @@ in the Supabase dashboard, not via a migrations directory here.
   `app/` and `app/api/` stayed put — Next.js App Router requires routes to live there.
   Verified with `git grep` for every import before moving, then `tsc --noEmit` + `next
   build` after. [[stack-and-rules]]
+- 2026-09-01 | Routed 4 of 6 docs/wiki/ pages into CLAUDE.md's agent routing table
+  (contributing.md, getting-started.md, glossary.md, faq.md); extended
+  scripts/second_brain_close.py's dead-link and stale-claim checks to cover
+  docs/wiki/ too | User initially asked to make the wiki agent-queried like
+  `.agents/`; was talked down to "only lift the specific missing fact" — then, when
+  told the wiki was human-only and they'd never read it themselves, explicitly chose
+  routing it over deleting it. `architecture.md` and the wiki's own `README.md`
+  stayed unrouted — both explicitly defer to `.agents/` for architecture truth, so
+  routing them would be pure duplication with no new fact. [[stack-and-rules]]
+- 2026-09-01 | **Reversed the entry above, same session.** Deleted `docs/wiki/`
+  entirely (all 6 files), removed its 4 routing entries from `CLAUDE.md`, migrated the
+  2 facts that weren't already duplicated elsewhere (the lefthook hook table, the env
+  var Purpose/Where-to-get-it detail) directly into `stack-and-rules.md` | The routing
+  decision assumed the wiki's hand-written prose (faq, glossary, contributing
+  checklist) would keep getting maintained by someone. User then said plainly they'll
+  never write in it — and had already said they'd never read it. With zero human
+  readership or authorship, a hand-written layer has no maintainer at all; relying on
+  me to opportunistically keep it current (as I did earlier this session) isn't the
+  same as it actually being maintained. Reverted `second_brain_close.py`'s dead-link
+  and stale-claim checks back to `.agents/`-only, matching the deletion. [[stack-and-rules]]

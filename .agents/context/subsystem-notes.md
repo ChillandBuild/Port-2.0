@@ -49,6 +49,19 @@ and never move genuinely sensitive content behind it.
 `/privacy`, `/terms`, and `/refunds` are three thin routes over one presentational shell.
 Editing the shell changes all three at once — check the other two before restyling one.
 
+## Theme correction runs `setState` inside an effect, on purpose (`components/chrome/ThemeToggle.tsx`)
+`useState<Theme>("light")` starts at the server-rendered default, then a `useEffect`
+immediately corrects it to the real theme via `setLocal(currentTheme())` before
+subscribing to further changes. This trips `react-hooks/set-state-in-effect` (a real
+ESLint rule, not a false positive) because setState-in-effect is usually a smell — but
+here it's the only way to avoid a hydration mismatch: `currentTheme()` can only be read
+client-side, so it can't run in the lazy `useState` initializer without server and
+client disagreeing on first paint. Suppressed with `eslint-disable-next-line
+react-hooks/set-state-in-effect` plus a reason comment immediately above the call —
+if you touch this pattern elsewhere (any state that must start at a server-safe default
+and self-correct after mount), the same disable-with-reason is the right fix, not
+restructuring the effect away.
+
 ## Site icons (`app/icon.svg`, `app/apple-icon.png`, `app/favicon.ico`, `app/manifest.ts`)
 The favicon is a code-traced glyph, not a hand-drawn SVG: the `S` path is lifted from
 the real Bricolage Grotesque variable font instanced at wght 800, with the accent full

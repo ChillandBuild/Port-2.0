@@ -20,6 +20,11 @@
   accumulate again since it's the standing QA pattern — prune periodically, no fixed cadence.
 - The `ScrollFX` data-attribute contract is untyped and unverified — a renamed attribute
   fails silently. See [[subsystem-notes]].
+- `.git` is ~232MB — real history weight, likely from large files (design-tool exports,
+  a 2.4MB favicon.html) being committed then removed in past sessions, not just the 7
+  removed 2026-09-01 (those were caught before ever growing history much). Fixing this
+  needs a history rewrite (`git gc` / `git filter-repo`), which rewrites commit SHAs and
+  wasn't requested — flagged to the user, left alone. [[decisions-log]]
 - `app/layout.tsx` `metadataBase` is still the placeholder `https://sampathkumar.example`.
   OG image URLs and any absolute-URL metadata resolve against it — set the real domain
   before launch. `app/manifest.ts` `theme_color` (`#f1ebfb`, the chrome tint) is a taste

@@ -170,7 +170,14 @@ def check_stale_claims():
     as live if it matches a tracked file exactly OR as a path suffix (leading slashes
     normalized away first), not just literally root-relative. Skips active-backlog.md
     (or any file with 'backlog' in its name) — backlog items intentionally describe
-    planned, not-yet-built paths; flagging those as "stale" is the wrong test entirely."""
+    planned, not-yet-built paths; flagging those as "stale" is the wrong test entirely.
+    Same reasoning, opposite direction, for decisions/log.md (or any file with 'log' in
+    its name under a 'decisions' dir) — a changelog entry correctly quotes the path as
+    it was AT THE TIME of that decision; a later rename doesn't make the historical
+    entry wrong, and rewriting it would misrepresent history. Whole-file exemption,
+    same as backlog — this can't tell a correct historical reference from a genuinely
+    wrong one added in a brand-new entry, so proofread new log entries by hand when
+    adding them."""
     issues = []
     agents_dir = ROOT / ".agents"
     if not agents_dir.is_dir():
@@ -178,6 +185,8 @@ def check_stale_claims():
     tracked = run(["git", "ls-files"]).strip().splitlines()
     for md in agents_dir.rglob("*.md"):
         if "backlog" in md.name.lower():
+            continue
+        if "log" in md.name.lower() and md.parent.name == "decisions":
             continue
         source = str(md.relative_to(ROOT))
         text = md.read_text(errors="ignore")

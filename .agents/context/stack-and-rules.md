@@ -3,8 +3,8 @@
 ## Tech Stack
 - Framework: Next.js 16.3.2 (App Router), React 19.2.8, TypeScript 5
 - Motion: GSAP 3.15 + ScrollTrigger for scroll-tied animation; a custom rAF loop
-  (`lib/world-render.ts`, `lib/world.ts`, `lib/world-instance.ts`) drives the canvas
-  "world" scene independent of the GSAP timelines
+  (`lib/frontend/world-render.ts`, `lib/frontend/world.ts`, `lib/frontend/world-instance.ts`)
+  drives the canvas "world" scene independent of the GSAP timelines
 - Styling: CSS Modules + design tokens in `styles/tokens.css` (no Tailwind, no CSS-in-JS)
 - Testing/QA: no unit test framework configured. Visual/E2E verification runs through
   ad-hoc `lab/*.mjs` scripts using `playwright-core` (screenshot-driven, not an assertion suite)
@@ -19,9 +19,21 @@
     keyword-matched rule engine (`replyFor()`) answering only from `lib/content.ts`
     (`ESTIMATOR` data included). Explicitly a placeholder — its own comment says to
     "swap this fetch handler for Vercel AI SDK + OpenAI later; the widget stays identical."
-- Everything else is static / server-rendered. Env keys: `SUPABASE_URL`,
-  `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, `HIRE_NOTIFY_TO`
-  (see `docs/wiki/getting-started.md`).
+- Everything else is static / server-rendered. Env keys, all read only by
+  `app/api/submissions/route.ts` and its `lib/backend/` support — the route no-ops
+  cleanly (still returns success to the client) when any are unset:
+  - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — Supabase dashboard → Project Settings
+    → API. The service-role key bypasses RLS; never log it or fetch it into an agent.
+  - `RESEND_API_KEY` — Resend dashboard. `RESEND_FROM` — a verified Resend sending
+    domain (sandbox mode only delivers to the Resend account owner's own address).
+  - `HIRE_NOTIFY_TO` — the inbox that receives hire-form and case-studies-gate
+    submissions; set to Sampath's real inbox before deploying.
+  - `VERCEL_OIDC_TOKEN` is written by the Vercel CLI — leave it alone.
+- Git hooks (`lefthook.yml`, lefthook installed separately, not an npm dependency —
+  `lefthook install` once per clone writes `.git/hooks/`): pre-commit runs
+  `npx eslint {staged_files}` on staged TS/TSX/JS/JSX files; pre-push runs
+  `npx tsc --noEmit && npm run build`. A failing pre-push means the build or type
+  check is actually broken — fix the code, not the hook.
 
 ## Hard Invariants
 - `styles/tokens.css` is the only source of palette/type/spacing values — no hardcoded
@@ -42,7 +54,8 @@
 ## File Map
 - `app/` — layout (fonts, metadata), the homepage, and routes `/hire`, `/case-studies`,
   `/lead-generation`, `/schedule`, `/privacy`, `/terms`, `/refunds`
-- `app/api/submissions/route.ts` — the single POST backend (Supabase insert + Resend email)
+- `app/api/submissions/route.ts` — Supabase insert + Resend email; `app/api/chat/route.ts`
+  — the chat widget's rule-engine backend, no LLM/DB
 - `app/icon.svg`, `app/apple-icon.png`, `app/favicon.ico` — the site icon set (Next
   metadata file conventions; a flat Bricolage `S.` mark). `app/manifest.ts` is the
   hand-authored web manifest, colours from `tokens.css`. `public/icon-{192,512}.png` +
