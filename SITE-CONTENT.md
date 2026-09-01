@@ -176,24 +176,55 @@ Zinnov company; the role was concurrent.)
 
 ## 7. Tools he works in
 
-Grouped by what they are used for.
+Grouped by what they are used for. 154 entries across eight groups; a few tools
+are listed twice because they genuinely serve two layers.
 
-**Finding and qualifying prospects** — LinkedIn Sales Navigator, Apollo, ZoomInfo,
-Crunchbase, Lusha, Cognism, Hunter, Lemlist.
-Used for executive lead discovery, buyer intent signals, direct dial and email
-verification, and growth-trigger tracking.
+**Prospecting and lead intelligence** — Adyntel, Ahrefs, Apollo.io, Audience.co,
+BuiltWith, Buska.io, Capterra, Champify, Cognism, Common Room, Coresignal, Clearbit,
+Datagma, Demandbase, FullEnrich, G2, GetLatka, GetSales.io, HG Insights, Kleo, Leadfeeder,
+LeadMagic, LinkedIn Sales Navigator, LoneScale, Lusha, MadKudu, Ocean.io, Openmart, Pocus,
+PredictLeads, Prospeo.io, RB2B, saasyDB, Store Leads, Tamtam, Teamfluence, TheirStack,
+Trustpilot, Trigify.io, UserGems, ZoomInfo.
+Used for executive lead discovery, buyer intent signals, verified direct dials and email,
+and growth-trigger tracking.
 
-**CRM and pipeline management** — Salesforce, HubSpot, Pipedrive, Zoho, Close.
-Used for data hygiene, automated lead routing, deal stage tracking, executive reporting.
+**Data scraping and enrichment** — AI Ark, Apify, Bardeen, Clay, Crunchbase, Crustdata,
+Dropcontact, Instant Data Scraper, Lix, Octave, PhantomBuster, Serper, Shovels.
+Used to turn a name into a record: firmographics, tech stack, headcount moves and contact
+detail, filled in automatically.
 
-**Automation and enrichment** — n8n, agentic AI tooling, Clay, Instantly.ai, Smartlead,
-PhantomBuster.
-Used for workflow automation, lead enrichment, outreach personalisation, and
-deliverability infrastructure.
+**Outbound and sales engagement** — 11x, Artisan, Boomerang, Breakcold, EasyGen,
+Extrovert, Instantly.ai, Jason AI, Lemlist, Letterdrop, Lyne.ai, Orum, OutboundSync,
+Regie.ai, RevReply, Salee, Salesfinity, Salesloft, Scripe, Smartlead, Snov.io, Supergrow,
+Taplio, TheBoomerang.co, Twain.
+Used for sequencing across email, LinkedIn and phone, with personalisation and reply
+handling at volume.
 
-**Market and deal intelligence** — Finquest AI, PitchBook, CB Insights, Gong.io,
-Draup AI, Chorus.
-Used for M&A database mapping, deal intelligence, call analytics, proposal engineering.
+**GTM infrastructure and deliverability** — BounceBan, EmailGuard, Findymail, HeyReach.io,
+Hunter.io, Icypeas, Maildoso, MailTracker, Marketo, MxToolBox, NeverBounce, Porkbun,
+Premium Inboxes, Rocketreach, ScaledMail, TitanX, Warmy, Zapmail, ZeroBounce.
+Used for domains, mailboxes, DNS records and warm-up — the plumbing that decides inbox
+versus spam folder.
+
+**CRM and pipeline** — Airtable, ChurnZero, folk, HubSpot CRM, Notion, Pipedrive CRM,
+Salesforce CRM, Saleshandy CRM, Salesrobot, Velaris, Waalaxy, Woodpecker.co, Zoho CRM.
+Used for pipeline data hygiene, automated lead routing, deal stage tracking and executive
+reporting.
+
+**Content, meetings and deal execution** — Adobe Photoshop, Canva, Chili Piper, Conga,
+Demio, Figma, Howly, RingCentral, SalesCloser AI, Sendspark, ShareFile, Stripe,
+SurveyMonkey, Trumpet, Zoom, Zuora.
+Used for decks, demos, scheduling, proposals and payment — everything between a booked
+meeting and a signed contract.
+
+**Automation and agentic AI** — 11x, Aomni, Artisan, Bardeen, Induced, Jason AI, Make,
+n8n, Relevance AI, Salee, Synthflow AI, Topo, Zapier.
+Used for workflow orchestration and AI agents that run research, enrichment and follow-up
+in the background.
+
+**Intelligence, research and AI** — Avoma, CB Insights, ChatGPT, Claude, Demodesk, Fathom,
+Google Gemini, Gong, Hyperbound, Koala, Metabase, Peeker AI, Perplexity, Telescope AI.
+Used for deal intelligence, call analytics, market research and reasoning models.
 
 He monitors SPF, DKIM and DMARC health on sending domains as part of outreach hygiene.
 
@@ -293,15 +324,27 @@ No physical product; no shipping applies.
 
 ## 11. Topics he writes about
 
-Subjects he has published on, for reference. These are topics, not articles.
+Subjects he has published on, for reference. These are topics, not articles. The
+featured-posts section links 42 of them directly.
 
-- Why hyper-segmented, industry-specific value propositions outperform generic cold
-  outreach in private markets.
-- How structured product demos and proposal scoping move a discovery call toward a close.
-- Building proprietary database architectures for PE deal sourcing and target
-  acquisition modelling.
-- Adapting outreach cadence and buyer communication norms across North America, Europe,
-  APAC and MENA.
+- Cold email: campaign construction, funnel stages, the 2026 tooling cheat sheet, and
+  what moved reply rates from 5% to 14%.
+- Deliverability: domains, mailboxes, DNS records and warm-up as infrastructure work
+  rather than a settings checkbox.
+- Signal-based and warm outbound: anonymous visitor identification, LinkedIn engagement,
+  job-change triggers, and the 15-minute response window.
+- Clay and GTM automation: credit economics, allbound motions, and Clay run as an
+  operating system across sales, growth and RevOps.
+- The outbound stack: what a complete engine looks like layer by layer, and how the 2021
+  SDR setup compares with the 2026 one.
+- LinkedIn outreach: multi-account workflows, voice and video sequences, and finding
+  clients without scraping, ads or spam.
+- GTM strategy: founder-led sales to a repeatable revenue engine, and telling a dead
+  channel apart from lost product-market fit.
+- Pipeline and SDR practice: pipeline architecture over closing, and the system an SDR
+  team would run today.
+- Positioning: what actually separates B2B from B2C buying decisions.
+- One post outside the professional set, on mindset and the law of vibration.
 
 ---
 

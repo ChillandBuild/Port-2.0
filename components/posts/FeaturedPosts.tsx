@@ -20,9 +20,15 @@ function LinkedInMark() {
  *
  * The rail is doubled for the loop — the second set is the continuation of the
  * first, kept out of the tab order and hidden from screen readers so nobody
- * hears or tabs through the same four posts twice. Hover or keyboard focus
- * pauses the drift; under reduced motion there is no drift at all and the rail
+ * hears or tabs through the same posts twice. Hover or keyboard focus pauses
+ * the drift; under reduced motion there is no drift at all and the rail
  * becomes a plain scroll strip.
+ *
+ * Two card shapes share one height. Most posts carry their own image,
+ * hotlinked from LinkedIn's CDN and cropped to a fixed ratio so the cards stay
+ * level as they pass. Carousel and document posts have no fetchable cover —
+ * LinkedIn serves those only to a signed-in session — so they render a
+ * typographic cover in the same box instead of a broken or missing image.
  */
 export function FeaturedPosts() {
   const loop = [...POSTS, ...POSTS];
@@ -65,14 +71,42 @@ export function FeaturedPosts() {
                   data-tilt="4"
                   tabIndex={duplicate ? -1 : undefined}
                 >
-                  <p className={`mono ${styles.topic}`}>
-                    <LinkedInMark />
-                    {post.topic}
-                  </p>
-                  <h4 className={styles.title}>{post.title}</h4>
-                  <p className={styles.summary}>{post.summary}</p>
-                  <span className={`mono ${styles.more}`}>
-                    Read post on LinkedIn <span className={styles.arrow} aria-hidden="true">↗</span>
+                  {post.image ? (
+                    /* Hotlinked from LinkedIn's CDN, which already serves these
+                       cached for a day. next/image would mean remote-pattern
+                       config plus an optimisation hop for no gain. */
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      className={styles.cover}
+                      src={post.image.src}
+                      alt={post.title}
+                      width={post.image.width}
+                      height={post.image.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span className={styles.coverFallback}>
+                      <span className={`mono ${styles.coverTag}`} aria-hidden="true">
+                        Carousel
+                      </span>
+                      <span className={styles.coverTitle}>{post.title}</span>
+                    </span>
+                  )}
+                  <span className={styles.body}>
+                    <span className={`mono ${styles.topic}`}>
+                      <LinkedInMark />
+                      {post.topic}
+                    </span>
+                    {/* On a carousel card the cover already carries the title,
+                        so repeating it here would print it twice. */}
+                    {post.image ? (
+                      <span className={styles.title}>{post.title}</span>
+                    ) : null}
+                    <span className={styles.summary}>{post.summary}</span>
+                    <span className={`mono ${styles.more}`}>
+                      Read post on LinkedIn <span className={styles.arrow} aria-hidden="true">↗</span>
+                    </span>
                   </span>
                 </a>
               </li>

@@ -3,10 +3,15 @@ import { TOOL_GROUPS } from "@/lib/content";
 import styles from "./PlatformArchitecture.module.css";
 
 /**
- * Four groups, one hairline grid — same shape as Terms' phases, because both
+ * Eight groups, one hairline grid — same shape as Terms' phases, because both
  * sections are enumerating a fixed set rather than ranking it. Tools are
  * listed, not described one by one: the group description carries the "why",
  * the tag list carries the "what".
+ *
+ * The groups are deliberately uneven — prospecting runs to 41 tools, CRM to 13
+ * — so each one states its own count and the wide breakpoint is two columns,
+ * not four. Half-width cards let a long chip list wrap into a few rows instead
+ * of a narrow column fourteen rows deep.
  *
  * Entrance runs on plain CSS `@keyframes` (fill-mode: forwards), not
  * ScrollFX's GSAP reveal — it plays and settles on mount regardless of scroll
@@ -21,7 +26,8 @@ export function PlatformArchitecture() {
           The stack behind every cadence.
         </h2>
         <p className={styles.standfirst}>
-          Four layers, run together — discovery, pipeline, automation and
+          Eight layers, run together — prospecting, enrichment, engagement,
+          deliverability, pipeline, deal execution, automation and
           intelligence, not a pile of logins.
         </p>
       </div>
@@ -33,7 +39,10 @@ export function PlatformArchitecture() {
             key={group.name}
             style={{ "--i": i } as CSSProperties}
           >
-            <h3 className={styles.name}>{group.name}</h3>
+            <div className={styles.nameRow}>
+              <h3 className={styles.name}>{group.name}</h3>
+              <p className={`mono ${styles.count}`}>{group.tools.length} tools</p>
+            </div>
             <p className={styles.description}>{group.description}</p>
             <ul className={styles.tools}>
               {group.tools.map((tool) => (
