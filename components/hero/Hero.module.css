@@ -109,7 +109,6 @@
 }
 
 .lede {
-  text-align: left;
   margin-top: 1.75rem;
   max-width: 34ch;
   font-size: var(--text-base);
@@ -179,7 +178,6 @@
   .content {
     margin-left: 0;
     align-items: flex-start;
-    text-align: left;
   }
 
   .stat:first-child {

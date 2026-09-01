@@ -229,8 +229,6 @@
 
 .heroAnchor .headline,
 .heroAnchor .lede {
-  text-align: left;
-
   margin-left: auto;
 }
 
@@ -799,8 +797,6 @@
 
   .heroAnchor .headline,
   .heroAnchor .lede {
-  text-align: left;
-
     margin-left: 0;
   }
 
@@ -976,8 +972,6 @@
 
   .heroAnchor .headline,
   .heroAnchor .lede {
-  text-align: left;
-
     margin-left: 0;
   }
 
