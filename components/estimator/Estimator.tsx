@@ -122,37 +122,39 @@ export function Estimator({
 
       {/* Month-by-month projection table */}
       <div className={styles.projectionWrap} data-reveal>
-        <h3 className={`mono ${styles.projectionHeading}`}>Month-by-month projection</h3>
-        <div className={styles.tableScroll}>
-          <table className={styles.projectionTable} aria-live="polite">
-            <thead>
-              <tr>
-                <th className={`mono ${styles.th}`}>Month</th>
-                <th className={`mono ${styles.th}`}>Leads</th>
-                <th className={`mono ${styles.th}`}>Meetings</th>
-                <th className={`mono ${styles.th}`}>Tool cost</th>
-                <th className={`mono ${styles.th}`}>Cumulative cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              {outcome.projection.map((row) => (
-                <tr
-                  key={row.month}
-                  className={row.isRamp ? styles.rampRow : styles.steadyRow}
-                >
-                  <td className={`tabular ${styles.td}`}>
-                    {row.month}
-                    {row.isRamp && <span className={`mono ${styles.rampBadge}`}>ramp</span>}
-                  </td>
-                  <td className={`tabular ${styles.td}`}>{row.leads.toLocaleString()}</td>
-                  <td className={`tabular ${styles.td}`}>~{row.meetings}</td>
-                  <td className={`tabular ${styles.td}`}>${row.toolCost.toLocaleString()}</td>
-                  <td className={`tabular ${styles.td}`}>${row.cumulativeCost.toLocaleString()}</td>
+        <details className={styles.projectionDetails}>
+          <summary className={`mono ${styles.projectionSummary}`}>Month-by-month projection</summary>
+          <div className={styles.tableScroll}>
+            <table className={styles.projectionTable} aria-live="polite">
+              <thead>
+                <tr>
+                  <th className={`mono ${styles.th}`}>Month</th>
+                  <th className={`mono ${styles.th}`}>Leads</th>
+                  <th className={`mono ${styles.th}`}>Meetings</th>
+                  <th className={`mono ${styles.th}`}>Tool cost</th>
+                  <th className={`mono ${styles.th}`}>Cumulative cost</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {outcome.projection.map((row) => (
+                  <tr
+                    key={row.month}
+                    className={row.isRamp ? styles.rampRow : styles.steadyRow}
+                  >
+                    <td className={`tabular ${styles.td}`}>
+                      {row.month}
+                      {row.isRamp && <span className={`mono ${styles.rampBadge}`}>ramp</span>}
+                    </td>
+                    <td className={`tabular ${styles.td}`}>{row.leads.toLocaleString()}</td>
+                    <td className={`tabular ${styles.td}`}>~{row.meetings}</td>
+                    <td className={`tabular ${styles.td}`}>${row.toolCost.toLocaleString()}</td>
+                    <td className={`tabular ${styles.td}`}>${row.cumulativeCost.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
 
         <details className={styles.explainerDetails}>
           <summary className={`mono ${styles.explainerSummary}`}>
