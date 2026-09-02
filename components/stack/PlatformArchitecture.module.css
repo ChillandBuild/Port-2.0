@@ -37,6 +37,14 @@
   max-width: 52ch;
 }
 
+.expertise {
+  margin-top: 0.75rem;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 .groups {
   display: grid;
   gap: clamp(1.5rem, 4vw, 2.5rem);

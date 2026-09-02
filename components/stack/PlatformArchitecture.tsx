@@ -30,6 +30,9 @@ export function PlatformArchitecture() {
           deliverability, pipeline, deal execution, automation and
           intelligence, not a pile of logins.
         </p>
+        <p className={`mono ${styles.expertise}`}>
+          Hands-on expertise with all of them, built over seven years running outbound.
+        </p>
       </div>
 
       <div className={styles.groups}>
