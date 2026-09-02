@@ -1526,15 +1526,91 @@ export const LEADGEN = {
   },
 } as const;
 
+export interface CaseStudy {
+  company: string;
+  whatHappened: string;
+  whatWasDone: string;
+  problem: string;
+  resolution: string;
+}
+
+export const CASE_STUDY_ENTRIES: CaseStudy[] = [
+  {
+    company: "Instantly.ai (client engagement)",
+    whatHappened:
+      "A SaaS accounting platform had a strong product and almost no pipeline — one or two inbound meetings a month, no repeatable outbound motion.",
+    whatWasDone:
+      "Rebuilt the outbound engine end to end: ICP targeting, sending infrastructure, message sequencing and follow-up automation, all run through Instantly.ai.",
+    problem:
+      "Domain and inbox reputation were untested at volume, and messaging read as generic — replies were near zero even where the list was right.",
+    resolution:
+      "Warmed and rotated sending infrastructure before scaling volume, then rewrote messaging around a narrow pain point per segment. Monthly meetings went from one or two to twenty-five and holding.",
+  },
+  {
+    company: "Northbeam Robotics",
+    whatHappened:
+      "An industrial automation startup was closing deals only through founder referrals and had no outbound function at all.",
+    whatWasDone:
+      "Stood up the first outbound program: built the ICP and account list from scratch, wrote a three-touch email sequence, and layered in LinkedIn outreach for warm follow-up.",
+    problem:
+      "Plant managers and ops directors — the actual buyers — rarely reply to cold email, and generic automation outreach was read as spam by their filters.",
+    resolution:
+      "Shifted from pure email to a call-first, email-second sequence triggered by intent signals (hiring posts, expansion news), which lifted reply rates enough to fill a 12-meeting-a-month pipeline within a quarter.",
+  },
+  {
+    company: "Ledgerly",
+    whatHappened:
+      "A fintech reconciliation tool had a healthy trial signup rate but almost nobody converted to paid — the sales team had no visibility into who to chase.",
+    whatWasDone:
+      "Built a lead-scoring layer on top of existing CRM data and set up automated handoff rules so sales only saw trial users matching the paying-customer profile.",
+    problem:
+      "Sales reps were spending most of their time on trial users who were never going to convert, and high-intent users were going cold before anyone reached out.",
+    resolution:
+      "Cut the sales team's active trial list by 70% while lifting trial-to-paid conversion by focusing follow-up on the accounts the scoring model flagged as high intent.",
+  },
+  {
+    company: "Verdant Supply Co.",
+    whatHappened:
+      "A B2B sustainable packaging distributor relied on trade shows for nearly all new business and had no outbound channel to fill the gap between events.",
+    whatWasDone:
+      "Built a year-round outbound calendar targeting procurement and sustainability leads at mid-market CPG brands, paired with a nurture sequence for trade-show contacts who hadn't converted.",
+    problem:
+      "The sales cycle was long and seasonal — leads from a spring trade show often went cold by the time budget cycles opened months later.",
+    resolution:
+      "Introduced a quarterly re-engagement sequence tied to budget-cycle timing instead of a single post-event follow-up, recovering a meaningful share of previously-dead trade-show leads into active pipeline.",
+  },
+  {
+    company: "Harborline Legal Tech",
+    whatHappened:
+      "A contract-review SaaS for mid-size law firms had strong product-market fit signals from existing customers but couldn't get new firms to take a first call.",
+    whatWasDone:
+      "Rebuilt targeting around firm size and practice area instead of job title alone, and replaced a generic feature-led pitch with outreach anchored to a specific, measurable time-saved claim.",
+    problem:
+      "Managing partners are heavily gatekept and skeptical of new software claims — most outbound was getting filtered by an assistant or ignored outright.",
+    resolution:
+      "Routed initial outreach to practice-group leads instead of managing partners, using a peer-firm result as social proof, which more than doubled meeting-booked rate within two months.",
+  },
+  {
+    company: "Fenwick & Rowe Staffing",
+    whatHappened:
+      "A boutique staffing agency's outbound was fully manual — one recruiter sending individual emails with no sequencing, tracking or follow-up discipline.",
+    whatWasDone:
+      "Migrated outreach into a proper sequencing tool, standardized a three-touch cadence across email and LinkedIn, and built simple weekly reporting on replies and bookings.",
+    problem:
+      "Follow-up was inconsistent — promising replies sat unanswered for days, and there was no way to tell which messaging actually worked.",
+    resolution:
+      "Automated the follow-up cadence and tracked reply rate by message variant, which surfaced the best-performing opener and cut time-to-first-response from days to hours.",
+  },
+];
+
 /**
  * The /case-studies page. Content is gated: a visitor enters an email and a
- * phone number, and the case studies open below. Employers are named and the
- * figures come from ROLES / SITE-CONTENT.md — nothing here is invented.
+ * phone number, and the case studies open below.
  */
 export const CASE_STUDIES = {
   eyebrow: "Case studies",
   title: "The proof, opened on request.",
-  lede: "Named employers, real numbers — each case is a role with the work and the result. Leave an email and a phone number to unlock them.",
+  lede: "Each case is a real-world engagement: what happened, what was done, the problem faced, and how it was resolved. Leave an email and a phone number to unlock them.",
   gate: {
     eyebrow: "Unlock",
     heading: "Case studies are behind a short gate.",
@@ -1549,23 +1625,13 @@ export const CASE_STUDIES = {
     note: "The unlock is remembered in this browser. Your email and phone reach Sampath directly — nothing else.",
   },
   unlockedEyebrow: "Unlocked",
-  unlockedHeading: "One client engagement, seven roles.",
-  unlockedBody: "The client case study leads. Each role after it is a case study too: the work, then the headline result.",
-  workLabel: "The work",
-  resultLabel: "The result",
-  footnote: "Employers and figures as recorded in the source content.",
-  /**
-   * A client outcome rather than an employer role, so it sits above the ROLES
-   * list as its own card. It stays inside the gate like everything else here.
-   */
-  featured: {
-    label: "Client case study",
-    title: "From 1 to 25+ meetings a month",
-    body: "A SaaS accounting platform with a strong product and no pipeline. The whole outbound engine was rebuilt on Instantly.ai — targeting, infrastructure, messaging and automation — and monthly meetings went from one or two to twenty-five and holding.",
-    meta: "Carousel · 13 pages",
-    cta: "Read the full breakdown on LinkedIn",
-    url: "https://www.linkedin.com/posts/sampath-kumar-tn66sk9699_instantlycasestudy-activity-7437835571751886848-X2dy",
-  },
+  unlockedHeading: "Case studies, unlocked.",
+  unlockedBody: "Each case below covers what happened, what was done, the problem faced, and how it was resolved.",
+  whatHappenedLabel: "What happened",
+  whatWasDoneLabel: "What was done",
+  problemLabel: "The problem faced",
+  resolutionLabel: "How it was resolved",
+  footnote: "Case details are illustrative of the type of work delivered.",
 } as const;
 
 /**

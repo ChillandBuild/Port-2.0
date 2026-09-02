@@ -1,58 +1,38 @@
-import { CASE_STUDIES, ROLES } from "@/lib/content";
+import { CASE_STUDIES, CASE_STUDY_ENTRIES } from "@/lib/content";
 import styles from "./CaseStudies.module.css";
 
 /**
  * The case studies themselves, rendered server-side and passed into the gate
- * as children. Each role is a case: the work, then the headline result, with
- * the employer named — the same ROLES the homepage history draws on.
- *
- * One client outcome leads, above the roles. It is a delivered engagement
- * rather than a job, so it gets its own card and links out to the full
- * breakdown instead of pretending to be a seventh role.
+ * as children. Each entry is a company with four labeled blocks: what
+ * happened, what was done, the problem faced, and how it was resolved.
  */
 export function CaseStudies() {
-  const { featured } = CASE_STUDIES;
-
   return (
     <div className={styles.list}>
-      <article className={`${styles.case} ${styles.featured}`}>
-        <header className={styles.meta}>
-          <p className={`mono ${styles.role}`}>{featured.label}</p>
-          <p className={`mono ${styles.when}`}>{featured.meta}</p>
-        </header>
-
-        <h3 className={styles.featuredTitle}>{featured.title}</h3>
-        <p className={styles.work}>{featured.body}</p>
-
-        <a
-          className={`mono ${styles.featuredLink}`}
-          href={featured.url}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {featured.cta} <span aria-hidden="true">↗</span>
-        </a>
-      </article>
-
-      {ROLES.map((role) => (
-        <article className={styles.case} key={role.company + role.dates}>
+      {CASE_STUDY_ENTRIES.map((entry) => (
+        <article className={styles.case} key={entry.company}>
           <header className={styles.meta}>
-            <p className={`mono ${styles.role}`}>
-              {role.title} · {role.company}
-            </p>
-            <p className={`mono ${styles.when}`}>
-              {role.dates} · {role.place}
-            </p>
+            <p className={`mono ${styles.role}`}>{entry.company}</p>
           </header>
 
           <div className={styles.body}>
-            <p className={`mono ${styles.label}`}>{CASE_STUDIES.workLabel}</p>
-            <p className={styles.work}>{role.summary}</p>
+            <p className={`mono ${styles.label}`}>{CASE_STUDIES.whatHappenedLabel}</p>
+            <p className={styles.work}>{entry.whatHappened}</p>
+          </div>
+
+          <div className={styles.body}>
+            <p className={`mono ${styles.label}`}>{CASE_STUDIES.whatWasDoneLabel}</p>
+            <p className={styles.work}>{entry.whatWasDone}</p>
+          </div>
+
+          <div className={styles.body}>
+            <p className={`mono ${styles.label}`}>{CASE_STUDIES.problemLabel}</p>
+            <p className={styles.work}>{entry.problem}</p>
           </div>
 
           <p className={styles.result}>
-            <span className={`mono ${styles.label}`}>{CASE_STUDIES.resultLabel}</span>
-            <span className={styles.resultValue}>{role.result}</span>
+            <span className={`mono ${styles.label}`}>{CASE_STUDIES.resolutionLabel}</span>
+            <span className={styles.resultValue}>{entry.resolution}</span>
           </p>
         </article>
       ))}
