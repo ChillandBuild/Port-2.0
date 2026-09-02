@@ -907,6 +907,13 @@
   }
 
   .frame {
+    /* Fluid, not a fixed 78rem cap: at exactly 1024px viewport this equals
+       78rem (no change from the old baseline), then grows with the
+       viewport — so it actually widens on real laptop/desktop widths
+       (~1400-1700px), not just past some guessed ultra-wide threshold.
+       Capped at 104rem so it doesn't stretch absurdly on 4K+. The ch-based
+       prose widths inside .document are untouched either way. */
+    max-width: min(104rem, calc(60vw + 40rem));
     grid-template-columns: 17.5rem minmax(0, 1fr);
     gap: clamp(2rem, 4vw, 4rem);
     padding: 0 var(--space-shell);
@@ -922,17 +929,5 @@
 
   .section {
     scroll-margin-top: calc(var(--nav-h) + 1.5rem);
-  }
-}
-
-/* On very large viewports the frame stays capped at 78rem, which leaves dead
-   gutters either side. Widen the canvas (sidebar + gap) without touching the
-   ch-based prose widths in the document — line length stays readable either
-   way. */
-@media (min-width: 1600px) {
-  .frame {
-    max-width: 92rem;
-    grid-template-columns: 19.5rem minmax(0, 1fr);
-    gap: clamp(3rem, 5vw, 5.5rem);
   }
 }
