@@ -25,6 +25,7 @@ export const COURSE = {
     codePlaceholder: "LG-XXXX-XXXX",
     submit: "Unlock the course",
     checking: "Checking…",
+    opening: "Opening the course…",
     invalidCode: "That code doesn't match an active enrollment. Check the email you received after payment.",
     error: "Something went wrong checking your code. Try again in a moment.",
     buyLabel: "Enroll now",

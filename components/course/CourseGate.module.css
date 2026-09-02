@@ -74,6 +74,10 @@
 }
 
 .submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
   min-height: 3rem;
   padding: 0 1.5rem;
   font-family: var(--font-mono);
@@ -95,6 +99,28 @@
 .submit:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 999px;
+  opacity: 0.85;
+  animation: spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error {

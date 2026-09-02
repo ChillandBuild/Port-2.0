@@ -5,8 +5,14 @@ import { useState } from "react";
 import { COURSE } from "@/lib/content/course";
 import styles from "./CourseGate.module.css";
 
-type Phase = "idle" | "checking" | "done";
+type Phase = "idle" | "checking" | "opening";
 type Failure = "invalid" | "expired" | "server" | null;
+
+const PHASE_COPY: Record<Phase, string> = {
+  idle: COURSE.gate.submit,
+  checking: COURSE.gate.checking,
+  opening: COURSE.gate.opening,
+};
 
 const FAILURE_COPY: Record<Exclude<Failure, null>, string> = {
   invalid: COURSE.gate.invalidCode,
@@ -27,7 +33,7 @@ export function CourseUnlockForm() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (phase === "checking") return;
+    if (phase !== "idle") return;
     setPhase("checking");
     setFailure(null);
     try {
@@ -38,7 +44,12 @@ export function CourseUnlockForm() {
       });
       const payload = (await response.json()) as { success: boolean; error?: string };
       if (payload.success) {
-        setPhase("done");
+        // router.refresh() has no completion signal — it re-fetches Supabase
+        // and server-renders the whole guide, then swaps this form out once
+        // that lands. Staying in "opening" keeps the button disabled and the
+        // label honest for that whole gap; there's no idle to fall back to
+        // because this component is about to unmount.
+        setPhase("opening");
         router.refresh();
         return;
       }
@@ -73,11 +84,12 @@ export function CourseUnlockForm() {
           setCode(event.target.value);
           if (failure) setFailure(null);
         }}
-        disabled={phase === "checking"}
+        disabled={phase !== "idle"}
         required
       />
-      <button className={styles.submit} type="submit" disabled={phase === "checking"}>
-        {phase === "checking" ? COURSE.gate.checking : COURSE.gate.submit}
+      <button className={styles.submit} type="submit" disabled={phase !== "idle"}>
+        {phase !== "idle" && <span className={styles.spinner} aria-hidden="true" />}
+        {PHASE_COPY[phase]}
       </button>
       {failure && (
         <p className={styles.error} role="alert">
