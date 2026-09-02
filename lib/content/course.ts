@@ -4,6 +4,14 @@
  * from the markdown files in content/course/ via lib/course.ts, so the two
  * cannot drift. Server-only import: enrollHref reads an env var.
  */
+/**
+ * TODO(client): confirm the real price before launch. A ₹10 test transaction
+ * will temporarily override this value during end-to-end verification —
+ * that's an operational step (edit this constant, test, revert), never a
+ * code branch; don't hardcode a test price anywhere.
+ */
+export const COURSE_PRICE_INR = 10; // TEMP: test-transaction price, revert to 4999 before launch.
+
 export const COURSE = {
   eyebrow: "The course",
   title: "The Lead Generation Course.",
@@ -14,9 +22,9 @@ export const COURSE = {
 
   gate: {
     lockedEyebrow: "Members only",
-    lockedHeading: "The course is for enrolled buyers.",
+    lockedHeading: "Everything you need to build outbound that works.",
     lockedBody:
-      "Enroll to get instant access — or, if you have already paid, enter the access code from your email.",
+      "The entire pipeline — ICP, sourcing, cadences, qualification, hand-off — in 30 lessons. One payment, work through it at your own pace.",
     expiredEyebrow: "Access ended",
     expiredHeading: "Your 30-day access has expired.",
     expiredBody:
@@ -31,6 +39,43 @@ export const COURSE = {
     buyLabel: "Enroll now",
     buyNote: "You'll get your access code by email right after payment — come back here and enter it below to unlock.",
     expiryLabel: "Your access is valid until",
+
+    whatsInsideHeading: "What you get",
+    whatsInsideItems: [
+      "Define your ICP without guessing",
+      "Build a sourcing loop that doesn't dry up",
+      "Write cadences that get replies",
+      "Qualify before you waste a call",
+      "Hand off deals cleanly to close",
+    ],
+    statLessonsLabel: "Lessons",
+    statLessons: 30,
+    statDaysLabel: "Days access",
+    statDays: 30,
+
+    payPrefix: "Pay Now",
+    payNote: "You'll get instant access — your code also arrives by email.",
+    unlockToggleLabel: "Already enrolled? Enter your access code",
+
+    dialogHeading: "Enroll in the course",
+    dialogNameLabel: "Name",
+    dialogEmailLabel: "Email",
+    dialogPhoneLabel: "Phone",
+    dialogSubmit: "Continue to payment",
+    dialogCreatingOrder: "Preparing payment…",
+    dialogVerifying: "Confirming your payment…",
+    dialogSuccessHeading: "You're in.",
+    dialogSuccessBody: "Your access code (also emailed to you):",
+    dialogPendingHeading: "Payment received.",
+    dialogPendingBody: "Your payment went through — your access code is on its way by email.",
+    dialogErrorOrder: "Couldn't start the payment. Try again.",
+    dialogErrorUnverified: "We couldn't confirm your payment — check your email or contact support.",
+    dialogErrorVerifyNetwork: "Couldn't confirm the payment just now. Try again.",
+    dialogRetry: "Try again",
+    dialogContinueLabel: "Continue to the course",
+    dialogCopyLabel: "Copy code",
+    dialogCopiedLabel: "Copied",
+    dialogClose: "Close",
   },
 
   enroll: {
@@ -47,10 +92,10 @@ export const COURSE = {
 } as const;
 
 /**
- * Where "Enroll now" points: the Razorpay Payment Page (international
- * payments enabled in the Razorpay dashboard). Falls back to the schedule
- * page so a missing env var degrades to "enroll on a call" instead of a dead
- * button. Server-only — client components must receive it as a prop.
+ * Fallback for the Pay Now button when RAZORPAY_KEY_ID isn't configured —
+ * degrades to the hosted Payment Page if one is set, otherwise to "enroll on
+ * a call" instead of a dead click. Server-only — client components must
+ * receive it as a prop.
  */
 export const COURSE_ENROLL_HREF =
   process.env.RAZORPAY_PAYMENT_PAGE_URL ?? "/schedule";

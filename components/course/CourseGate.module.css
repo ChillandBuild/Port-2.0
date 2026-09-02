@@ -184,3 +184,230 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* What's inside — the list of concrete deliverables, absent from the gate
+   before this redesign; the strongest honest conversion lever available. */
+.whatsInside {
+  margin-top: clamp(2rem, 4vh, 3rem);
+  max-width: 34rem;
+}
+
+.whatsInsideHeading {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+.whatsInsideList {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.whatsInsideItem {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: var(--on-page);
+}
+
+.whatsInsideItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Stat row — reuses the page-wide ScrollFX [data-count] driver; no new
+   animation code needed here, only the markup/attributes. */
+.statRow {
+  display: flex;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  margin-top: clamp(1.75rem, 3.5vh, 2.5rem);
+}
+
+.stat {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-stat);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--on-page);
+}
+
+.statLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+/* Panel — thin accent rule + a restrained glow, composed from the accent
+   token via color-mix (no --shadow-* token exists in tokens.css). */
+.panel {
+  position: relative;
+  box-shadow: 0 0 60px -24px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.panelRule {
+  height: 2px;
+  margin: -1.5rem -1.5rem 1.25rem;
+  background: var(--accent);
+}
+
+.unlockToggle {
+  margin-top: 0.5rem;
+}
+
+.unlockSummary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  list-style: none;
+}
+
+.unlockSummary::-webkit-details-marker {
+  display: none;
+}
+
+.unlockSummary:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.unlockToggle[open] .unlockSummary {
+  margin-bottom: 0.85rem;
+}
+
+/* Staged entrance — pure CSS, no GSAP needed for an above-the-fold mount-in
+   reveal. Neutralized globally under prefers-reduced-motion (styles/global.css)
+   plus an explicit override here for clarity, matching the .spinner precedent. */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.entrance1,
+.entrance2,
+.entrance3,
+.entrance4,
+.entrance5,
+.entrance6 {
+  animation: fadeUp 0.6s var(--ease-out-quint) both;
+}
+
+.entrance1 {
+  animation-delay: 0s;
+}
+.entrance2 {
+  animation-delay: 0.08s;
+}
+.entrance3 {
+  animation-delay: 0.16s;
+}
+.entrance4 {
+  animation-delay: 0.24s;
+}
+.entrance5 {
+  animation-delay: 0.32s;
+}
+.entrance6 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrance1,
+  .entrance2,
+  .entrance3,
+  .entrance4,
+  .entrance5,
+  .entrance6 {
+    animation: none;
+  }
+}
+
+/* Enroll dialog */
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(11, 27, 42, 0.55);
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem 1.5rem;
+  background: var(--surface-panel);
+  color: var(--on-panel);
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+}
+
+.dialogCloseButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  color: var(--on-panel-soft);
+  cursor: pointer;
+}
+
+.dialogCloseButton:hover {
+  color: var(--on-panel);
+}
+
+.dialogHeading {
+  margin: 0 1.5rem 0.5rem 0;
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+}
+
+.dialogStatus {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  padding: 1rem 0;
+}
+
+.dialogSuccess {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+}
+
+.dialogCode {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}

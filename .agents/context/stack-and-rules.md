@@ -26,6 +26,16 @@
   - `app/api/course/unlock/route.ts` (POST, added `685ecd4`) — redeems an access code
     from `/lead-generation`'s gate; sets an httpOnly cookie whose value is the code
     itself (every request re-validates it against Supabase, so no signing needed).
+  - `app/api/course/order/route.ts` (POST) — creates a Razorpay Order for the on-site
+    Checkout.js flow on `/course`'s gate. Amount is always `COURSE_PRICE_INR` from
+    `lib/content/course.ts`, server-fixed — never trusts a client-supplied price.
+  - `app/api/course/verify/route.ts` (POST) — verifies the Checkout.js success signature
+    (`order_id|payment_id` HMAC, keyed with `RAZORPAY_KEY_SECRET` — a different scheme
+    from the webhook's raw-body HMAC), then grants access via the same
+    `grantCourseAccess()` the webhook uses and sets the access cookie immediately, so the
+    code displays in the dialog without waiting on the webhook. The webhook route above
+    stays wired unchanged as the backup path if the browser closes before this completes;
+    both converge safely through `grantCourseAccess`'s existing idempotency.
 - Everything else is static / server-rendered. Env keys, read only by the API routes
   above and their `lib/backend/` support — routes no-op cleanly (submissions still
   returns success to the client) when their own vars are unset, but the course routes
@@ -39,10 +49,16 @@
     submissions; set to Sampath's real inbox before deploying.
   - `RAZORPAY_WEBHOOK_SECRET` — Razorpay dashboard → webhook config. Without it,
     `verifyRazorpaySignature` always returns false and every webhook is rejected — no
-    course access is ever granted.
-  - `RAZORPAY_PAYMENT_PAGE_URL` — the hosted Razorpay Payment Page for the course.
-    `COURSE_ENROLL_HREF` falls back to `/schedule` ("enroll on a call") if unset, so a
-    missing var degrades gracefully rather than dead-ending on a button.
+    course access is ever granted via that (backup) path.
+  - `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` — Razorpay dashboard → Settings → API Keys.
+    Used by `app/api/course/order` (order creation, Basic Auth) and `app/api/course/verify`
+    (checkout signature HMAC). Without `RAZORPAY_KEY_ID`, `CourseGate`'s Pay Now button
+    degrades to a plain link to `COURSE_ENROLL_HREF` instead of a broken click.
+  - `RAZORPAY_PAYMENT_PAGE_URL` — no longer the primary buy link (that's the on-site
+    Checkout.js dialog now); repurposed as `COURSE_ENROLL_HREF`'s value, the misconfiguration
+    fallback for when `RAZORPAY_KEY_ID` is unset. Falls back further to `/schedule`
+    ("enroll on a call") if this is also unset, so a missing var degrades gracefully
+    rather than dead-ending on a button.
   - `VERCEL_OIDC_TOKEN` is written by the Vercel CLI — leave it alone.
 - Git hooks (`lefthook.yml`, lefthook installed separately, not an npm dependency —
   `lefthook install` once per clone writes `.git/hooks/`): pre-commit runs
