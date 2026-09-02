@@ -6,6 +6,7 @@ import { PointerFX } from "@/components/motion/PointerFX";
 import { ScrollFX } from "@/components/motion/ScrollFX";
 import { ScheduleAgenda } from "@/components/schedule/ScheduleAgenda";
 import { ScheduleContact } from "@/components/schedule/ScheduleContact";
+import { ScheduleCta } from "@/components/schedule/ScheduleCta";
 import { ScheduleEngagement } from "@/components/schedule/ScheduleEngagement";
 import { ScheduleForm } from "@/components/schedule/ScheduleForm";
 import { ScheduleHero } from "@/components/schedule/ScheduleHero";
@@ -41,6 +42,7 @@ export default function SchedulePage() {
           body="Set a market focus and a target monthly lead volume to see the meetings, the research cycle, and the tool spend those numbers imply — the same model the call starts from."
         />
         <ScheduleTracks />
+        <ScheduleCta />
         <ScheduleForm />
         <ScheduleContact />
       </main>

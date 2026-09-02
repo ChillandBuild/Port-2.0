@@ -43,10 +43,6 @@ export function ScheduleHero() {
           </div>
         ))}
       </dl>
-
-      <a className={styles.cta} href={SCHEDULE.cta.href}>
-        {SCHEDULE.cta.label}
-      </a>
     </section>
   );
 }
