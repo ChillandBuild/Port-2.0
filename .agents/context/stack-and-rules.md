@@ -68,9 +68,10 @@
 
 ## File Map
 - `app/` — layout (fonts, metadata), the homepage, and routes `/hire`, `/case-studies`,
-  `/lead-generation` (free trailer + paid course, same URL — [[decisions-log]]),
-  `/course` (redirects to `/lead-generation`), `/schedule`, `/privacy`, `/terms`,
-  `/refunds`
+  `/lead-generation` (free trailer only), `/course` (paid gate + guide, its own route
+  with the access check and a `loading.tsx` — briefly merged into `/lead-generation`,
+  split back apart same day, see [[decisions-log]] `b181d90`), `/schedule`, `/privacy`,
+  `/terms`, `/refunds`
 - `app/api/submissions/route.ts` — Supabase insert + Resend email; `app/api/chat/route.ts`
   — the chat widget's rule-engine backend, no LLM/DB; `app/api/webhooks/razorpay/` and
   `app/api/course/unlock/` — the paid course's payment + access-code flow
@@ -95,7 +96,8 @@
   - `lib/frontend/` — client-only: `world.ts`, `world-instance.ts`, `world-render.ts`
     (the canvas/rAF world engine, paired with `components/world/WorldStage.tsx`),
     `pointer.ts` (one shared pointer rAF loop), `scroll-store.ts` (one shared scroll rAF
-    loop), `theme.ts` (light/dark state)
+    loop), `theme.ts` (light/dark state), `course-progress.ts` (localStorage-backed
+    guide reading-progress store, `useSyncExternalStore` — see [[subsystem-notes]])
   - `lib/content.ts`, `lib/submissions.ts` stay at `lib/` root — genuinely shared: both
     are imported by frontend components AND by an `app/api/*` route handler (content.ts
     by `app/api/chat/route.ts`'s `ESTIMATOR` data; submissions.ts's `SubmissionPayload`
@@ -104,10 +106,13 @@
 - `components/<area>/` — one folder per page area (hero, world, range, posts, ledger,
   linkedin, history, education, estimator, contact, chrome, brand, about, etc.), each with
   a colocated `.module.css`
-- `components/leadgen/LeadGenPage.tsx` — the free `/lead-generation` trailer (8-stage
-  pipeline, work-plan, tool stack, CTA); `components/course/` — `CourseGate` (paywall)
-  and `CourseUnlockForm` (access-code redemption); `components/guide/` — `GuidePage`/
-  `GuideShell`/`blocks.tsx`, the unlocked course's documentation-style layout
+- `components/leadgen/LeadGenPage.tsx` — the free `/lead-generation` trailer: hero,
+  meaning, the 8-stage pipeline, and a closing CTA into `/course` (work-plan/tool-stack
+  sections were removed `5194d44`); `components/course/` — `CourseGate` (paywall,
+  "Enroll now" leads the panel) and `CourseUnlockForm` (access-code redemption, holds
+  an `"opening"` loading phase through `router.refresh()` — see [[subsystem-notes]]);
+  `components/guide/` — `GuidePage`/`GuideShell`/`blocks.tsx`, the unlocked course's
+  documentation-style layout with reading-progress tracking
 - `styles/` — tokens, shared type primitives, global reset
 - `lab/` — throwaway Playwright-driven screenshot/debug scripts used for visual QA during
   development (not a maintained test suite — expect drift/dead scripts here)

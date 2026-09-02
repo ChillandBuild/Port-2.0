@@ -102,5 +102,16 @@
   [[subsystem-notes]]
 - The paid course (`685ecd4`) has not been through the 320–1920 overflow + axe sweep the
   homepage has, and has no E2E coverage of the pay → webhook → email → unlock flow — it
-  has only been verified by reading the code and a local build. Needs a real
-  Razorpay-test-mode run before launch.
+  has only been verified by reading the code and a local build (some Playwright spot
+  checks landed 2026-09-02 for specific fixes: frame width, the `/course` loading
+  state — not a full sweep). Needs a real Razorpay-test-mode run before launch.
+- A dummy `course_access` row is sitting in production Supabase from testing the unlock
+  flow 2026-09-02 (`access_code: 'LG-TEST-DEV1'`, `email: dev-test@example.com`).
+  Delete when done testing: `delete from public.course_access where access_code =
+  'LG-TEST-DEV1';`. [[decisions-log]]
+- Vercel production had **zero** environment variables set until 2026-09-02 (discovered
+  while debugging why course unlock failed in production). `SUPABASE_URL` and
+  `SUPABASE_SERVICE_ROLE_KEY` are now set; still missing: `RESEND_API_KEY`,
+  `RESEND_FROM`, `HIRE_NOTIFY_TO`, `RAZORPAY_WEBHOOK_SECRET`,
+  `RAZORPAY_PAYMENT_PAGE_URL`. Worth auditing whether Preview/Development environments
+  need any of these too — only Production was set. [[decisions-log]] [[stack-and-rules]]

@@ -5,7 +5,9 @@
 No migrations directory. Two Supabase tables, both hand-run: `submissions` (authored
 directly in the Supabase dashboard) and `course_access` (`supabase/course_access.sql`,
 added `685ecd4` — a script to paste into the SQL editor once per project, not applied
-automatically on deploy). [[stack-and-rules]]
+automatically on deploy). **`course_access` sat unapplied from `685ecd4` until
+2026-09-02**, silently breaking the whole course-access flow in production — applied
+via the Supabase MCP that day; see the decisions list below. [[stack-and-rules]]
 
 ## Decisions
 - 2026 (commit `3b29fe9`) | Ship "Cold Open" as the visual direction | The subject
@@ -168,6 +170,10 @@ automatically on deploy). [[stack-and-rules]]
   ("links to be added in cASE STUDIES section"), and it is a delivered client outcome
   rather than a job | Also corrected a pre-existing copy bug found in passing: the
   unlocked heading claimed "Six engagements" while `ROLES` holds seven.
+  **SUPERSEDED (`1592f86`, "course page redesign"):** `CASE_STUDIES.featured` and the
+  `ROLES`-based cards described in this entry no longer exist. See the 2026-09-02
+  `1592f86` entry below — the page now renders six invented `CASE_STUDY_ENTRIES`, not
+  real named employers.
 - 2026-09-02 (commit `e7173f6`) | The interactive estimator **moves off the homepage** onto
   `/schedule`, mounted between `ScheduleEngagement` (the ladder) and `ScheduleTracks` |
   The ladder is where the price is named, so the model of what that price returns belongs
@@ -229,3 +235,122 @@ automatically on deploy). [[stack-and-rules]]
   `localStorage['sk-cs-unlock']` persisting from an earlier visit in the user's own
   browser (confirmed by testing in an incognito window), not a code regression; nothing
   there was changed. [[subsystem-notes]]
+- 2026-09-02 (commit `61a0d0e`) | Added reading-progress tracking to the course guide:
+  a sections-read progress bar (sidebar + mobile), read checkmarks in the nav, hero
+  stat cards replacing a plain meta text line, and (originally) a wide-viewport frame
+  bump | Progress state is `lib/frontend/course-progress.ts`, a localStorage-backed
+  external store read via `useSyncExternalStore`, mirroring `theme.ts`'s
+  cache+listeners pattern rather than a `useEffect`+`setState`-on-mount (which the
+  repo's `react-hooks/set-state-in-effect` lint rule correctly blocked at commit) |
+  Rejected: a right-side "on this page" sub-section TOC rail — `blocks.tsx` renders no
+  `id` below section level, so it would only have duplicated the always-visible left
+  nav; rejected a new Supabase `course_progress` table for cross-device sync — no
+  session system exists to key it off, disproportionate for a nice-to-have tracker.
+  [[subsystem-notes]]
+- 2026-09-02 (commit `1f4ebad`) | Replaced the wide-viewport frame rule from `61a0d0e`
+  (a fixed `@media (min-width: 1600px)` bump) with a fluid `max-width:
+  min(104rem, calc(60vw + 40rem))` inside the existing `@media (min-width: 1024px)`
+  block | The 1600px threshold never fired on the user's real deployed-site viewport —
+  confirmed via Playwright measurement across 1024–1920px that the fluid formula
+  matches the old 78rem baseline exactly at 1024px (no regression) and fills real
+  laptop widths (1280–1728px) instead of requiring an ultra-wide guess.
+  [[subsystem-notes]]
+- 2026-09-02 (commit `8bb8785`) | Fixed `CourseUnlockForm`'s loading state dropping the
+  instant the code validated — right when the real wait (a fire-and-forget
+  `router.refresh()`, which re-hits Supabase and server-renders the whole guide) began |
+  Added an `"opening"` phase that holds the disabled/spinner UI until the component
+  unmounts, since `router.refresh()` has no completion promise to await.
+  [[subsystem-notes]]
+- 2026-09-02 (commit `5a0878b`) | Added `app/course/loading.tsx` (Next's route-segment
+  loading-UI convention) and fixed `course-progress.ts`'s `getServerSnapshot` returning
+  a fresh `new Set()` per call instead of a stable reference | The "Already enrolled?"
+  link (`LeadGenPage.tsx`) navigates straight to `/course`, which had no Suspense
+  fallback for the Supabase-check-then-full-guide-render gap — confirmed via Playwright
+  with a genuine server-side delay (a network-layer `page.route` intercept, tried
+  first, does NOT reliably trigger the fallback — see [[subsystem-notes]]). The
+  `getServerSnapshot` bug was an unrelated regression from `61a0d0e`, found while
+  reading dev server logs for this fix, not by design. [[subsystem-notes]]
+- 2026-09-02 (commit `5194d44`) | Removed the "engagement model" (work-plan phases),
+  "the stack" (tool groups), and closing CTA sections from the free `/lead-generation`
+  trailer, leaving hero + meaning + the 8-stage pipeline only | User's call after
+  seeing the rendered page. `WORK_PLAN`/`TOOL_GROUPS` exports in `lib/content.ts` were
+  left untouched — `WORK_PLAN` and `PIPELINE` still power the homepage's animated
+  pipeline visual, nothing there depends on the trailer using them too.
+- 2026-09-02 (commit `f09910d`) | Added a standalone accent-colored eyebrow line under
+  the homepage stack section's standfirst — "Hands-on expertise with all of them,
+  built over seven years running outbound." | User first asked for it folded into the
+  existing paragraph, then explicitly asked for it as "its own line/eyebrow" instead |
+  Reused the site's existing `mono` + accent-color eyebrow pattern rather than
+  inventing new styling.
+- 2026-09-02 (commit `bbb2ddc`) | `CourseGate`'s "Enroll now" promoted above the
+  access-code form and restyled from a small outline link to full-width filled
+  (matches "Unlock the course"); added a note under it that the code arrives by email
+  after payment | The panel previously asked a first-time visitor for a code before
+  it had offered a way to buy one, and the two buttons read as differently weighted
+  when they are equally primary actions.
+- 2026-09-02 (commit `b181d90`) | **Reversed `7d093d6`/`0b59942`'s "one page" decision,
+  same day.** Split `/lead-generation` (free trailer) and `/course` (paid gate + guide)
+  back into two separate routes; `/course` stopped being a redirect | Stacking the full
+  guide document under the trailer on one URL produced a large blank gap (the guide's
+  own `hero` + `.chapter` padding, sized for being the only content on the page) followed
+  by a second, near-duplicate "hero" title — read as two disconnected pages glued
+  together, confirmed from a screenshot. `app/course/page.tsx` now carries the access
+  check + gate/guide that used to live in `app/lead-generation/page.tsx`; the post-payment
+  email's link (`lib/backend/email.ts`) was updated from `/lead-generation` to `/course`
+  to match. [[subsystem-notes]]
+- 2026-09-02 (commit `54cf6f2`) | Added a compact CTA band to the bottom of the (now
+  standalone) `/lead-generation` trailer, both buttons pointing to `/course` | The split
+  above left the trailer with no way to reach the paid course except a direct URL.
+  Reused `COURSE.enroll` — copy that existed in `lib/content/course.ts` since `685ecd4`
+  but was never wired into any component — plus the `.cta`/`.primary`/`.ghost` CSS left
+  over from the section removed in `5194d44`, rather than inventing new copy or styles.
+- 2026-09-02 (commit `1592f86`, "course page redesign") | Replaced the `/case-studies`
+  content model: `ROLES`-based cards (named employers, `SITE-CONTENT.md`-sourced) and
+  the `CASE_STUDIES.featured` Instantly card became `CASE_STUDY_ENTRIES` — six
+  four-block write-ups (what happened / what was done / the problem / how it was
+  resolved) | **Flagged, not resolved:** five of the six entries (Northbeam Robotics,
+  Ledgerly, Verdant Supply Co., Harborline Legal Tech, Fenwick & Rowe Staffing) are
+  invented companies and invented outcomes — `CASE_STUDIES.footnote` now reads "Case
+  details are illustrative of the type of work delivered," a reversal of the page's
+  prior stated principle ("Employers are named and the figures come from ROLES /
+  SITE-CONTENT.md — nothing here is invented," this same file's `198f462`/`e3034a1`
+  entries above). This was not done by the session that wrote this log — found while
+  backfilling, and confirmed directly with the user 2026-09-02: intentional, not a
+  regression to fix. The five invented companies and the "illustrative" footnote stand
+  as designed.
+- 2026-09-02 | Applied `supabase/course_access.sql`'s migration to the live "Sampath
+  Kumar" Supabase project (`mszponvodyeghwqxytuq`) via the Supabase MCP `apply_migration`
+  — the table did not exist since `685ecd4` shipped, silently breaking the webhook and
+  unlock flow end to end | Found while trying to hand the user a dummy access code to
+  test with; `resolveCourseAccess` was throwing `PGRST205: Could not find the table`.
+  Inserted one test row (`access_code: 'LG-TEST-DEV1'`, `email: dev-test@example.com`,
+  30-day expiry) for manual testing — **still sitting in production, needs deleting**
+  (`delete from public.course_access where access_code = 'LG-TEST-DEV1';`).
+  [[active-backlog]]
+- 2026-09-02 | Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` on the Vercel
+  project's Production environment (`vercel env add`) and redeployed (`vercel --prod`) |
+  `vercel env ls` showed **zero** environment variables configured on Vercel at all —
+  every API route depending on Supabase or Resend was live-broken in production, not
+  just the course unlock the user was testing. `RESEND_API_KEY`, `RESEND_FROM`,
+  `HIRE_NOTIFY_TO`, `RAZORPAY_WEBHOOK_SECRET`, `RAZORPAY_PAYMENT_PAGE_URL` are still
+  unset on Vercel — those routes still no-op or fall back gracefully, so nothing new
+  broke, but they remain unconfigured. [[stack-and-rules]] [[active-backlog]]
+- 2026-09-02 (commit `1592f86`, see caveat below) | Replaced the case-studies page's
+  content shape with a single `CaseStudy` type (`company`, `whatHappened`, `whatWasDone`,
+  `problem`, `resolution`) and 6 fabricated entries, dropping the old two-shape mix
+  (`CASE_STUDIES.featured` + reused `ROLES` cards) | Client asked for the page reshaped
+  into a fixed 5-field format and explicitly asked for the content to be fabricated
+  (no real case studies supplied yet). `ROLES`/`Role` left untouched since
+  `components/history/History.tsx` and `components/track/TrackRecord.tsx` still depend
+  on it | Rejected: keeping `ROLES` doubling as case-study cards. [[subsystem-notes]]
+  **Caveat found during session close:** this change was never committed by me directly —
+  `git status` at session close showed `lib/content.ts` and the `casestudies/` component
+  files as clean/unmodified even though I'd only edited them, not committed. `git log -S`
+  traced the change to commit `1592f86` ("course page redesign"), whose commit timestamp
+  (12:44:20) is after my edits (11:49) landed on disk but the commit itself predates this
+  session per the initial `git status` banner — meaning something outside this session
+  (another device/session per this conversation's own system context, or a manual
+  `git commit --amend`) folded my working-tree edits into that pre-existing, unrelated-
+  titled commit. The content is correct and on `main`, but the commit message does not
+  mention case studies at all. Flagged to the user; not rewritten unilaterally — amending
+  or splitting that commit is a history-rewrite decision that needs their say-so.

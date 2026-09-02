@@ -89,6 +89,22 @@ every later visit and may report the gate as "removed" or "broken." It isn't —
 as built. Before treating a "gate is missing" report as a code bug, first ask them to
 check in a private/incognito window or clear site data for the domain.
 
+## Case study content is fabricated, and deliberately decoupled from `ROLES`
+`CASE_STUDY_ENTRIES` (`lib/content.ts`, exported alongside a `CaseStudy` interface —
+`company`, `whatHappened`, `whatWasDone`, `problem`, `resolution`) is what
+`components/casestudies/CaseStudies.tsx` renders. As of 2026-09-02 these six entries are
+**placeholder/illustrative content, not real client work** — the client asked for the
+page reshaped into this 5-field format and explicitly asked for fabricated entries with
+company names either invented or omitted, since no real case-study data was supplied yet.
+This is the opposite of the `ROLES` drift trap two sections up: `ROLES` is real,
+fact-checked employment history that must stay in sync across three places. Do **not**
+apply that same "keep it accurate" instinct here — until real client case studies are
+supplied, this content is expected to be invented, and should read as illustrative rather
+than as a claim of fact (the page footnote says as much). `CaseStudies.tsx` no longer
+imports `ROLES` at all — that coupling ("the same ROLES the homepage history draws on")
+was removed this session; `ROLES` still powers `components/history/History.tsx` and
+`components/track/TrackRecord.tsx` on the homepage, untouched. [[decisions-log]]
+
 ## Legal pages share one shell (`components/legal/LegalPage.tsx`)
 `/privacy`, `/terms`, and `/refunds` are three thin routes over one presentational shell.
 Editing the shell changes all three at once — check the other two before restyling one.
@@ -221,3 +237,58 @@ had no entry for this commit at all until this session.
 - **A captured payment with no email is logged, not retried or failed** — Razorpay
   Payment Pages normally collect it, so a missing email is treated as rare enough to
   handle manually from the Supabase dashboard rather than build recovery flow for.
+
+## Course reading progress (`lib/frontend/course-progress.ts`, `components/guide/GuideShell.tsx`)
+Added `61a0d0e` ([[decisions-log]]). Browser-scoped only — localStorage, no account
+system to key a server record off, so progress does not sync across devices; this is
+a stated, accepted trade-off, not a gap to silently "fix" by adding a Supabase table.
+
+**`getServerSnapshot` must return a stable reference, always** — `useSyncExternalStore`
+compares it by identity. Returning a fresh `new Set()` per call (the original,
+buggy version) makes React log "getServerSnapshot should be cached to avoid an
+infinite loop" and can actually loop; fixed `5a0878b` by returning one module-level
+`EMPTY` constant. The bug shipped in `61a0d0e` and sat unnoticed for a session because
+it is a console warning, not a build/type error — `tsc --noEmit` and `next build`
+both stay green through it. If you touch this file again: the client snapshot
+(`getCourseProgress`) has the same requirement and already returns the cached
+`cache` variable, not a fresh Set, for the same reason.
+
+Read-tracking reuses the *existing* scroll-spy `IntersectionObserver` in
+`GuideShell.tsx` (the one that already drove `activeId`) rather than adding a second
+observer — `markSectionVisited(id)` is called in the same `isIntersecting` branch.
+
+## `CourseUnlockForm`'s post-success wait has no completion signal (`components/course/CourseUnlockForm.tsx`)
+Fixed `8bb8785` ([[decisions-log]]). On a valid code, the flow is: cookie set
+server-side → `router.refresh()` → the whole `/course` RSC tree re-renders (Supabase
+check + full `GuidePage` render) → this form's component unmounts once the gate is
+replaced. `router.refresh()` returns `void`, not a promise — there is no way to
+`await` "the refresh is done." The original bug: the code set a `"done"` phase right
+when calling `refresh()`, but the JSX only branched on `"checking"`, so `"done"`
+rendered identically to idle — the loading UI vanished at the exact moment the real
+(often multi-second, cold-start-prone) wait began. The fix is an `"opening"` phase
+that is never reset to idle on the success path; it only ever stops because the
+component unmounts. If this pattern recurs elsewhere (anything that calls
+`router.refresh()` after a mutation and needs to show "working" through the gap), the
+fix is the same: hold the loading phase through to unmount, don't try to detect
+refresh completion.
+
+## The connected Razorpay MCP is NOT this project's account
+Checked 2026-09-02: `mcp__claude_ai_Razorpay__fetch_all_payments` returns live data, but
+the payment's `notes.purpose` is `astrologer_welcome` — a different business entirely,
+not Sampath's lead-gen course. Don't assume this MCP connection can be used to inspect
+or manage this project's Razorpay account (payments, settlements, payment pages) without
+re-confirming which account is wired up first. It is also read-only regardless (no
+payment-page or webhook-secret creation tools) — actually configuring
+`RAZORPAY_WEBHOOK_SECRET` / `RAZORPAY_PAYMENT_PAGE_URL` still requires the user to do it
+by hand in the Razorpay dashboard. [[decisions-log]]
+
+## Verifying Next's `loading.tsx` — a network-layer delay is not a Suspense delay
+Learned `5a0878b`, verifying the `/course` loading-state fix. Delaying the response
+with Playwright's `page.route(...).continue()` (an artificial network-layer delay on
+the intercepted request) did **not** trigger the `loading.tsx` fallback during a
+client-side `<Link>` navigation in this app, even across a fresh dev-server restart to
+rule out stale HMR. Adding a genuine `await new Promise(r => setTimeout(r, 3000))`
+inside the page component itself **did** trigger it immediately and reliably. Do not
+trust a `page.route` intercept to prove or disprove a Suspense/loading-boundary fix —
+verify with a real `setTimeout` in the server component (temporarily, reverted after),
+the same way this fix was confirmed.
