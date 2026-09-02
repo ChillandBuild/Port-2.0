@@ -45,7 +45,11 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sampathkumar.example"),
+  // Resolves every relative Open Graph image and canonical URL on the site, so
+  // a placeholder here silently points social previews at a domain that does
+  // not exist. Kept in step with NEXT_PUBLIC_SITE_URL, which lib/backend/email.ts
+  // uses to build the links inside course emails.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.sampathkumar.in"),
   title: "Sampath Kumar — Pre Sales Head & Lead Generation",
   description:
     "Sampath Kumar is a Pre Sales Head and Lead Generation leader with 7+ years driving B2B SaaS, IT, staffing, and private-market deal origination pipeline growth globally.",

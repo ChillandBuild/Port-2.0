@@ -29,11 +29,14 @@
 
 .form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
   gap: 0.75rem;
-  max-width: 24rem;
+  max-width: 34rem;
 }
 
 .label {
+  grid-column: 1 / -1;
   font-family: var(--font-mono);
   font-size: var(--text-meta);
   letter-spacing: var(--tracking-meta);
@@ -57,6 +60,17 @@
 .input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+@media (max-width: 420px) {
+  .form {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .submit {
+    width: 100%;
+  }
 }
 
 .submit {

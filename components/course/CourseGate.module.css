@@ -164,6 +164,36 @@
   color: var(--on-panel-soft);
 }
 
+/* Access-code entry, folded away so it never competes with the enroll CTA. */
+.unlock {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule-panel);
+}
+
+.unlockSummary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--on-panel-soft);
+  list-style: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.unlockSummary::-webkit-details-marker {
+  display: none;
+}
+
+.unlockSummary:hover,
+.unlockSummary:focus-visible {
+  color: var(--on-panel);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.unlock[open] .unlockSummary {
+  margin-bottom: 1rem;
+}
+
 .backNote {
   margin-top: 1.75rem;
   font-size: var(--text-sm);

@@ -6,7 +6,7 @@ import { COURSE } from "@/lib/content/course";
 import styles from "./CourseUnlockInline.module.css";
 
 type Phase = "idle" | "checking" | "opening";
-type Failure = "invalid" | "expired" | "server" | null;
+type Failure = "invalid" | "expired" | "revoked" | "server" | null;
 
 const PHASE_COPY: Record<Phase, string> = {
   idle: COURSE.gate.submit,
@@ -17,8 +17,16 @@ const PHASE_COPY: Record<Phase, string> = {
 const FAILURE_COPY: Record<Exclude<Failure, null>, string> = {
   invalid: COURSE.gate.invalidCode,
   expired: COURSE.gate.invalidCode,
+  revoked: COURSE.gate.revokedCode,
   server: COURSE.gate.error,
 };
+
+/** Anything the route handler can return that we have copy for. */
+function toFailure(error: string | undefined): Exclude<Failure, null> {
+  return error === "expired" || error === "invalid" || error === "revoked" || error === "server"
+    ? error
+    : "server";
+}
 
 /**
  * Inline unlock form — a <details> toggle that expands to reveal the access
@@ -44,15 +52,16 @@ export function CourseUnlockInline() {
       });
       const payload = (await response.json()) as { success: boolean; error?: string };
       if (payload.success) {
+        // The cookie is set by the route handler. Unlike the /course gate —
+        // where router.refresh() re-renders the page and swaps this form for
+        // the guide — this inline form sits on /lead-generation, which shows
+        // it unconditionally, so refreshing would spin forever. Navigate to
+        // the course instead; the server render picks up the cookie.
         setPhase("opening");
-        router.refresh();
+        router.push("/course");
         return;
       }
-      setFailure(
-        payload.error === "expired" || payload.error === "invalid" || payload.error === "server"
-          ? payload.error
-          : "server",
-      );
+      setFailure(toFailure(payload.error));
     } catch {
       setFailure("server");
     }

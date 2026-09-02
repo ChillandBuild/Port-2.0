@@ -6,9 +6,18 @@ import {
   getCourseProgress,
   getCourseProgressServerSnapshot,
   markSectionVisited,
+  recordSectionTime,
+  startProgressReporting,
   subscribeCourseProgress,
 } from "@/lib/frontend/course-progress";
 import styles from "./guide.module.css";
+
+/**
+ * How long a section must stay in the reading band before it counts as read.
+ * Long enough that scrolling past does not count, short enough that skimming a
+ * short section still does.
+ */
+const DWELL_MS = 4000;
 
 export interface SearchEntry {
   id: string;
@@ -77,23 +86,51 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
   // setState-on-mount effect.
   const visited = useSyncExternalStore(subscribeCourseProgress, getCourseProgress, getCourseProgressServerSnapshot);
 
-  // Scroll spy: whichever section crosses the upper-middle band is active,
-  // and is marked read for good (progress only ever grows).
+  // Scroll spy plus dwell tracking. Whichever section crosses the upper-middle
+  // band becomes active immediately, but it only counts as *read* after
+  // DWELL_MS in that band — previously one flick of the scroll wheel marked all
+  // 40 sections read, which made both the progress bar and the engagement
+  // figures meaningless. Progress still only ever grows.
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-guide-section]"));
     if (sections.length === 0) return;
+
+    const enteredAt = new Map<string, number>();
+
+    const settle = (id: string) => {
+      const since = enteredAt.get(id);
+      if (since === undefined) return;
+      enteredAt.delete(id);
+      const seconds = (performance.now() - since) / 1000;
+      if (seconds * 1000 >= DWELL_MS) {
+        markSectionVisited(id);
+        recordSectionTime(id, seconds);
+      }
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          setActiveId(entry.target.id);
-          markSectionVisited(entry.target.id);
+          const id = entry.target.id;
+          if (entry.isIntersecting) {
+            setActiveId(id);
+            if (!enteredAt.has(id)) enteredAt.set(id, performance.now());
+          } else {
+            settle(id);
+          }
         }
       },
       { rootMargin: "-20% 0px -70% 0px" },
     );
     sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+
+    const stopReporting = startProgressReporting();
+    return () => {
+      observer.disconnect();
+      // Credit whatever is still on screen when the reader navigates away.
+      for (const id of Array.from(enteredAt.keys())) settle(id);
+      stopReporting();
+    };
   }, []);
 
   // Drawer + search keyboard behaviour: Esc closes; focus is managed.

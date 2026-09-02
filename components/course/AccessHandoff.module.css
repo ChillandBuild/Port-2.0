@@ -1,0 +1,173 @@
+/*
+ * The access handoff page — the first thing a hiring company sees, so it gets
+ * more care than an internal screen. Direction: one centred plate on the world
+ * surface, editorial display type carrying the hierarchy, a mono meta ledger
+ * (the same <dl> rhythm the rest of the site uses for figures), and a single
+ * accent reserved for the one action. No card grid, no decorative gradient.
+ */
+
+.page {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  background: var(--surface-page);
+  color: var(--on-page);
+}
+
+.card {
+  width: min(34rem, 100%);
+  padding: clamp(1.75rem, 5vw, 3rem);
+  background: var(--surface-panel);
+  color: var(--on-panel);
+  border: 1px solid var(--rule-panel);
+  border-radius: 16px;
+}
+
+.eyebrow {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+}
+
+.heading {
+  margin-top: 0.85rem;
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 0.9rem;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: var(--on-panel-soft);
+}
+
+/* Meta ledger — hairline-separated rows, not boxes. */
+.meta {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--rule-panel);
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule-panel);
+}
+
+.metaLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-panel-mute);
+}
+
+.metaValue {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: right;
+}
+
+.action {
+  margin-top: 1.9rem;
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  font: inherit;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out-expo),
+    transform var(--duration-fast) var(--ease-out-expo);
+}
+
+.open:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.open:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.open:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.spinner {
+  width: 0.85em;
+  height: 0.85em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: handoffSpin 700ms linear infinite;
+}
+
+@keyframes handoffSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.startsNote {
+  margin-top: 0.85rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--on-panel-soft);
+}
+
+.trackedNote {
+  margin-top: 1.75rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule-panel);
+  font-size: var(--text-xs);
+  color: var(--on-panel-mute);
+}
+
+.error {
+  margin-top: 0.85rem;
+  font-size: var(--text-sm);
+  text-align: center;
+  color: var(--danger);
+}
+
+.deadLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.deadLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .open:hover:not(:disabled) {
+    transform: none;
+  }
+  .spinner {
+    animation-duration: 2s;
+  }
+}

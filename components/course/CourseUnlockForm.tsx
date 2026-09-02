@@ -6,7 +6,7 @@ import { COURSE } from "@/lib/content/course";
 import styles from "./CourseGate.module.css";
 
 type Phase = "idle" | "checking" | "opening";
-type Failure = "invalid" | "expired" | "server" | null;
+type Failure = "invalid" | "expired" | "revoked" | "server" | null;
 
 const PHASE_COPY: Record<Phase, string> = {
   idle: COURSE.gate.submit,
@@ -17,8 +17,16 @@ const PHASE_COPY: Record<Phase, string> = {
 const FAILURE_COPY: Record<Exclude<Failure, null>, string> = {
   invalid: COURSE.gate.invalidCode,
   expired: COURSE.gate.invalidCode,
+  revoked: COURSE.gate.revokedCode,
   server: COURSE.gate.error,
 };
+
+/** Anything the route handler can return that we have copy for. */
+function toFailure(error: string | undefined): Exclude<Failure, null> {
+  return error === "expired" || error === "invalid" || error === "revoked" || error === "server"
+    ? error
+    : "server";
+}
 
 /**
  * Redeems the access code emailed after payment. The route handler sets the
@@ -53,11 +61,7 @@ export function CourseUnlockForm() {
         router.refresh();
         return;
       }
-      setFailure(
-        payload.error === "expired" || payload.error === "invalid" || payload.error === "server"
-          ? payload.error
-          : "server",
-      );
+      setFailure(toFailure(payload.error));
     } catch {
       setFailure("server");
     }

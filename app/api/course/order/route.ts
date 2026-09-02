@@ -1,5 +1,5 @@
 import { createOrder } from "@/lib/backend/razorpay";
-import { COURSE_PRICE_INR } from "@/lib/content/course";
+import { COURSE_PRICE_USD, COURSE_CURRENCY } from "@/lib/content/course";
 
 export const runtime = "nodejs";
 
@@ -16,7 +16,7 @@ export async function POST(): Promise<Response> {
   }
 
   try {
-    const order = await createOrder(COURSE_PRICE_INR * 100);
+    const order = await createOrder(COURSE_PRICE_USD * 100, COURSE_CURRENCY);
     return Response.json({
       success: true,
       orderId: order.id,

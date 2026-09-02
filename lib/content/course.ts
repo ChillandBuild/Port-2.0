@@ -4,13 +4,8 @@
  * from the markdown files in content/course/ via lib/course.ts, so the two
  * cannot drift. Server-only import: enrollHref reads an env var.
  */
-/**
- * TODO(client): confirm the real price before launch. A ₹10 test transaction
- * will temporarily override this value during end-to-end verification —
- * that's an operational step (edit this constant, test, revert), never a
- * code branch; don't hardcode a test price anywhere.
- */
-export const COURSE_PRICE_INR = 10; // TEMP: test-transaction price, revert to 4999 before launch.
+export const COURSE_PRICE_USD = 59;
+export const COURSE_CURRENCY = "USD";
 
 export const COURSE = {
   eyebrow: "The course",
@@ -26,15 +21,20 @@ export const COURSE = {
     lockedBody:
       "The entire pipeline — ICP, research, infrastructure, campaigns, tracking — in 40 lessons. One payment, work through it at your own pace.",
     expiredEyebrow: "Access ended",
-    expiredHeading: "Your 30-day access has expired.",
+    expiredHeading: "Your access window has closed.",
     expiredBody:
-      "Your enrollment window has closed. Enroll again for a fresh 30 days — or reach out if you believe this is a mistake.",
+      "This access window has ended. Enroll for a fresh 30 days below — or, if you were given a time-limited link, ask whoever sent it for a new one.",
+    revokedEyebrow: "Access ended",
+    revokedHeading: "This access was ended by the organiser.",
+    revokedBody:
+      "Whoever arranged this access has closed it. Contact them if you think that's a mistake — or enroll below for your own copy.",
     codeLabel: "Access code",
     codePlaceholder: "LG-XXXX-XXXX",
     submit: "Unlock the course",
     checking: "Checking…",
     opening: "Opening the course…",
     invalidCode: "That code doesn't match an active enrollment. Check the email you received after payment.",
+    revokedCode: "That access was ended by whoever arranged it. Ask them for a new link.",
     error: "Something went wrong checking your code. Try again in a moment.",
     buyLabel: "Enroll now",
     buyNote: "You'll get your access code by email right after payment — come back here and enter it below to unlock.",
@@ -78,12 +78,38 @@ export const COURSE = {
     dialogClose: "Close",
   },
 
+  /**
+   * The /c/<code> handoff page — the first thing a hiring company sees. It
+   * exists so opening the link and starting the clock are two separate acts:
+   * corporate mail scanners follow links, so a redirect here would spend the
+   * window before a person ever saw it.
+   */
+  handoff: {
+    eyebrow: "Sampath Kumar",
+    heading: "The lead generation system, in full.",
+    body:
+      "ICP, research, infrastructure, campaigns, LinkedIn, tracking and the numbers — the whole thing I run, written out in 40 sections.",
+    forLabel: "Prepared for",
+    windowLabel: "Your access",
+    startsNote: "Your time starts when you open it — not now. Take a moment.",
+    open: "Open the course",
+    opening: "Opening…",
+    error: "Couldn't open it just now. Try again in a moment.",
+    trackedNote:
+      "Opens are logged so Sampath knows when to follow up.",
+
+    deadHeading: "This link is no longer active.",
+    deadBody:
+      "It may have already been used up, or been withdrawn. Ask whoever sent it for a fresh one.",
+    deadLink: "See the rest of the site",
+  },
+
   enroll: {
     eyebrow: "The course",
     heading: "Prefer to run it yourself?",
     body:
       "Everything in the system above, taught step by step — the ICP method, the research loop, campaign sequencing, LinkedIn outreach, tracking, and the metrics. One payment, 30 days of access, all 40 lessons.",
-    priceLabel: "₹4,999", // TODO(client): set the real price before launch.
+    priceLabel: "$59",
     durationLabel: "30 days of access",
     buyLabel: "Enroll now",
     memberLabel: "Already enrolled? Enter your code",

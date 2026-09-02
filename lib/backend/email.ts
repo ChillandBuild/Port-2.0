@@ -1,9 +1,12 @@
 import { Resend } from "resend";
 import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
+import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
 
-// Matches metadataBase in app/layout.tsx; overridable per environment.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sampathkumar.example";
+// Matches metadataBase in app/layout.tsx; overridable per environment. The
+// fallback is the real domain, not a placeholder: this builds the links a
+// paying buyer receives, and a wrong one strands them with no way back in.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.sampathkumar.in";
 
 const SOURCE_LABEL: Record<SubmissionPayload["source"], string> = {
   "case-studies-gate": "Case studies — unlocked",
@@ -60,17 +63,29 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
     return;
   }
 
+  // Both are guaranteed on a paid enrollment — grantCourseAccess writes the
+  // deadline up front and the buyer's email is required. Demo grants can have
+  // neither, and they use their own email; this is the wrong function for them.
+  if (!access.email || !access.expiresAt) {
+    console.error(`course access email skipped for ${access.accessCode} — no email or deadline`);
+    return;
+  }
+  const recipient = access.email;
+
+  // Vercel runs UTC. Without an explicit zone a 19:00 IST deadline formats as
+  // the previous day, so the buyer is told their access ends before it does.
   const expiry = new Date(access.expiresAt).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "Asia/Kolkata",
   });
 
   try {
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
-      to: access.email,
+      to: recipient,
       subject: "Your Lead Generation course access code",
       text: [
         "Thank you for enrolling in the Lead Generation course.",
@@ -91,5 +106,70 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
     });
   } catch (error) {
     console.error(`sendCourseAccessEmail failed for ${access.email}`, error);
+  }
+}
+
+export interface CourseGrantEmail {
+  to: string;
+  label: string;
+  url: string;
+  accessSeconds: number;
+  redeemBy: string | null;
+}
+
+/**
+ * Sends a time-limited access link to a company representative.
+ *
+ * Separate from sendCourseAccessEmail because the two say genuinely different
+ * things: a buyer has a deadline ("valid until 3 March"), while this recipient
+ * has a duration that has not started yet ("4 hours, beginning when you open
+ * it"). Reusing the buyer copy here would state a date that does not exist.
+ *
+ * Returns whether it actually sent, so the console can tell the operator
+ * rather than implying an email that never left.
+ */
+export async function sendCourseGrantEmail(grant: CourseGrantEmail): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !from) {
+    console.error(`course grant email skipped for ${grant.to} — Resend not configured`);
+    return false;
+  }
+
+  const window = formatDuration(grant.accessSeconds);
+  const claimBy = grant.redeemBy
+    ? new Date(grant.redeemBy).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: DISPLAY_TIME_ZONE,
+      })
+    : null;
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from,
+      to: grant.to,
+      subject: "Your access to the Lead Generation system",
+      text: [
+        grant.label ? `For ${grant.label}.` : "",
+        "",
+        "Here is the full lead generation system I run — ICP, research, infrastructure, campaigns, tracking and the numbers, written out in 40 sections.",
+        "",
+        grant.url,
+        "",
+        `Your ${window} of access starts when you open it, not now — so there is no rush to click.`,
+        claimBy ? `The link itself stays available until ${claimBy}.` : "",
+        "",
+        "— Sampath Kumar",
+      ]
+        .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
+        .join("\n"),
+    });
+    return true;
+  } catch (error) {
+    console.error(`sendCourseGrantEmail failed for ${grant.to}`, error);
+    return false;
   }
 }

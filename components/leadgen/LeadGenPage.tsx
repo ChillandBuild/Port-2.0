@@ -63,7 +63,12 @@ export function LeadGenPage() {
         </h2>
         <p className={styles.ctaBody}>{COURSE.enroll.body}</p>
         <div className={styles.ctaActions}>
-          <Link className={styles.primary} href="/course">
+          {/*
+            prefetch={false} is load-bearing: this link sits next to the unlock
+            form, so after a redeem it would be in view with the access cookie
+            already set. A prefetch render of /course starts the access clock.
+          */}
+          <Link className={styles.primary} href="/course" prefetch={false}>
             {COURSE.enroll.buyLabel}
           </Link>
           <CourseUnlockInline />

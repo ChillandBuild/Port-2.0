@@ -46,8 +46,11 @@ export interface RazorpayOrder {
  * always set here, server-side, from the caller — never trust a client-
  * supplied price. No `razorpay` SDK is installed for one endpoint; a raw
  * REST call keeps the dependency list unchanged.
+ *
+ * Requires International Payments enabled on the Razorpay account for any
+ * currency other than INR — otherwise the order create call fails.
  */
-export async function createOrder(amountPaise: number): Promise<RazorpayOrder> {
+export async function createOrder(amountMinorUnits: number, currency: string): Promise<RazorpayOrder> {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
   if (!keyId || !keySecret) throw new Error("Razorpay keys not configured.");
@@ -60,8 +63,8 @@ export async function createOrder(amountPaise: number): Promise<RazorpayOrder> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      amount: amountPaise,
-      currency: "INR",
+      amount: amountMinorUnits,
+      currency,
       receipt: `course_${Date.now()}`,
       notes: { product: "lead-gen-course" },
     }),
