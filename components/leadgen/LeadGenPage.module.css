@@ -1,0 +1,306 @@
+/* The /lead-generation page. Tonal steps run page → page-alt → page → panel →
+   page-alt → close, so no two adjacent sections share a ground. */
+
+.hero {
+  background: var(--surface-page);
+  color: var(--on-page);
+  padding: calc(var(--nav-h) + var(--space-section)) var(--space-shell) var(--space-section);
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  color: var(--on-page-soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.back:hover {
+  color: var(--accent);
+}
+
+.eyebrow {
+  color: var(--accent);
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin-top: 1.25rem;
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+}
+
+.meaning,
+.process,
+.model,
+.stack {
+  padding: var(--space-section) var(--space-shell);
+}
+
+.meaning {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+}
+
+.process {
+  background: var(--surface-page);
+  color: var(--on-page);
+}
+
+.model {
+  background: var(--surface-panel);
+  color: var(--on-panel);
+}
+
+.stack {
+  background: var(--surface-page-alt);
+  color: var(--on-page);
+}
+
+.meaning .sectionHeading {
+  max-width: 14ch;
+}
+
+.sectionHeading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin-top: 1rem;
+  text-wrap: balance;
+}
+
+.sectionBody {
+  margin-top: 0.9rem;
+  max-width: 52ch;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+}
+
+.model .sectionHeading {
+  color: var(--on-panel);
+}
+
+.model .sectionBody {
+  color: var(--on-panel-soft);
+}
+
+.meaningBody {
+  max-width: 60ch;
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: var(--on-page-soft);
+}
+
+.meaningBody + .meaningBody {
+  margin-top: 0.9rem;
+}
+
+.stages {
+  list-style: none;
+  margin: clamp(2rem, 4vh, 3rem) 0 0;
+  padding: 0;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.stageNo {
+  color: var(--accent);
+  padding-top: 0.2rem;
+}
+
+.stageName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  letter-spacing: -0.02em;
+}
+
+.stageBody {
+  margin-top: 0.35rem;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  max-width: 56ch;
+}
+
+.phases {
+  list-style: none;
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  margin: clamp(2rem, 4vh, 3rem) 0 0;
+  padding: 0;
+}
+
+.phase {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-panel);
+}
+
+.phase .stageName {
+  color: var(--on-panel);
+}
+
+.phase .stageBody {
+  color: var(--on-panel-soft);
+}
+
+.groups {
+  display: grid;
+  gap: 1px;
+  margin-top: clamp(2rem, 4vh, 3rem);
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.group {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.25rem 1.4rem;
+  background: var(--surface-page);
+}
+
+.groupName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+}
+
+.groupTools {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.toolLink {
+  color: inherit;
+  text-decoration: none;
+  transition: color 140ms ease, opacity 140ms ease;
+}
+
+.toolLink:hover,
+.toolLink:focus-visible {
+  color: var(--on-page);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.groupBody {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--on-page-soft);
+  max-width: 46ch;
+}
+
+.cta {
+  background: var(--surface-close);
+  color: var(--on-close);
+  padding: var(--space-section) var(--space-shell);
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.ctaHeading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h2);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.ctaBody {
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--on-close-soft);
+}
+
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform 140ms var(--ease-out-quint),
+    background 140ms var(--ease-out-quint);
+}
+
+.primary {
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+}
+
+.primary:hover {
+  background: var(--accent-hover);
+}
+
+.ghost {
+  border-color: var(--rule-strong);
+  color: var(--on-close);
+}
+
+.ghost:hover {
+  background: color-mix(in srgb, var(--on-close) 10%, transparent);
+  transform: translateY(-2px);
+}
+
+@media (min-width: 860px) {
+  .phases {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
