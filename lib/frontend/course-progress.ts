@@ -10,6 +10,8 @@
 
 export const COURSE_PROGRESS_KEY = "sk-course-progress";
 
+const EMPTY: Set<string> = new Set();
+
 let cache: Set<string> | null = null;
 const listeners = new Set<() => void>();
 
@@ -24,14 +26,19 @@ function read(): Set<string> {
 
 /** Client snapshot for useSyncExternalStore. Stable reference until progress changes. */
 export function getCourseProgress(): Set<string> {
-  if (typeof window === "undefined") return new Set();
+  if (typeof window === "undefined") return EMPTY;
   if (!cache) cache = read();
   return cache;
 }
 
-/** Server/first-hydration snapshot: always empty, same as a fresh visitor. */
+/**
+ * Server/first-hydration snapshot: always empty, same as a fresh visitor.
+ * Must return the same reference every call — useSyncExternalStore compares
+ * by identity, and a fresh `new Set()` each time trips React's "getServerSnapshot
+ * should be cached" warning (and can loop).
+ */
 export function getCourseProgressServerSnapshot(): Set<string> {
-  return new Set();
+  return EMPTY;
 }
 
 export function markSectionVisited(id: string): void {

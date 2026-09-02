@@ -1,0 +1,38 @@
+.wrap {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1.1rem;
+  min-height: 60vh;
+  padding: var(--space-section) var(--space-shell);
+  text-align: center;
+}
+
+.spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 3px solid var(--rule-strong);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
