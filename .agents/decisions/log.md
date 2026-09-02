@@ -2,8 +2,10 @@
 
 ## Migration Index
 <!-- date | migration file | what changed -->
-No migration files in-repo. The one database table (`submissions`, Supabase) is managed
-in the Supabase dashboard, not via a migrations directory here.
+No migrations directory. Two Supabase tables, both hand-run: `submissions` (authored
+directly in the Supabase dashboard) and `course_access` (`supabase/course_access.sql`,
+added `685ecd4` — a script to paste into the SQL editor once per project, not applied
+automatically on deploy). [[stack-and-rules]]
 
 ## Decisions
 - 2026 (commit `3b29fe9`) | Ship "Cold Open" as the visual direction | The subject
@@ -121,3 +123,109 @@ in the Supabase dashboard, not via a migrations directory here.
   me to opportunistically keep it current (as I did earlier this session) isn't the
   same as it actually being maintained. Reverted `second_brain_close.py`'s dead-link
   and stale-claim checks back to `.agents/`-only, matching the deletion. [[stack-and-rules]]
+- 2026-09-02 (commit `e887a45`) | Replaced `TOOL_GROUPS` wholesale — 4 curated groups /
+  25 tools became the source doc's 8 groups / 154 chips (149 unique URLs, 5 tools
+  cross-listed on purpose) — and `POSTS` went from 4 hand-written entries to 42 real
+  LinkedIn permalinks | Source was `Tools to be added.docx` in the repo root, which
+  supplied names and URLs only: no tool websites, no post titles/summaries/images. So
+  the work was resolution and authoring, not data entry. Every one of the 149 tool URLs
+  was resolved then verified by live HTTP; titles and ~140-char summaries were written
+  per post from the fetched post bodies | Rejected: extending the existing 4 groups
+  rather than replacing them (user asked for replacement explicitly).
+  [[subsystem-notes]] [[active-backlog]]
+- 2026-09-02 (commit `e887a45`) | Post images are **hotlinked** from `media.licdn.com`,
+  not downloaded into `public/`, and render through a plain `<img>` rather than
+  `next/image` | User's call on hotlinking. It is technically sound: the signed URLs
+  carry `e=2147483647` (year 2038, effectively non-expiring) and serve `200` with
+  `Cache-Control: public, max-age=86400` from any referer, verified from a foreign
+  domain, `localhost:3000` and a `.vercel.app` host. `next/image` was rejected because
+  the project has no `images.remotePatterns` config and ships no other raster images —
+  it would mean new config plus a Vercel optimisation hop for URLs the CDN already
+  caches for a day | Cost accepted: ~4.0MB of image if every card is seen, spread by
+  `loading="lazy"`. Self-hosting into `public/` remains the fix if it reads slow.
+  [[subsystem-notes]] [[active-backlog]]
+- 2026-09-02 (commit `e887a45`) | The 11 carousel/document posts get a **designed
+  typographic cover** (accent gradient + title + "Carousel" tag), not a screenshot |
+  Their real covers are unobtainable: LinkedIn serves `feedshare-document-cover-images`
+  only to a signed-in session (`403 deny-InvalidToken` even with a token freshly issued
+  seconds earlier, cookies carried, browser UA and `Referer: linkedin.com`). A headless
+  Chromium **does** render them logged-out, so a Playwright capture script was offered
+  and priced out — user chose the designed cover instead | Rejected: auto-capture with
+  the repo's existing `playwright-core`; asking the user to screenshot 12 slides;
+  dropping the carousel posts. [[subsystem-notes]]
+- 2026-09-02 (commit `e887a45`) | Kept the featured-posts marquee rather than moving to
+  a filterable grid, and widened the stack section from 4 columns to 2 at ≥1200px |
+  User picked the marquee for all 42. Two columns because 8 groups in a 4-col grid put
+  a 41-chip group beside a 13-chip one; half-width cards let a long chip list wrap into
+  a few rows instead of a column fourteen rows deep. Each group now states its own tool
+  count so the unevenness reads as deliberate | Doc order (the GTM funnel: prospecting →
+  enrichment → outbound → deliverability → CRM → execution → automation → intelligence)
+  was preserved rather than re-sorted by size, which would have packed the grid tighter
+  but destroyed the sequence's meaning. [[subsystem-notes]]
+- 2026-09-02 (commit `e887a45`) | The Instantly client engagement lands in
+  `CASE_STUDIES.featured` as its own card above `ROLES`, inside the existing gate — not
+  as a seventh role and not in the posts marquee | The source doc files it separately
+  ("links to be added in cASE STUDIES section"), and it is a delivered client outcome
+  rather than a job | Also corrected a pre-existing copy bug found in passing: the
+  unlocked heading claimed "Six engagements" while `ROLES` holds seven.
+- 2026-09-02 (commit `e7173f6`) | The interactive estimator **moves off the homepage** onto
+  `/schedule`, mounted between `ScheduleEngagement` (the ladder) and `ScheduleTracks` |
+  The ladder is where the price is named, so the model of what that price returns belongs
+  directly under it rather than mid-homepage. `Estimator` already carried optional
+  `eyebrow`/`heading`/`body` props written for exactly this remount, so no component
+  change was needed — only new copy ("Model the pipeline before you book.") | Two knock-on
+  fixes this forced: the estimator's own links dead-ended on the new route, so
+  `ESTIMATOR.toolsLink.href` became root-relative `/#range` and `freeCallNote.cta` became
+  `#book` (the `ScheduleForm` id) relabelled "Book the call"; and the homepage hero's
+  "Work with me" ghost CTA, which pointed at the now-absent `#estimator`, was repointed to
+  `#range`. Rejected for that CTA: `#contact` (skips every piece of evidence) and `#stack`
+  (opens on tooling before breadth is established). [[subsystem-notes]]
+- 2026-09-02 (commit `e7173f6`) | The impressions chart's line now **redraws on an infinite
+  loop** instead of drawing once per scroll pass | User asked for the graph to "move
+  continuously, like a train" and chose looping draw-in over a scrolling ticker or a
+  travelling pulse when the three were put side by side | Implemented as two tweens rather
+  than one repeating timeline, with the loop's own ScrollTrigger pausing it off-screen and
+  reduced-motion skipping it entirely — the reasons are load-bearing and written up in
+  [[subsystem-notes]].
+- 2026-09-02 (commit `e7173f6`) | Closing CTA (`components/reply/Reply.tsx`) gains a second
+  button, "Schedule a call" → `/schedule`, as an outlined ghost beside the filled LinkedIn
+  primary | The close previously offered one exit and it was not the booking page. Ghost
+  rather than a second filled button so the pair keeps a hierarchy | Its hover/active
+  states deliberately avoid `transform`: `data-magnet` writes `transform` every rAF frame
+  and would win, silently killing the press feedback — same reason `.primary:active` uses
+  `filter: brightness()`.
+- 2026-09-02 (commit `e7173f6`) | Hero/world copy says "leads", not "names"
+  (`WorldStage.tsx`), and two role titles corrected in `ROLES` — Zinnov & Draup →
+  Lead Generation Executive, Emotii → Senior Lead Generation Specialist | User-supplied
+  corrections from live-site screenshots | Alore's identical "Lead Generation Specialist"
+  was explicitly left alone after asking. The same facts live in three unsynced places, so
+  `SITE-CONTENT.md` and `app/api/chat/route.ts` were corrected in the same pass — see
+  [[subsystem-notes]]. Two pre-existing bugs fixed in passing: the chat route's work-history
+  answer said "6 roles" with no Emotii and wrong Zinnov dates, and its estimator CTA pointed
+  at `/#work-plan`, an id that exists nowhere (now `/schedule#estimator`).
+- 2026-09-01 (commit `685ecd4`) | `/lead-generation` became a paid course | Razorpay
+  webhook grants 30 days of Supabase-backed access on `payment.captured`;
+  `CourseGate`/`CourseUnlockForm` gate the content behind an access-code form,
+  `GuidePage`/`GuideShell` render a 3-chapter, ~30-lesson document compiled into
+  `lib/guide/*` from `content/lead-generation.md`. The access cookie's value **is** the
+  access code itself — no separate signature — because every request re-validates it
+  against Supabase and its expiry, so no server-side session store is needed. This
+  replaced the old free `LeadGenPage` outright: the component and its CSS were deleted,
+  not hidden or flagged | This commit bundled the course/Razorpay work with unrelated
+  changes (README, chat route, estimator copy) in one large push, and the second brain
+  was never updated for any of it at the time — caught and backfilled 2026-09-02, one
+  session later. [[stack-and-rules]] [[active-backlog]]
+- 2026-09-02 (commit `7d093d6`) | Restored the free `LeadGenPage` on `/lead-generation`
+  as a trailer ABOVE the paid course gate, same URL — not a revert of `685ecd4` and not
+  a separate route for the course | User wanted both: the free process overview first,
+  the paywall/guide directly below it. `app/course/page.tsx` already redirected to
+  `/lead-generation`, so one URL serving both fits that existing intent | Restored
+  `components/leadgen/LeadGenPage.tsx` and `.module.css` verbatim from `685ecd4^` (they
+  already imported `LEADGEN`/`PIPELINE`/`WORK_PLAN`/`TOOL_GROUPS` from `lib/content.ts`,
+  which `685ecd4` never touched). Only `app/lead-generation/page.tsx` changed — mounted
+  `<LeadGenPage />` above the existing access-gated block, switched page `description`
+  metadata to `LEADGEN.lede`. The case-studies email/phone gate was checked in the same
+  session and found already intact — the "missing" gate was
+  `localStorage['sk-cs-unlock']` persisting from an earlier visit in the user's own
+  browser (confirmed by testing in an incognito window), not a code regression; nothing
+  there was changed. [[subsystem-notes]]
