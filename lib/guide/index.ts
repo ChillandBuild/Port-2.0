@@ -88,6 +88,14 @@ function blockText(block: Block): string {
         .join(" ");
     case "collapsible":
       return [block.summary, ...block.blocks.map(blockText)].join(" ");
+    case "flow":
+      return [block.title, ...block.steps.map((s) => [s.label, s.note].filter(Boolean).join(" "))]
+        .filter(Boolean)
+        .join(" ");
+    case "tree":
+      return [block.root, ...block.branches.map((b) => [b.label, b.outcome].join(" "))].join(" ");
+    case "bars":
+      return [block.title, ...block.items.map((b) => [b.label, b.display].join(" "))].join(" ");
   }
 }
 
@@ -95,4 +103,4 @@ export function sectionText(section: GuideSection): string {
   return [section.title, ...section.blocks.map(blockText)].join(" ");
 }
 
-export type { GuideChapter, GuideSection, Block } from "./types";
+export type { GuideChapter, GuideSection, Block, DiagramTone } from "./types";

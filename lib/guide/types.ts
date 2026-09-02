@@ -30,6 +30,31 @@ export interface TimelinePhase {
 
 export type CalloutVariant = "result" | "target" | "note" | "guarantee";
 
+/** Outcome tone for tree branches and flow steps. */
+export type DiagramTone = "positive" | "negative" | "neutral" | "accent";
+
+export interface FlowStep {
+  label: string;
+  /** Optional sub-line under the chip. */
+  note?: string;
+  tone?: DiagramTone;
+}
+
+export interface TreeBranch {
+  label: string;
+  /** What happens on this branch, shown as the card body. */
+  outcome: string;
+  tone: DiagramTone;
+}
+
+export interface BarItem {
+  label: string;
+  /** Numeric value the bar length is proportional to. */
+  value: number;
+  /** Display form (e.g. "4–6" or "22–35+"). */
+  display: string;
+}
+
 export type Block =
   | { type: "para"; text: string }
   | { type: "list"; ordered?: boolean; items: ListItem[] }
@@ -41,6 +66,12 @@ export type Block =
   | { type: "quote"; text: string }
   /** Pre-formatted ASCII flow from the source, rendered as-is in mono. */
   | { type: "mono"; text: string }
+  /** Horizontal arrow-rail diagram: chips joined by → connectors. */
+  | { type: "flow"; title?: string; steps: FlowStep[] }
+  /** Branching decision diagram: a root with tone-colored outcome cards. */
+  | { type: "tree"; root: string; branches: TreeBranch[] }
+  /** Horizontal CSS bar chart — value-proportional bars, no JS. */
+  | { type: "bars"; title?: string; items: BarItem[] }
   /** Long reference material rendered inside a native <details>. */
   | { type: "collapsible"; summary: string; blocks: Block[] };
 

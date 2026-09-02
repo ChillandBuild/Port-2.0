@@ -112,6 +112,16 @@ export const METRICS_TARGETS: GuideChapter = {
             ["Enterprise (3+ domains + 5+ LI)", "9–12+", "10–20+", "22–35+"],
           ],
         },
+        {
+          type: "bars",
+          title: "Total meetings per month by infrastructure",
+          items: [
+            { label: "Starter (1 domain + 1 LI)", value: 5, display: "4–6" },
+            { label: "Growth (1 domain + 2 LI)", value: 9.5, display: "8–11" },
+            { label: "Scale (2 domains + 3 LI)", value: 18, display: "14–22" },
+            { label: "Enterprise (3+ domains + 5+ LI)", value: 28.5, display: "22–35+" },
+          ],
+        },
       ],
     },
     {
@@ -163,7 +173,8 @@ export const METRICS_TARGETS: GuideChapter = {
           type: "metrics",
           items: [
             { value: "0.08–0.15%", label: "Email MQL rate", note: "industry benchmark for hyper-personalized outbound" },
-            { value: "54% / 43%", label: "LinkedIn acceptance / reply rate", note: "1.3–2.7% MQL (Smart Link qualified)" },
+            { value: "54%", label: "LinkedIn acceptance rate", note: "connections that convert to network" },
+            { value: "43%", label: "LinkedIn reply rate", note: "1.3–2.7% MQL (Smart Link qualified)" },
             { value: "21–30 days", label: "Ramp time", note: "new infrastructure hits full volume post-warming-up" },
             { value: "2×", label: "Scale multiplier", note: "doubling the infrastructure → doubling the meetings. Linear growth with proper execution." },
           ],

@@ -496,6 +496,17 @@
   color: var(--on-page);
 }
 
+/* Tool names picked out of prose — bold with a faint accent marker, so the
+   practical "what do I actually use" thread is scannable in any lesson. */
+.guideTool {
+  font-weight: 650;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: 3px;
+  padding: 0.05em 0.22em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
 .guidePara + .guidePara,
 .guidePara + .guideList,
 .guideList + .guidePara,
@@ -892,6 +903,281 @@
 
 .guideDetailsBody > * + * {
   margin-top: 0.9rem;
+}
+
+/* ------------------------------------------------------------- infographics */
+
+/* Shared outcome tones for flow chips and tree branches. */
+.guideTone_positive {
+  --tone: #2e8b57;
+}
+
+.guideTone_negative {
+  --tone: #c2504a;
+}
+
+.guideTone_neutral {
+  --tone: #c28a2e;
+}
+
+.guideTone_accent {
+  --tone: var(--accent);
+}
+
+/* Block: flow — horizontal arrow rail. */
+.guideFlow {
+  margin-top: 1.1rem;
+}
+
+.guideFlowTitle {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+  margin-bottom: 0.6rem;
+}
+
+.guideFlowRail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+
+.guideFlowStep {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule-strong);
+  border-top: 2px solid var(--tone, var(--accent));
+  border-radius: 8px;
+  min-width: 6rem;
+}
+
+.guideFlowLabel {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
+  color: var(--on-page);
+}
+
+.guideFlowNote {
+  font-size: var(--text-meta);
+  color: var(--on-page-soft);
+}
+
+/* Arrows sit between chips as pseudo-elements of every chip after the
+   first, so they interleave correctly even when the rail wraps. */
+.guideFlowRail li + li::before {
+  content: "→";
+  align-self: center;
+  font-family: var(--font-mono);
+  color: var(--accent-meta);
+  font-size: 1rem;
+  margin-inline: 0.35rem;
+}
+
+/* Block: tree — branching decision diagram. */
+.guideTree {
+  margin-top: 1.1rem;
+  max-width: 62ch;
+}
+
+.guideTreeRoot {
+  display: inline-block;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page);
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+}
+
+.guideTreeBranches {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  padding-left: 1.1rem;
+  border-left: 1px solid var(--rule-strong);
+  margin-left: 0.9rem;
+}
+
+.guideTreeBranch {
+  position: relative;
+  padding: 0.7rem 0.9rem;
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--tone, var(--accent));
+  border-radius: 8px;
+}
+
+.guideTreeBranch::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem;
+  top: 50%;
+  width: 1.1rem;
+  height: 1px;
+  background: var(--rule-strong);
+}
+
+.guideTreeLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--tone, var(--accent-meta));
+}
+
+.guideTreeOutcome {
+  margin-top: 0.2rem;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--on-page);
+}
+
+/* Block: bars — value-proportional CSS bar chart. */
+.guideBars {
+  margin-top: 1.1rem;
+  max-width: 62ch;
+}
+
+.guideBarsTitle {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+  margin-bottom: 0.6rem;
+}
+
+.guideBarsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.guideBarsRow {
+  display: grid;
+  grid-template-columns: 10.5rem minmax(0, 1fr) 4.5rem;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.guideBarsLabel {
+  font-size: var(--text-sm);
+  color: var(--on-page);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.guideBarsTrack {
+  height: 0.8rem;
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.guideBarsFill {
+  display: block;
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: inherit;
+}
+
+.guideBarsValue {
+  font-size: var(--text-xs);
+  color: var(--accent-meta);
+  text-align: right;
+}
+
+@media (max-width: 560px) {
+  .guideBarsRow {
+    grid-template-columns: minmax(0, 1fr) 4.5rem;
+  }
+
+  .guideBarsLabel {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+}
+
+/* Metric donut ring — a conic ring behind percentage values. */
+.guideMetricRing {
+  position: relative;
+}
+
+.guideMetricRing::before {
+  content: "";
+  position: absolute;
+  inset: -0.5rem -1rem;
+  border-radius: 999px;
+  background: conic-gradient(
+    var(--accent) var(--pct, 0%),
+    color-mix(in srgb, var(--rule-strong) 45%, transparent) 0
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 6px));
+  opacity: 0.55;
+}
+
+/* Process rail arrowheads. */
+.guideProcessStep::after {
+  content: "▾";
+  position: absolute;
+  left: 0.72rem;
+  bottom: -0.55rem;
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--rule-strong);
+}
+
+.guideProcessStep:last-child::after {
+  display: none;
+}
+
+/* Timeline phase progression: Setup → Launch → Scale deepens the accent. */
+.guideTimelinePhase:nth-child(1) {
+  border-left-color: color-mix(in srgb, var(--accent) 45%, var(--rule-strong));
+}
+
+.guideTimelinePhase:nth-child(2) {
+  border-left-color: color-mix(in srgb, var(--accent) 72%, var(--rule-strong));
+}
+
+.guideTimelinePhase:nth-child(3) {
+  border-left-color: var(--accent);
+}
+
+/* Chapter icons. */
+.chapterIcon {
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.18em;
+  color: var(--accent);
+}
+
+.navChapterIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  align-self: center;
+  color: var(--accent);
+  opacity: 0.85;
 }
 
 /* -------------------------------------------------------------- responsive */

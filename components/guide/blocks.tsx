@@ -1,4 +1,5 @@
-import type { Block } from "@/lib/guide";
+import type { Block, DiagramTone } from "@/lib/guide";
+import { withToolHighlights } from "./inline";
 import styles from "./guide.module.css";
 
 /**
@@ -7,8 +8,12 @@ import styles from "./guide.module.css";
  * summarizes the source text it is given.
  */
 
+function toneClass(tone?: DiagramTone): string {
+  return tone ? ` ${styles[`guideTone_${tone}`] ?? ""}` : "";
+}
+
 function Para({ text }: { text: string }) {
-  return <p className={styles.guidePara}>{text}</p>;
+  return <p className={styles.guidePara}>{withToolHighlights(text)}</p>;
 }
 
 interface ListItemShape {
@@ -22,11 +27,11 @@ function ListBlock({ ordered, items }: { ordered?: boolean; items: ListItemShape
     <Tag className={`${styles.guideList}${ordered ? ` ${styles.guideListOrdered}` : ""}`}>
       {items.map((item, i) => (
         <li key={i}>
-          {item.text}
+          {withToolHighlights(item.text)}
           {item.children && (
             <Tag className={`${styles.guideList} ${styles.guideListNested}${ordered ? ` ${styles.guideListOrdered}` : ""}`}>
               {item.children.map((child, j) => (
-                <li key={j}>{child}</li>
+                <li key={j}>{withToolHighlights(child)}</li>
               ))}
             </Tag>
           )}
@@ -57,10 +62,10 @@ function TableBlock({ caption, headers, rows }: { caption?: string; headers: str
                 {row.map((cell, j) =>
                   j === 0 ? (
                     <th key={j} scope="row">
-                      {cell}
+                      {withToolHighlights(cell)}
                     </th>
                   ) : (
-                    <td key={j}>{cell}</td>
+                    <td key={j}>{withToolHighlights(cell)}</td>
                   ),
                 )}
               </tr>
@@ -72,16 +77,34 @@ function TableBlock({ caption, headers, rows }: { caption?: string; headers: str
   );
 }
 
+/** Percent fill for a metric's donut ring — exact or midpoint of a range
+ *  ("54%" → 54, "60–80%" → 70). Returns null for non-percentage values. */
+function percentFill(value: string): number | null {
+  const single = /^(\d+(?:\.\d+)?)\s*%$/.exec(value);
+  if (single) return Number(single[1]);
+  const range = /^(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*%$/.exec(value);
+  if (range) return (Number(range[1]) + Number(range[2])) / 2;
+  return null;
+}
+
 function Metrics({ items }: { items: { value: string; label: string; note?: string }[] }) {
   return (
     <div className={styles.guideMetrics}>
-      {items.map((metric, i) => (
-        <div className={styles.guideMetric} key={i}>
-          <p className={`mono ${styles.guideMetricValue}`}>{metric.value}</p>
-          <p className={styles.guideMetricLabel}>{metric.label}</p>
-          {metric.note && <p className={styles.guideMetricNote}>{metric.note}</p>}
-        </div>
-      ))}
+      {items.map((metric, i) => {
+        const fill = percentFill(metric.value);
+        return (
+          <div className={styles.guideMetric} key={i}>
+            <p
+              className={`mono ${styles.guideMetricValue}${fill !== null ? ` ${styles.guideMetricRing}` : ""}`}
+              style={fill !== null ? ({ "--pct": `${Math.min(100, Math.max(0, fill))}%` } as React.CSSProperties) : undefined}
+            >
+              {metric.value}
+            </p>
+            <p className={styles.guideMetricLabel}>{metric.label}</p>
+            {metric.note && <p className={styles.guideMetricNote}>{metric.note}</p>}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -95,8 +118,8 @@ function Process({ title, steps }: { title?: string; steps: { name: string; desc
           <li className={styles.guideProcessStep} key={i}>
             <span className={`mono ${styles.guideProcessNo}`}>{String(i + 1).padStart(2, "0")}</span>
             <div>
-              <p className={styles.guideProcessName}>{step.name}</p>
-              {step.description && <p className={styles.guideProcessDesc}>{step.description}</p>}
+              <p className={styles.guideProcessName}>{withToolHighlights(step.name)}</p>
+              {step.description && <p className={styles.guideProcessDesc}>{withToolHighlights(step.description)}</p>}
             </div>
           </li>
         ))}
@@ -121,7 +144,7 @@ function Timeline({
             {phase.bullets && (
               <ul className={`${styles.guideList} ${styles.guideTimelineBullets}`}>
                 {phase.bullets.map((bullet, j) => (
-                  <li key={j}>{bullet}</li>
+                  <li key={j}>{withToolHighlights(bullet)}</li>
                 ))}
               </ul>
             )}
@@ -136,7 +159,7 @@ function Callout({ variant, title, text }: { variant: string; title?: string; te
   return (
     <aside className={`${styles.guideCallout} ${styles[`guideCallout_${variant}`] ?? ""}`}>
       {title && <p className={`mono ${styles.guideCalloutTitle}`}>{title}</p>}
-      <p className={styles.guideCalloutText}>{text}</p>
+      <p className={styles.guideCalloutText}>{withToolHighlights(text)}</p>
     </aside>
   );
 }
@@ -145,7 +168,7 @@ function Quote({ text }: { text: string }) {
   return (
     <blockquote className={styles.guideQuote}>
       {text.split("\n\n").map((para, i) => (
-        <p key={i}>{para}</p>
+        <p key={i}>{withToolHighlights(para)}</p>
       ))}
     </blockquote>
   );
@@ -156,6 +179,61 @@ function Mono({ text }: { text: string }) {
     <pre className={styles.guideMono}>
       <code>{text}</code>
     </pre>
+  );
+}
+
+function Flow({ title, steps }: { title?: string; steps: { label: string; note?: string; tone?: DiagramTone }[] }) {
+  return (
+    <div className={styles.guideFlow}>
+      {title && <p className={`mono ${styles.guideFlowTitle}`}>{title}</p>}
+      <ol className={styles.guideFlowRail}>
+        {steps.map((step, i) => (
+          <li key={i} className={`${styles.guideFlowStep}${toneClass(step.tone)}`}>
+            <p className={styles.guideFlowLabel}>{withToolHighlights(step.label)}</p>
+            {step.note && <p className={styles.guideFlowNote}>{withToolHighlights(step.note)}</p>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function Tree({ root, branches }: { root: string; branches: { label: string; outcome: string; tone: DiagramTone }[] }) {
+  return (
+    <div className={styles.guideTree}>
+      <p className={`mono ${styles.guideTreeRoot}`}>{withToolHighlights(root)}</p>
+      <ul className={styles.guideTreeBranches}>
+        {branches.map((branch, i) => (
+          <li key={i} className={`${styles.guideTreeBranch}${toneClass(branch.tone)}`}>
+            <p className={`mono ${styles.guideTreeLabel}`}>{branch.label}</p>
+            <p className={styles.guideTreeOutcome}>{withToolHighlights(branch.outcome)}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Bars({ title, items }: { title?: string; items: { label: string; value: number; display: string }[] }) {
+  const max = Math.max(...items.map((item) => item.value));
+  return (
+    <figure className={styles.guideBars}>
+      {title && <figcaption className={`mono ${styles.guideBarsTitle}`}>{title}</figcaption>}
+      <ul className={styles.guideBarsList}>
+        {items.map((item, i) => (
+          <li key={i} className={styles.guideBarsRow}>
+            <span className={styles.guideBarsLabel}>{withToolHighlights(item.label)}</span>
+            <span className={styles.guideBarsTrack}>
+              <span
+                className={styles.guideBarsFill}
+                style={{ width: `${Math.max(4, (item.value / max) * 100)}%` }}
+              />
+            </span>
+            <span className={`mono ${styles.guideBarsValue}`}>{item.display}</span>
+          </li>
+        ))}
+      </ul>
+    </figure>
   );
 }
 
@@ -197,6 +275,12 @@ export function renderBlock(block: Block, key?: string): React.ReactElement {
       return <Quote text={block.text} />;
     case "mono":
       return <Mono text={block.text} />;
+    case "flow":
+      return <Flow title={block.title} steps={block.steps} />;
+    case "tree":
+      return <Tree root={block.root} branches={block.branches} />;
+    case "bars":
+      return <Bars title={block.title} items={block.items} />;
     case "collapsible":
       return <Collapsible summary={block.summary} blocks={block.blocks} />;
   }

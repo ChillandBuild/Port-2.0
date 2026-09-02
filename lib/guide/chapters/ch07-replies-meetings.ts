@@ -73,8 +73,13 @@ export const REPLIES_MEETINGS: GuideChapter = {
       title: "The Reply Handling Workflow",
       blocks: [
         {
-          type: "mono",
-          text: "Reply Detected → Categorizing\n├── Positive → Calendar + Team Alert → Meeting\n├── Negative → Suppress (role-based)\n└── Neutral → 2x Follow-up → Nurture",
+          type: "tree",
+          root: "Reply Detected → Categorizing",
+          branches: [
+            { label: "Positive", tone: "positive", outcome: "Calendar + team alert → Meeting." },
+            { label: "Negative", tone: "negative", outcome: "Suppress (role-based)." },
+            { label: "Neutral", tone: "neutral", outcome: "2x follow-up → Nurture." },
+          ],
         },
         { type: "para", text: "Tech stack for conversion:" },
         {

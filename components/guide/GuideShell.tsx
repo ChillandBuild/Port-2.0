@@ -10,6 +10,7 @@ import {
   startProgressReporting,
   subscribeCourseProgress,
 } from "@/lib/frontend/course-progress";
+import { chapterIcon } from "./icons";
 import styles from "./guide.module.css";
 
 /**
@@ -216,6 +217,7 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
         <div key={chapter.id} className={styles.navChapter}>
           <a className={styles.navChapterLink} href={`#${chapter.id}`}>
             <span className={`mono ${styles.navChapterNo}`}>{chapter.number}</span>
+            {chapterIcon(chapter.id, styles.navChapterIcon)}
             {chapter.title}
           </a>
           {chapter.groups.map((group, gi) => (

@@ -21,16 +21,17 @@ export const SYSTEM: GuideChapter = {
       title: "The Six-Step Process",
       blocks: [
         {
-          type: "process",
+          type: "flow",
           steps: [
-            { name: "Research", description: "ICP driven by client/customer inputs." },
-            { name: "Prospecting" },
-            { name: "Scraping & Validating" },
-            { name: "Email Campaign — manual or automated via CRM" },
-            { name: "LinkedIn Campaign — manual or automated via CRM" },
-            { name: "Cold Calling by AI (if required)" },
+            { label: "Research", note: "ICP-driven" },
+            { label: "Prospecting" },
+            { label: "Scraping & Validating" },
+            { label: "Email Campaign", note: "manual or CRM" },
+            { label: "LinkedIn Campaign", note: "manual or CRM" },
+            { label: "AI Cold Calling", note: "if required" },
           ],
         },
+        { type: "para", text: "Every chapter that follows is one of these six steps, expanded into the exact actions, tools and numbers that make it run." },
       ],
     },
     {

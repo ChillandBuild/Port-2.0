@@ -1,5 +1,6 @@
 import { COURSE } from "@/lib/content/course";
 import { GUIDE_DOCUMENT, buildGuideNav, sectionText, type GuideNavChapter } from "@/lib/guide";
+import { chapterIcon } from "./icons";
 import { GuideShell } from "./GuideShell";
 import { renderBlock } from "./blocks";
 import styles from "./guide.module.css";
@@ -44,7 +45,9 @@ export function GuidePage() {
       {GUIDE_DOCUMENT.chapters.map((chapter) => (
         <section key={chapter.id} id={chapter.id} className={styles.chapter} data-guide-chapter>
           <header className={styles.chapterHeader}>
-            <p className={`mono ${styles.chapterNo}`}>Chapter {chapter.number}</p>
+            <p className={`mono ${styles.chapterNo}`}>
+              {chapterIcon(chapter.id, styles.chapterIcon)} Chapter {chapter.number}
+            </p>
             <h2 className={styles.chapterTitle}>{chapter.title}</h2>
             <p className={`mono ${styles.chapterSource}`}>{chapter.source}</p>
             {chapter.intro?.map((block, i) => (
