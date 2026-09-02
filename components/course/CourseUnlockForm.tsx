@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { COURSE } from "@/lib/content/course";
-import styles from "./CourseGate.module.css";
+import styles from "./CourseSales.module.css";
 
 type Phase = "idle" | "checking" | "opening";
 type Failure = "invalid" | "expired" | "revoked" | "server" | null;

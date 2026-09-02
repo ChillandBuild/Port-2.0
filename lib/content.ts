@@ -1455,6 +1455,13 @@ export const REFUNDS: LegalDoc = {
   updated: LEGAL_UPDATED,
   sections: [
     {
+      heading: "The course (Lead Generation Strategy)",
+      body: [
+        "A full refund is available when requested within 7 days of enrolling in the course, through the same contact method used for purchase, quoting the payment reference from your receipt.",
+        "Approved course refunds go back to the original payment method through the payment provider. The 30-day access window ends when a refund is processed.",
+      ],
+    },
+    {
       heading: "Cancelling before the session",
       body: [
         "A full refund is available when the client cancels at least 24 hours before the scheduled start time, requested through the same contact method used for booking.",

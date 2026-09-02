@@ -115,6 +115,115 @@ export const COURSE = {
     memberLabel: "Already enrolled? Enter your code",
     outlineLabel: "The lesson list",
   },
+
+  /**
+   * The /course sales page (all states render it; only the hero copy
+   * differs). Curriculum section content is generated from GUIDE_DOCUMENT,
+   * not stored here.
+   */
+  sales: {
+    hero: {
+      lockedEyebrow: "The Lead Generation Strategy Course",
+      lockedHeading: "Run outbound like a system, not a guess.",
+      lockedBody:
+        "The exact 90-day multi-channel playbook I run for real campaigns — ICP, research, infrastructure, sequencing, LinkedIn, tracking and the numbers — in 40 lessons you can work through in an afternoon and execute the next morning.",
+      expiredEyebrow: "Access ended",
+      expiredHeading: "Your 30-day window has closed.",
+      expiredBody:
+        "The full course is one payment away again. Enroll below for a fresh 30 days — everything you finished is right where you left it in the new window.",
+      revokedEyebrow: "Access ended",
+      revokedHeading: "This access was ended by the organiser.",
+      revokedBody:
+        "Whoever arranged this access has closed it. Contact them if you think that's a mistake — or enroll below for your own copy.",
+    },
+    priceAnchor: "$59 · one-time payment",
+    heroCta: "Enroll now — $59",
+    heroCtaNote: "Secure payment via Razorpay",
+    ctaHref: "#enroll",
+
+    outcomesEyebrow: "What you get",
+    outcomesHeading: "Every piece of the outbound engine, taught.",
+    outcomes: [
+      "Define your ICP without guessing",
+      "Build a sourcing loop that doesn't dry up",
+      "Write sequences that get replies",
+      "Run LinkedIn outreach that doesn't get blocked",
+      "Qualify before you waste a call",
+      "Read the numbers that decide whether to scale",
+    ],
+    outcomesNote: "40 lessons · 9 chapters · worksheets, benchmarks and tool pricing included.",
+
+    curriculumEyebrow: "The curriculum",
+    curriculumHeading: "Nine chapters. Forty lessons. In order.",
+    curriculumBody: "Each chapter builds on the last — start at the top, or jump to the piece you need today.",
+    curriculumMeta: (n: number) => `${n} lesson${n === 1 ? "" : "s"}`,
+
+    instructorEyebrow: "Your instructor",
+    instructorHeading: "Built by someone who runs this for a living.",
+    instructorBody: [
+      "I'm Sampath Kumar. For 7+ years I've built and run outbound lead generation and pre-sales systems across IT, SaaS, Pharma, Edutech and Fintech — the ICP research, the infrastructure, the sequences, and the CRM reporting that proves it worked.",
+      "This course is that system written out the way I actually run it: real tool pricing, real benchmark numbers, and the decision trees I use when replies come in. Nothing theoretical.",
+    ],
+    instructorCta: "Connect on LinkedIn",
+
+    pricingEyebrow: "Enroll",
+    pricingHeading: "One payment. Thirty days. The whole system.",
+    includesLabel: "What's included",
+    includes: [
+      "All 40 lessons across 9 chapters",
+      "The 7-touch sequence framework",
+      "Tool stack with real 2026 pricing",
+      "Reply-handling decision trees",
+      "MQL benchmarks by infrastructure size",
+      "Access code delivered by email instantly",
+    ],
+    guaranteeBadge: "7-day money-back guarantee",
+    guaranteeNote: "If it's not for you, request a full refund within 7 days of enrollment — see the refund policy below.",
+    secureNote: "Payments secured by Razorpay · UPI, cards & netbanking",
+    formHeading: "Enroll in the course",
+    unlockHeading: "Already enrolled?",
+    unlockBody: "Enter the access code from your email to unlock the course on this device.",
+
+    faqEyebrow: "Questions",
+    faqHeading: "Before you enroll.",
+    faq: [
+      {
+        q: "Who is this course for?",
+        a: "Founders, SDRs/BDRs, freelance lead generators and marketing teams who need to run outbound themselves. If you've never sent a cold email, start at Chapter 1 — if you have, the benchmark tables and decision trees alone are worth the price.",
+      },
+      {
+        q: "What format is the course in?",
+        a: "Written lessons — 40 of them across 9 chapters, with tables, flow diagrams and benchmarks throughout. It reads like documentation, not video, so you can skim, search and come back to exactly the piece you need.",
+      },
+      {
+        q: "Do I need to buy the tools you list?",
+        a: "The course includes real pricing for every tool so you can budget before you spend. Nothing is purchased through this site; several chapters have free-tier paths to start with.",
+      },
+      {
+        q: "How long do I have access?",
+        a: "30 days from payment, on any device — you unlock with the access code emailed to you right after checkout.",
+      },
+      {
+        q: "How does the 7-day refund work?",
+        a: "Request a refund within 7 days of enrollment through the contact method on the refund policy page, quoting your payment reference. Approved refunds go back to your original payment method.",
+      },
+      {
+        q: "I paid but haven't received my access code.",
+        a: "Check spam first. If it's not there within a few minutes, the checkout success screen also shows the code — and you can reach out on LinkedIn with your payment reference.",
+      },
+      {
+        q: "Is the LinkedIn automation part compliant?",
+        a: "The course teaches the methods as they're actually run, including where the risk sits — and the organic, no-automation track alongside it. Read Chapter 5 before automating anything.",
+      },
+    ],
+
+    trustLinks: [
+      { label: "Refund policy", href: "/refunds" },
+      { label: "Terms", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
+    ],
+    backLabel: "Back to the site",
+  },
 } as const;
 
 /**

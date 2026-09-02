@@ -3,7 +3,7 @@ import { Footer } from "@/components/chrome/Footer";
 import { TopNav } from "@/components/chrome/TopNav";
 import { PointerFX } from "@/components/motion/PointerFX";
 import { ScrollFX } from "@/components/motion/ScrollFX";
-import { CourseGate } from "@/components/course/CourseGate";
+import { CourseSalesPage } from "@/components/course/CourseSalesPage";
 import { GuidePage } from "@/components/guide/GuidePage";
 import { COURSE } from "@/lib/content/course";
 import { getCurrentCourseAccess } from "@/lib/backend/course-access";
@@ -47,7 +47,7 @@ export default async function CoursePage() {
         {access.state === "valid" ? (
           <GuidePage />
         ) : (
-          <CourseGate state={access.state} />
+          <CourseSalesPage state={access.state} />
         )}
       </main>
       <Footer />

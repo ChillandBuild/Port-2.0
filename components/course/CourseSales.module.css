@@ -1,0 +1,658 @@
+/* The /course sales page — hero, outcomes, curriculum, instructor, pricing
+   card with the always-open enroll form, FAQ, trust links. Uses the site's
+   close-surface (violet) as the page ground so the pricing card reads as
+   the one bright, actionable object on it. */
+
+.page {
+  background: var(--surface-close);
+  color: var(--on-close);
+}
+
+.page > section,
+.page > footer {
+  padding: var(--space-section) var(--space-shell);
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+}
+
+.sectionHeading {
+  margin-top: 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 1.15rem + 1.9vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sectionBody {
+  margin-top: 0.9rem;
+  max-width: 58ch;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--on-close-soft);
+}
+
+.textLink {
+  display: inline-block;
+  margin-top: 1.1rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.textLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  padding-top: calc(var(--space-section) + 1rem);
+}
+
+.heading {
+  margin-top: 1rem;
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 1.4rem + 4.2vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin-top: 1.2rem;
+  max-width: 56ch;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--on-close-soft);
+}
+
+.heroActions {
+  margin-top: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0 1.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  text-decoration: none;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  border: 1px solid transparent;
+  transition: background 140ms var(--ease-out-quint);
+}
+
+.primary:hover {
+  background: var(--accent-hover);
+}
+
+.priceAnchor {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.priceValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.priceTerms {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-close-soft);
+}
+
+.trustCue {
+  margin-top: 0.8rem;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-close-soft);
+  opacity: 0.75;
+}
+
+.heroStats {
+  margin: 2.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+.heroStat {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.heroStatValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.4rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.heroStatLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-close-soft);
+}
+
+/* --------------------------------------------------------------- outcomes */
+
+.outcomeGrid {
+  list-style: none;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem 2rem;
+}
+
+@media (min-width: 720px) {
+  .outcomeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.outcome {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.outcomeCheck {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.7rem;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: 999px;
+  transform: translateY(0.2rem);
+}
+
+.outcomesNote {
+  margin-top: 1.2rem;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-close-soft);
+}
+
+/* ------------------------------------------------------------- curriculum */
+
+.chapterList {
+  list-style: none;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.chapterCard {
+  background: var(--surface-page);
+  color: var(--on-page);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chapterSummary {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.15rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.chapterSummary::-webkit-details-marker {
+  display: none;
+}
+
+.chapterIconWrap {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 10px;
+}
+
+.chapterTitleGroup {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.chapterNo {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+}
+
+.chapterTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.015em;
+}
+
+.chapterCount {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+.lessonList {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 1.15rem 1.1rem 4.45rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lessonItem {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--on-page-soft);
+}
+
+.lessonItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+/* ------------------------------------------------------------- instructor */
+
+.instructor .sectionBody + .sectionBody {
+  margin-top: 0.7rem;
+}
+
+/* ------------------------------------------------------ pricing + enroll */
+
+.pricing {
+  scroll-margin-top: calc(var(--nav-h) + 2rem);
+}
+
+.priceCard {
+  margin-top: 1.6rem;
+  max-width: 30rem;
+  padding: 1.5rem 1.5rem 1.7rem;
+  background: var(--surface-page);
+  color: var(--on-page);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px -32px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.priceCardTop {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: start;
+}
+
+.priceBig {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.guaranteeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: #1d6b40;
+  background: color-mix(in srgb, #2e8b57 14%, transparent);
+  border: 1px solid color-mix(in srgb, #2e8b57 35%, transparent);
+  border-radius: 999px;
+}
+
+.priceCardRule {
+  height: 1px;
+  background: var(--rule);
+  margin: 1.15rem 0;
+}
+
+.includesLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+}
+
+.includesList {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.includesItem {
+  position: relative;
+  padding-left: 1.3rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.includesItem::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Enroll form (shared with CourseUnlockForm) — always expanded. */
+
+.enrollArea {
+  margin-top: 0.25rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.formHeading {
+  margin-bottom: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.015em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+  margin-top: 0.35rem;
+}
+
+.input {
+  min-height: 2.9rem;
+  padding: 0 0.9rem;
+  font-size: 1rem;
+  color: var(--on-page);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  min-height: 3.1rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out-quint);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--on-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 999px;
+  opacity: 0.85;
+  animation: sales-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@keyframes sales-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: #b3564d;
+}
+
+.dialogStatus {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: start;
+  font-size: 0.9375rem;
+  color: var(--on-page);
+}
+
+.dialogSuccess {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: start;
+}
+
+.dialogSuccess h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.dialogSuccess p {
+  font-size: 0.9375rem;
+  color: var(--on-page-soft);
+}
+
+.dialogCode {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  color: var(--on-page);
+  background: var(--surface-page-alt);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+}
+
+.secureNote {
+  margin-top: 0.7rem;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+.guaranteeNote {
+  margin-top: 0.45rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--on-page-soft);
+}
+
+.unlockBlock {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.unlockHeading {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent-meta);
+}
+
+.unlockBody {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--on-page-soft);
+  margin-bottom: 0.35rem;
+}
+
+/* -------------------------------------------------------------------- FAQ */
+
+.faqList {
+  margin-top: 1.4rem;
+  max-width: 46rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.faqItem {
+  background: var(--surface-page);
+  color: var(--on-page);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+.faqQuestion {
+  padding: 0.95rem 1.1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::after {
+  content: "+";
+  float: right;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.faqItem[open] .faqQuestion::after {
+  content: "–";
+}
+
+.faqAnswer {
+  padding: 0 1.1rem 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--on-page-soft);
+}
+
+/* ------------------------------------------------------------- trust links */
+
+.trustRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 0;
+  padding-bottom: calc(var(--space-section) + 1rem);
+}
+
+.trustLink {
+  font-size: var(--text-sm);
+  color: var(--on-close-soft);
+  text-decoration: none;
+}
+
+.trustLink:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

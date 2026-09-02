@@ -1,19 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { COURSE } from "@/lib/content/course";
-import styles from "./CourseGate.module.css";
+import styles from "./CourseSales.module.css";
 
-type Phase =
-  | "closed"
-  | "details"
-  | "creating-order"
-  | "checkout"
-  | "verifying"
-  | "success"
-  | "pending"
-  | "error";
+type Phase = "details" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
 
 type ErrorKind = "order" | "unverified" | "verify-network" | null;
 
@@ -45,7 +37,7 @@ declare global {
   }
 }
 
-/** Module-scoped so repeated dialog opens don't re-inject the script tag. */
+/** Module-scoped so repeated checkouts don't re-inject the script tag. */
 let checkoutScriptPromise: Promise<void> | null = null;
 
 function loadCheckoutScript(): Promise<void> {
@@ -80,12 +72,12 @@ interface EnrollDialogProps {
 /**
  * The whole on-site payment flow — details form, Checkout.js, verify, code
  * reveal — in one self-contained client component, mirroring
- * CourseUnlockForm's Phase-union pattern. Embedded in the server-rendered
- * CourseGate, which stays a server component.
+ * CourseUnlockForm's Phase-union pattern. Rendered always-expanded inside
+ * the pricing card of the sales page; no collapsed "Pay Now" state.
  */
 export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: EnrollDialogProps) {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("closed");
+  const [phase, setPhase] = useState<Phase>("details");
   const [errorKind, setErrorKind] = useState<ErrorKind>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -95,30 +87,13 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
   const lastCheckoutResponse = useRef<RazorpayCheckoutResponse | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const headingId = useId();
-  const panelId = useId();
 
-  const isOpen = phase !== "closed";
-  const canClose = phase === "details" || phase === "error" || phase === "success" || phase === "pending";
-  const showPanel = isOpen && phase !== "checkout";
-
-  useEffect(() => {
-    if (phase === "details") nameInputRef.current?.focus();
-  }, [phase]);
-
-  // Inline section, not a modal — no focus trap. Escape just collapses it,
-  // same as the "‹ Back" control, when that's a safe thing to do.
-  useEffect(() => {
-    if (!isOpen) return;
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && canClose) close();
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, canClose]);
-
-  function close() {
-    setPhase("closed");
-    setErrorKind(null);
+  if (!keyConfigured) {
+    return (
+      <a className={styles.submit} href={fallbackHref} target="_blank" rel="noreferrer noopener">
+        {COURSE.gate.payPrefix} — {priceLabel}
+      </a>
+    );
   }
 
   async function submitDetails(event: React.FormEvent<HTMLFormElement>) {
@@ -217,133 +192,102 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
   }
 
   function continueToCourse() {
-    close();
     router.refresh();
   }
 
-  if (!keyConfigured) {
-    return (
-      <a className={styles.buy} href={fallbackHref} target="_blank" rel="noreferrer noopener">
-        {COURSE.gate.payPrefix} — {priceLabel}
-      </a>
-    );
-  }
-
   return (
-    <div className={styles.enrollArea}>
-      {phase === "closed" && (
-        <button
-          type="button"
-          className={styles.buy}
-          aria-expanded={false}
-          aria-controls={panelId}
-          onClick={() => setPhase("details")}
-        >
-          {COURSE.gate.payPrefix} — {priceLabel}
-        </button>
+    <div className={styles.enrollArea} aria-live="polite" aria-atomic="true">
+      {phase === "details" && (
+        <form className={styles.form} onSubmit={submitDetails}>
+          <h3 className={styles.formHeading} id={headingId}>
+            {COURSE.sales.formHeading}
+          </h3>
+          <label className={styles.label} htmlFor="enroll-name">
+            {COURSE.gate.dialogNameLabel}
+          </label>
+          <input
+            ref={nameInputRef}
+            className={styles.input}
+            id="enroll-name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+          />
+          <label className={styles.label} htmlFor="enroll-email">
+            {COURSE.gate.dialogEmailLabel}
+          </label>
+          <input
+            className={styles.input}
+            id="enroll-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+          />
+          <label className={styles.label} htmlFor="enroll-phone">
+            {COURSE.gate.dialogPhoneLabel}
+          </label>
+          <input
+            className={styles.input}
+            id="enroll-phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            required
+          />
+          <button className={styles.submit} type="submit">
+            {COURSE.gate.dialogSubmit} — {priceLabel}
+          </button>
+        </form>
       )}
 
-      {showPanel && (
-        <div id={panelId} className={styles.enrollPanel} aria-live="polite" aria-atomic="true">
-          {canClose && (
-            <button type="button" className={styles.enrollCollapse} onClick={close}>
-              ‹ {COURSE.gate.dialogClose}
+      {(phase === "creating-order" || phase === "verifying") && (
+        <div className={styles.dialogStatus}>
+          <span className={styles.spinner} aria-hidden="true" />
+          <p id={headingId}>
+            {phase === "creating-order" ? COURSE.gate.dialogCreatingOrder : COURSE.gate.dialogVerifying}
+          </p>
+        </div>
+      )}
+
+      {phase === "success" && result && (
+        <div className={styles.dialogSuccess}>
+          <h3 id={headingId}>{COURSE.gate.dialogSuccessHeading}</h3>
+          <p>{COURSE.gate.dialogSuccessBody}</p>
+          <p className={styles.dialogCode}>{result.accessCode}</p>
+          <button type="button" className={styles.secondary} onClick={copyCode}>
+            {copied ? COURSE.gate.dialogCopiedLabel : COURSE.gate.dialogCopyLabel}
+          </button>
+          <button type="button" className={styles.submit} onClick={continueToCourse}>
+            {COURSE.gate.dialogContinueLabel}
+          </button>
+        </div>
+      )}
+
+      {phase === "pending" && (
+        <div className={styles.dialogStatus}>
+          <h3 id={headingId}>{COURSE.gate.dialogPendingHeading}</h3>
+          <p>{COURSE.gate.dialogPendingBody}</p>
+        </div>
+      )}
+
+      {phase === "error" && errorKind && (
+        <div className={styles.dialogStatus}>
+          <p className={styles.error} role="alert" id={headingId}>
+            {ERROR_COPY[errorKind]}
+          </p>
+          {errorKind !== "unverified" && (
+            <button type="button" className={styles.submit} onClick={retry}>
+              {COURSE.gate.dialogRetry}
             </button>
           )}
-
-          {phase === "details" && (
-              <form className={styles.form} onSubmit={submitDetails}>
-                <h2 className={styles.dialogHeading} id={headingId}>
-                  {COURSE.gate.dialogHeading}
-                </h2>
-                <label className={styles.label} htmlFor="enroll-name">
-                  {COURSE.gate.dialogNameLabel}
-                </label>
-                <input
-                  ref={nameInputRef}
-                  className={styles.input}
-                  id="enroll-name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
-                <label className={styles.label} htmlFor="enroll-email">
-                  {COURSE.gate.dialogEmailLabel}
-                </label>
-                <input
-                  className={styles.input}
-                  id="enroll-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                />
-                <label className={styles.label} htmlFor="enroll-phone">
-                  {COURSE.gate.dialogPhoneLabel}
-                </label>
-                <input
-                  className={styles.input}
-                  id="enroll-phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  required
-                />
-                <button className={styles.submit} type="submit">
-                  {COURSE.gate.dialogSubmit} — {priceLabel}
-                </button>
-              </form>
-            )}
-
-            {(phase === "creating-order" || phase === "verifying") && (
-              <div className={styles.dialogStatus}>
-                <span className={styles.spinner} aria-hidden="true" />
-                <p id={headingId}>
-                  {phase === "creating-order" ? COURSE.gate.dialogCreatingOrder : COURSE.gate.dialogVerifying}
-                </p>
-              </div>
-            )}
-
-            {phase === "success" && result && (
-              <div className={styles.dialogSuccess}>
-                <h2 id={headingId}>{COURSE.gate.dialogSuccessHeading}</h2>
-                <p>{COURSE.gate.dialogSuccessBody}</p>
-                <p className={styles.dialogCode}>{result.accessCode}</p>
-                <button type="button" className={styles.submit} onClick={copyCode}>
-                  {copied ? COURSE.gate.dialogCopiedLabel : COURSE.gate.dialogCopyLabel}
-                </button>
-                <button type="button" className={styles.buy} onClick={continueToCourse}>
-                  {COURSE.gate.dialogContinueLabel}
-                </button>
-              </div>
-            )}
-
-            {phase === "pending" && (
-              <div className={styles.dialogStatus}>
-                <h2 id={headingId}>{COURSE.gate.dialogPendingHeading}</h2>
-                <p>{COURSE.gate.dialogPendingBody}</p>
-              </div>
-            )}
-
-            {phase === "error" && errorKind && (
-              <div className={styles.dialogStatus}>
-                <p className={styles.error} role="alert" id={headingId}>
-                  {ERROR_COPY[errorKind]}
-                </p>
-                {errorKind !== "unverified" && (
-                  <button type="button" className={styles.submit} onClick={retry}>
-                    {COURSE.gate.dialogRetry}
-                  </button>
-                )}
-              </div>
-            )}
         </div>
       )}
     </div>
