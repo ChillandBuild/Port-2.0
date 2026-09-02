@@ -1,12 +1,11 @@
 import { getSupabaseAdmin } from "@/lib/backend/supabase/admin";
 import { sendSubmissionNotification } from "@/lib/backend/email";
-import type { SubmissionPayload, SubmissionSource, Lane } from "@/lib/submissions";
+import type { SubmissionPayload, SubmissionSource } from "@/lib/submissions";
 
 export const runtime = "nodejs";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SOURCES: SubmissionSource[] = ["hire-form", "case-studies-gate", "schedule-call"];
-const LANES: Lane[] = ["hiring", "buying"];
+const SOURCES: SubmissionSource[] = ["case-studies-gate", "schedule-call"];
 
 function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (typeof body !== "object" || body === null) return false;
@@ -16,7 +15,6 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (b.name !== undefined && typeof b.name !== "string") return false;
   if (b.companyDomain !== undefined && typeof b.companyDomain !== "string") return false;
   if (b.companyName !== undefined && typeof b.companyName !== "string") return false;
-  if (b.lane !== undefined && !LANES.includes(b.lane as Lane)) return false;
   if (b.phone !== undefined && typeof b.phone !== "string") return false;
   if (b.slot !== undefined && typeof b.slot !== "string") return false;
   // Phone is the one field the schedule form treats as mandatory, not optional.
@@ -26,7 +24,7 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
 
 /**
  * Single shared endpoint for every form on the site that reaches Sampath
- * directly: the /hire capture form and the case-studies gate both post here.
+ * directly: the case-studies gate and the /schedule booking form both post here.
  * The Supabase write is the source of truth and is awaited; the email
  * notification is best-effort and never blocks or fails the response.
  */
@@ -52,7 +50,6 @@ export async function POST(request: Request): Promise<Response> {
       name: payload.name?.trim() || null,
       company_domain: payload.companyDomain?.trim() || null,
       company_name: payload.companyName?.trim() || null,
-      lane: payload.lane ?? null,
       phone: payload.phone?.trim() || null,
     });
     if (error) throw error;

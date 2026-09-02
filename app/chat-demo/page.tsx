@@ -32,7 +32,7 @@ export default function ChatDemoPage() {
           <ol style={{ fontFamily: "var(--font-body)", fontSize: 13.5, lineHeight: 1.6, margin: "6px 0 0 18px", color: "var(--on-page)" }}>
             <li>Click <strong>Re: hello — ask me anything</strong> at the bottom-right.</li>
             <li>Tap a chip or type e.g. <em>“What does the USD 350 cover?”</em> or <em>“Estimate 200 leads/mo”</em>.</li>
-            <li>Check the CTAs — they route to <code>/hire</code>, <code>/schedule</code>, <code>/case-studies</code> etc.</li>
+            <li>Check the CTAs — they route to <code>/schedule</code>, <code>/case-studies</code> etc.</li>
             <li>Try an out-of-scope question like <em>“Do you do crypto?”</em> — it refuses to guess.</li>
           </ol>
         </div>

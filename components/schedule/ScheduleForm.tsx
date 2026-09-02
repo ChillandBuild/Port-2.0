@@ -5,7 +5,7 @@
  * collect — product or service, region, industries, 30/60/90 goals — is the
  * published agenda of the free call itself, and asking twice is friction.
  *
- * State and validation follow HireCaptureForm.tsx exactly: plain useState per
+ * State and validation are deliberately plain: one useState per
  * field, inline regex, no form library. Posts to the shared /api/submissions
  * endpoint under the "schedule-call" source.
  */

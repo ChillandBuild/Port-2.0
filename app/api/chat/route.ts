@@ -16,8 +16,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
         "Yes — open to full-time roles and fractional / contract engagements.\n\nCoimbatore, IN (GMT+5:30) — replies land across IST, GMT and PT hours. 7+ years across 24 markets (NA, EU, APAC, MENA). Market rate for a Pre-Sales / Lead Gen leadership role — no fixed number on a page, prefers a real conversation.\n\nBuilt and led research + outreach teams, not just IC work. Owns a number: pipeline, MQLs, meetings booked, CRM hygiene.",
       chips: ["Show work history", "What sectors?", "Resume"],
       ctas: [
-        { label: "View /hire", href: "/hire", solid: true },
-        { label: "Resume", href: "/assets/sampath-kumar-resume.pdf" },
+        { label: "Resume", href: "/assets/sampath-kumar-resume.pdf", solid: true },
         { label: "Message on LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699" },
       ],
     };
@@ -74,7 +73,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
     return {
       text:
         "8 stages, in order (each depends on the last):\n\n01 Understand ICP → 02 Research → 03 Prospect (verify before any send) → 04 Outreach (cold email + LinkedIn, SPF/DKIM/DMARC monitored) → 05 Qualification (quality > count) → 06 Meeting (discovery + AE handoff) → 07 Pipeline (CRM + ROI) → 08 Growth (OKRs, training, process fixes).",
-      chips: ["Which tools per stage?", "Show estimator", "Teardown example"],
+      chips: ["Which tools per stage?", "Show estimator", "Show results"],
       ctas: [{ label: "Lead gen → /lead-generation", href: "/lead-generation" }],
     };
   }
@@ -138,7 +137,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
     chips: ["Is Sampath open to full-time roles?", "What does the USD 350 cover?", "Show results"],
     ctas: [
       { label: "Ask on LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699", solid: true },
-      { label: "View /hire", href: "/hire" },
+      { label: "Schedule a call", href: "/schedule" },
     ],
   };
 }

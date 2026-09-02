@@ -6,7 +6,6 @@ import type { CourseAccess } from "@/lib/backend/course-access";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sampathkumar.example";
 
 const SOURCE_LABEL: Record<SubmissionPayload["source"], string> = {
-  "hire-form": "Hire page — wants a teardown",
   "case-studies-gate": "Case studies — unlocked",
   "schedule-call": "Schedule — wants the free first call",
 };
@@ -16,7 +15,6 @@ function formatLines(payload: SubmissionPayload): string {
   if (payload.name) lines.push(`Name: ${payload.name}`);
   if (payload.companyDomain) lines.push(`Company domain: ${payload.companyDomain}`);
   if (payload.companyName) lines.push(`Company: ${payload.companyName}`);
-  if (payload.lane) lines.push(`Lane: ${payload.lane === "hiring" ? "Hiring for a role" : "Buying outbound"}`);
   if (payload.phone) lines.push(`Phone: ${payload.phone}`);
   if (payload.slot) lines.push(`Requested slot: ${payload.slot}`);
   return lines.join("\n");
