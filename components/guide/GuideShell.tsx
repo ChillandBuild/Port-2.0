@@ -1,7 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { GuideNavChapter } from "@/lib/guide";
+import {
+  getCourseProgress,
+  getCourseProgressServerSnapshot,
+  markSectionVisited,
+  subscribeCourseProgress,
+} from "@/lib/frontend/course-progress";
 import styles from "./guide.module.css";
 
 export interface SearchEntry {
@@ -66,14 +72,22 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
   const drawerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Scroll spy: whichever section crosses the upper-middle band is active.
+  // Reading progress lives outside React (localStorage-backed module store,
+  // same shape as theme.ts) so mirroring it in never needs a synchronous
+  // setState-on-mount effect.
+  const visited = useSyncExternalStore(subscribeCourseProgress, getCourseProgress, getCourseProgressServerSnapshot);
+
+  // Scroll spy: whichever section crosses the upper-middle band is active,
+  // and is marked read for good (progress only ever grows).
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-guide-section]"));
     if (sections.length === 0) return;
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActiveId(entry.target.id);
+          if (!entry.isIntersecting) continue;
+          setActiveId(entry.target.id);
+          markSectionVisited(entry.target.id);
         }
       },
       { rootMargin: "-20% 0px -70% 0px" },
@@ -109,6 +123,19 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
   const closeAndGo = useCallback(() => setDrawerOpen(false), []);
 
   const hits = useMemo(() => search(searchIndex, query), [searchIndex, query]);
+
+  const progressPercent = meta.sectionCount > 0 ? Math.round((visited.size / meta.sectionCount) * 100) : 0;
+
+  const progressBlock = (
+    <div className={styles.progress}>
+      <div className={styles.progressTrack}>
+        <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+      </div>
+      <p className={`mono ${styles.progressLabel}`}>
+        {visited.size} / {meta.sectionCount} sections read
+      </p>
+    </div>
+  );
 
   const searchPanelFor = (idSuffix: string) => (
     <div className={styles.search}>
@@ -158,18 +185,27 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
             <div key={gi} className={styles.navGroup}>
               {group.label && <p className={`mono ${styles.navGroupLabel}`}>{group.label}</p>}
               <ul className={styles.navList}>
-                {group.sections.map((section) => (
-                  <li key={section.id}>
-                    <a
-      className={`${styles.navLink}${activeId === section.id ? ` ${styles.navLinkActive}` : ""}`}
-                      href={`#${section.id}`}
-                      aria-current={activeId === section.id ? "true" : undefined}
-                      onClick={closeAndGo}
-                    >
-                      {section.title}
-                    </a>
-                  </li>
-                ))}
+                {group.sections.map((section) => {
+                  const isVisited = visited.has(section.id);
+                  return (
+                    <li key={section.id}>
+                      <a
+                        className={`${styles.navLink}${activeId === section.id ? ` ${styles.navLinkActive}` : ""}`}
+                        href={`#${section.id}`}
+                        aria-current={activeId === section.id ? "true" : undefined}
+                        aria-label={isVisited ? `${section.title} (read)` : undefined}
+                        onClick={closeAndGo}
+                      >
+                        {isVisited && (
+                          <span className={styles.navCheck} aria-hidden="true">
+                            ✓
+                          </span>
+                        )}
+                        {section.title}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -201,6 +237,7 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
         >
           Search
         </button>
+        <div className={styles.mobileBarFill} style={{ width: `${progressPercent}%` }} aria-hidden="true" />
       </div>
 
       {searchOpen && <div className={styles.mobileSearch}>{searchPanelFor("mobilebar")}</div>}
@@ -217,6 +254,7 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
             aria-label="Course contents"
             onClick={(event) => event.stopPropagation()}
           >
+            {progressBlock}
             {searchPanelFor("drawer")}
             {navTree}
           </div>
@@ -228,6 +266,7 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
         <aside className={styles.sidebar}>
           <div className={styles.sidebarSticky}>
             <p className={`mono ${styles.sidebarKicker}`}>{meta.durationNote}</p>
+            {progressBlock}
             <button
               className={styles.searchToggle}
               type="button"
@@ -246,9 +285,17 @@ export function GuideShell({ nav, searchIndex, meta, children }: GuideShellProps
           <header className={styles.hero}>
             <h1 className={styles.heroTitle}>{meta.title}</h1>
             <p className={styles.heroSubtitle}>{meta.subtitle}</p>
-            <p className={`mono ${styles.heroMeta}`}>
-              {meta.chapterCount} chapters · {meta.sectionCount} sections · {meta.durationNote}
-            </p>
+            <div className={styles.heroStats}>
+              <div className={styles.heroStat}>
+                <span className={styles.heroStatValue}>{meta.chapterCount}</span>
+                <span className={`mono ${styles.heroStatLabel}`}>Chapters</span>
+              </div>
+              <div className={styles.heroStat}>
+                <span className={styles.heroStatValue}>{meta.sectionCount}</span>
+                <span className={`mono ${styles.heroStatLabel}`}>Sections</span>
+              </div>
+              <p className={`mono ${styles.heroStatNote}`}>{meta.durationNote}</p>
+            </div>
           </header>
           {children}
         </div>

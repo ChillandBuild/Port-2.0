@@ -56,6 +56,15 @@
   background: var(--nav-link-hover);
 }
 
+.mobileBarFill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width var(--duration-normal) var(--ease-out-expo);
+}
+
 .mobileSearch {
   position: sticky;
   top: calc(var(--nav-h) + 3.5rem);
@@ -121,6 +130,37 @@
   text-transform: uppercase;
   color: var(--accent-meta);
   margin-bottom: 0.9rem;
+}
+
+.progress {
+  margin-bottom: 1.25rem;
+}
+
+.progressTrack {
+  height: 4px;
+  background: var(--rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width var(--duration-normal) var(--ease-out-expo);
+}
+
+.progressLabel {
+  margin-top: 0.5rem;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+.navCheck {
+  color: var(--accent-meta);
+  margin-right: 0.4rem;
 }
 
 .searchToggle {
@@ -331,12 +371,50 @@
   color: var(--on-page-soft);
 }
 
-.heroMeta {
-  margin-top: 1.25rem;
+.heroStats {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+
+.heroStat {
+  display: grid;
+  gap: 0.15rem;
+  align-content: center;
+  padding: 0.65rem 1.1rem;
+  background: var(--surface-page-alt);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+}
+
+.heroStatValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--accent-meta);
+}
+
+.heroStatLabel {
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page-soft);
+}
+
+.heroStatNote {
+  display: flex;
+  align-items: center;
+  padding: 0 1.1rem;
   font-size: var(--text-meta);
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: var(--accent-meta);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 10px;
 }
 
 /* ---------------------------------------------------------------- chapter */
@@ -844,5 +922,17 @@
 
   .section {
     scroll-margin-top: calc(var(--nav-h) + 1.5rem);
+  }
+}
+
+/* On very large viewports the frame stays capped at 78rem, which leaves dead
+   gutters either side. Widen the canvas (sidebar + gap) without touching the
+   ch-based prose widths in the document — line length stays readable either
+   way. */
+@media (min-width: 1600px) {
+  .frame {
+    max-width: 92rem;
+    grid-template-columns: 19.5rem minmax(0, 1fr);
+    gap: clamp(3rem, 5vw, 5.5rem);
   }
 }
