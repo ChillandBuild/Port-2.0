@@ -93,54 +93,28 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
   const [copied, setCopied] = useState(false);
   const [result, setResult] = useState<{ accessCode: string; expiresAt: string } | null>(null);
   const lastCheckoutResponse = useRef<RazorpayCheckoutResponse | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const headingId = useId();
+  const panelId = useId();
 
   const isOpen = phase !== "closed";
   const canClose = phase === "details" || phase === "error" || phase === "success" || phase === "pending";
-  const showOverlay = isOpen && phase !== "checkout";
+  const showPanel = isOpen && phase !== "checkout";
 
   useEffect(() => {
     if (phase === "details") nameInputRef.current?.focus();
   }, [phase]);
 
-  // Focus trap + Escape-to-close while open; focus returns to the trigger on close.
+  // Inline section, not a modal — no focus trap. Escape just collapses it,
+  // same as the "‹ Back" control, when that's a safe thing to do.
   useEffect(() => {
     if (!isOpen) return;
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    const focusable = () =>
-      dialogRef.current?.querySelectorAll<HTMLElement>(
-        "button:not(:disabled), input:not(:disabled), a[href]",
-      ) ?? [];
-
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        if (canClose) close();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const items = Array.from(focusable());
-      if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      if (event.key === "Escape" && canClose) close();
     }
-
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      previouslyFocused?.focus();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, canClose]);
 
   function close() {
     setPhase("closed");
@@ -256,26 +230,28 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
   }
 
   return (
-    <>
-      <button ref={triggerRef} type="button" className={styles.buy} onClick={() => setPhase("details")}>
-        {COURSE.gate.payPrefix} — {priceLabel}
-      </button>
-
-      {showOverlay && (
-        <div
-          className={styles.dialogOverlay}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget && canClose) close();
-          }}
+    <div className={styles.enrollArea}>
+      {phase === "closed" && (
+        <button
+          type="button"
+          className={styles.buy}
+          aria-expanded={false}
+          aria-controls={panelId}
+          onClick={() => setPhase("details")}
         >
-          <div ref={dialogRef} className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby={headingId}>
-            {canClose && (
-              <button type="button" className={styles.dialogCloseButton} onClick={close} aria-label={COURSE.gate.dialogClose}>
-                ×
-              </button>
-            )}
+          {COURSE.gate.payPrefix} — {priceLabel}
+        </button>
+      )}
 
-            {phase === "details" && (
+      {showPanel && (
+        <div id={panelId} className={styles.enrollPanel} aria-live="polite" aria-atomic="true">
+          {canClose && (
+            <button type="button" className={styles.enrollCollapse} onClick={close}>
+              ‹ {COURSE.gate.dialogClose}
+            </button>
+          )}
+
+          {phase === "details" && (
               <form className={styles.form} onSubmit={submitDetails}>
                 <h2 className={styles.dialogHeading} id={headingId}>
                   {COURSE.gate.dialogHeading}
@@ -368,9 +344,8 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
                 )}
               </div>
             )}
-          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

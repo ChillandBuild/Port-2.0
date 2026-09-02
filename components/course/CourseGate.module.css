@@ -343,51 +343,61 @@
   }
 }
 
-/* Enroll dialog */
-.dialogOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background: rgba(11, 27, 42, 0.55);
+/* Enroll flow — embedded inline in the panel, not a popup. .enrollArea holds
+   either the trigger button or the expanded panel, never both. */
+.enrollArea {
+  display: block;
 }
 
-.dialog {
-  position: relative;
-  width: 100%;
-  max-width: 26rem;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 1.75rem 1.5rem;
-  background: var(--surface-panel);
+.enrollPanel {
+  margin-top: 0.9rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: var(--surface-page);
   color: var(--on-panel);
-  border-radius: 14px;
   border: 1px solid var(--rule);
+  border-radius: 10px;
+  animation: slideDown 240ms var(--ease-out-expo) forwards;
 }
 
-.dialogCloseButton {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.9rem;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.25rem;
-  line-height: 1;
+/* Copied verbatim from Estimator.module.css's inline-reveal keyframe —
+   CSS Modules are file-scoped, so it can't be imported, only matched. */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enrollPanel {
+    animation: none;
+  }
+}
+
+.enrollCollapse {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--accent);
   background: transparent;
   border: none;
-  color: var(--on-panel-soft);
   cursor: pointer;
 }
 
-.dialogCloseButton:hover {
-  color: var(--on-panel);
+.enrollCollapse:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .dialogHeading {
-  margin: 0 1.5rem 0.5rem 0;
+  margin: 0 0 0.5rem;
   font-family: var(--font-display);
   font-size: var(--text-h3);
 }
