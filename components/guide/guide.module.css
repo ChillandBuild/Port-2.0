@@ -945,23 +945,25 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
+  /* Equal-width columns so every chip lines up in a clean grid, however the
+     steps wrap — content-sized flex chips produced ragged, misaligned rows. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.75rem, 1fr));
   gap: 0.6rem;
 }
 
 .guideFlowStep {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+  text-align: center;
   gap: 0.15rem;
-  padding: 0.6rem 0.9rem;
+  padding: 0.7rem 0.9rem;
   background: var(--surface-page-alt);
   border: 1px solid var(--rule-strong);
   border-top: 2px solid var(--tone, var(--accent));
   border-radius: 8px;
-  min-width: 6rem;
 }
 
 .guideFlowLabel {
@@ -977,15 +979,15 @@
   color: var(--on-page-soft);
 }
 
-/* Arrows sit between chips as pseudo-elements of every chip after the
-   first, so they interleave correctly even when the rail wraps. */
+/* Arrows are the first child inside each chip after the first, so the
+   incoming direction reads correctly even when the grid wraps. All chips
+   center their content, so the first chip (no arrow) still lines up. */
 .guideFlowRail li + li::before {
   content: "→";
-  align-self: center;
   font-family: var(--font-mono);
   color: var(--accent-meta);
   font-size: 1rem;
-  margin-inline: 0.35rem;
+  line-height: 1.2;
 }
 
 /* Block: tree — branching decision diagram. */
@@ -1206,7 +1208,9 @@
     max-width: min(104rem, calc(60vw + 40rem));
     grid-template-columns: 17.5rem minmax(0, 1fr);
     gap: clamp(2rem, 4vw, 4rem);
-    padding: 0 var(--space-shell);
+    /* Small fixed left inset so the sidebar hugs the window edge instead of
+       inheriting the page-wide --space-shell gutter (~57-72px of dead space). */
+    padding: 0 var(--space-shell) 0 1.25rem;
   }
 
   .sidebar {
