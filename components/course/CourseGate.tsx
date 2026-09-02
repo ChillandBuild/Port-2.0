@@ -24,12 +24,13 @@ export function CourseGate({ state }: { state: "locked" | "expired" }) {
       <p className={styles.body}>{body}</p>
 
       <div className={styles.panel}>
-        <CourseUnlockForm />
-        <div className={styles.rule} aria-hidden="true" />
         <p className={styles.enrollNote}>{COURSE.durationNote}</p>
         <a className={styles.buy} href={COURSE_ENROLL_HREF} target="_blank" rel="noreferrer noopener">
           {COURSE.gate.buyLabel}
         </a>
+        <p className={styles.buyNote}>{COURSE.gate.buyNote}</p>
+        <div className={styles.rule} aria-hidden="true" />
+        <CourseUnlockForm />
       </div>
 
       <p className={styles.backNote}>

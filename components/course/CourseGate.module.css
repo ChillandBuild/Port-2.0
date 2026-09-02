@@ -115,8 +115,9 @@
 }
 
 .buy {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   min-height: 3rem;
   margin-top: 0.9rem;
   padding: 0 1.5rem;
@@ -125,16 +126,21 @@
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid var(--rule-strong);
-  color: var(--on-panel);
-  transition:
-    transform 140ms var(--ease-out-quint),
-    background 140ms var(--ease-out-quint);
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  border: 1px solid transparent;
+  transition: background 140ms var(--ease-out-quint);
 }
 
 .buy:hover {
-  background: color-mix(in srgb, var(--on-panel) 10%, transparent);
-  transform: translateY(-2px);
+  background: var(--accent-hover);
+}
+
+.buyNote {
+  margin-top: 0.6rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--on-panel-soft);
 }
 
 .backNote {

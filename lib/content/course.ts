@@ -28,6 +28,7 @@ export const COURSE = {
     invalidCode: "That code doesn't match an active enrollment. Check the email you received after payment.",
     error: "Something went wrong checking your code. Try again in a moment.",
     buyLabel: "Enroll now",
+    buyNote: "You'll get your access code by email right after payment — come back here and enter it below to unlock.",
     expiryLabel: "Your access is valid until",
   },
 
