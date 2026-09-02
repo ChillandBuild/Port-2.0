@@ -1,17 +1,25 @@
 import type { Block, GuideChapter, GuideDocument, GuideSection } from "./types";
-import { ASSESSMENT } from "./assessment";
-import { METHODOLOGY } from "./methodology";
-import { PROCESS } from "./process";
+import { SYSTEM } from "./chapters/ch01-system";
+import { ICP_RESEARCH } from "./chapters/ch02-icp-research";
+import { TOOLS_INFRASTRUCTURE } from "./chapters/ch03-tools-infrastructure";
+import { CAMPAIGNS } from "./chapters/ch04-campaigns";
+import { LINKEDIN } from "./chapters/ch05-linkedin";
+import { TRACKING_HYGIENE } from "./chapters/ch06-tracking-hygiene";
+import { REPLIES_MEETINGS } from "./chapters/ch07-replies-meetings";
+import { METRICS_TARGETS } from "./chapters/ch08-metrics-targets";
+import { SUPPORT } from "./chapters/ch09-support";
 
 /**
- * The full Lead Generation Course document, structured. Source of record:
- * content/lead-generation.md — every claim, table and figure on the guide
- * page comes from this transcription.
+ * The full Lead Generation Strategy document, structured into nine chapters.
+ * Rebuilt from the original three-source transcription (assessment answers,
+ * process & methodology deck, 2-page process sheet) so each topic has one
+ * canonical home — provenance for every section lives in each chapter file's
+ * docstring.
  */
 export const GUIDE_DOCUMENT: GuideDocument = {
-  title: "The Lead Generation Course",
-  subtitle: "The complete 90-day multi-channel playbook — assessment answers, process, methodology, tools and pricing.",
-  chapters: [ASSESSMENT, METHODOLOGY, PROCESS],
+  title: "Lead Generation Strategy",
+  subtitle: "The complete 90-day multi-channel system — ICP, research, infrastructure, campaigns, LinkedIn, tracking, replies, metrics and support.",
+  chapters: [SYSTEM, ICP_RESEARCH, TOOLS_INFRASTRUCTURE, CAMPAIGNS, LINKEDIN, TRACKING_HYGIENE, REPLIES_MEETINGS, METRICS_TARGETS, SUPPORT],
 };
 
 export interface GuideNavSection {

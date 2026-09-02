@@ -129,11 +129,6 @@
   color: #b3564d;
 }
 
-.rule {
-  height: 1px;
-  margin: 1.5rem 0 1.25rem;
-  background: var(--rule);
-}
 
 .enrollNote {
   font-size: var(--text-sm);
@@ -266,29 +261,10 @@
   background: var(--accent);
 }
 
-.unlockToggle {
-  margin-top: 0.5rem;
-}
 
-.unlockSummary {
-  cursor: pointer;
-  font-size: var(--text-sm);
-  color: var(--accent);
-  list-style: none;
-}
 
-.unlockSummary::-webkit-details-marker {
-  display: none;
-}
 
-.unlockSummary:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 
-.unlockToggle[open] .unlockSummary {
-  margin-bottom: 0.85rem;
-}
 
 /* Staged entrance — pure CSS, no GSAP needed for an above-the-fold mount-in
    reveal. Neutralized globally under prefers-reduced-motion (styles/global.css)

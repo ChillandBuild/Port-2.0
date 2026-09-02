@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { COURSE, COURSE_ENROLL_HREF, COURSE_PRICE_INR } from "@/lib/content/course";
-import { CourseUnlockForm } from "./CourseUnlockForm";
 import { EnrollDialog } from "./EnrollDialog";
 import styles from "./CourseGate.module.css";
 
@@ -59,11 +58,6 @@ export function CourseGate({ state }: { state: "locked" | "expired" }) {
         <p className={styles.enrollNote}>{COURSE.durationNote}</p>
         <EnrollDialog priceLabel={priceLabel} fallbackHref={COURSE_ENROLL_HREF} keyConfigured={keyConfigured} />
         <p className={styles.buyNote}>{COURSE.gate.payNote}</p>
-        <div className={styles.rule} aria-hidden="true" />
-        <details className={styles.unlockToggle}>
-          <summary className={styles.unlockSummary}>{COURSE.gate.unlockToggleLabel}</summary>
-          <CourseUnlockForm />
-        </details>
       </div>
 
       <p className={styles.backNote}>

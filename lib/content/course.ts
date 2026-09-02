@@ -14,8 +14,8 @@ export const COURSE_PRICE_INR = 10; // TEMP: test-transaction price, revert to 4
 
 export const COURSE = {
   eyebrow: "The course",
-  title: "The Lead Generation Course.",
-  lede: "The entire outbound system — ICP, sourcing, cadences, qualification, hand-off, and the numbers — in 30 lessons. One payment, 30 days of access, work through it at your own pace.",
+  title: "The Lead Generation Strategy Course.",
+  lede: "The entire outbound system — ICP, research, infrastructure, campaigns, tracking, and the numbers — in 40 lessons. One payment, 30 days of access, work through it at your own pace.",
   indexHeading: "What's inside.",
   indexBody: "Lessons in order. Each one builds on the last; start at the top.",
   durationNote: "30 days of access from payment.",
@@ -24,7 +24,7 @@ export const COURSE = {
     lockedEyebrow: "Members only",
     lockedHeading: "Everything you need to build outbound that works.",
     lockedBody:
-      "The entire pipeline — ICP, sourcing, cadences, qualification, hand-off — in 30 lessons. One payment, work through it at your own pace.",
+      "The entire pipeline — ICP, research, infrastructure, campaigns, tracking — in 40 lessons. One payment, work through it at your own pace.",
     expiredEyebrow: "Access ended",
     expiredHeading: "Your 30-day access has expired.",
     expiredBody:
@@ -49,7 +49,7 @@ export const COURSE = {
       "Hand off deals cleanly to close",
     ],
     statLessonsLabel: "Lessons",
-    statLessons: 30,
+    statLessons: 40,
     statDaysLabel: "Days access",
     statDays: 30,
 
@@ -82,7 +82,7 @@ export const COURSE = {
     eyebrow: "The course",
     heading: "Prefer to run it yourself?",
     body:
-      "Everything in the pipeline above, taught step by step — the ICP method, the sourcing loop, cadence writing, qualification, and the hand-off. One payment, 30 days of access, all ~30 lessons.",
+      "Everything in the system above, taught step by step — the ICP method, the research loop, campaign sequencing, LinkedIn outreach, tracking, and the metrics. One payment, 30 days of access, all 40 lessons.",
     priceLabel: "₹4,999", // TODO(client): set the real price before launch.
     durationLabel: "30 days of access",
     buyLabel: "Enroll now",

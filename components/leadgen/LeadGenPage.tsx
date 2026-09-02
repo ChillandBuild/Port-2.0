@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LEADGEN, PIPELINE } from "@/lib/content";
 import { COURSE } from "@/lib/content/course";
+import { CourseUnlockInline } from "@/components/course/CourseUnlockInline";
 import styles from "./LeadGenPage.module.css";
 
 /**
@@ -65,9 +66,7 @@ export function LeadGenPage() {
           <Link className={styles.primary} href="/course">
             {COURSE.enroll.buyLabel}
           </Link>
-          <Link className={styles.ghost} href="/course">
-            {COURSE.enroll.memberLabel}
-          </Link>
+          <CourseUnlockInline />
         </div>
       </section>
     </>

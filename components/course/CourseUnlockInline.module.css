@@ -1,0 +1,116 @@
+/* Inline unlock form — used on pages outside the course gate (e.g.
+   lead-generation) where the full panel isn't present. */
+
+.toggle {
+  margin-top: 0.5rem;
+}
+
+.summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--on-close);
+  opacity: 0.7;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.toggle[open] .summary {
+  margin-bottom: 0.85rem;
+}
+
+.form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-close-soft);
+}
+
+.input {
+  min-height: 3rem;
+  padding: 0 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-page);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  background: var(--accent-gradient);
+  color: var(--accent-ink);
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out-quint);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 999px;
+  opacity: 0.85;
+  animation: spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: #b3564d;
+}

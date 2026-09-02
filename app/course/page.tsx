@@ -9,7 +9,7 @@ import { COURSE } from "@/lib/content/course";
 import { getCurrentCourseAccess } from "@/lib/backend/course-access";
 
 export const metadata: Metadata = {
-  title: "Lead Generation Course — Sampath Kumar",
+  title: "Lead Generation Strategy Course — Sampath Kumar",
   description: COURSE.lede,
 };
 

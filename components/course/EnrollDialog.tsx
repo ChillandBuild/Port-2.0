@@ -148,7 +148,7 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
         amount: order.amount,
         currency: order.currency,
         name: "Sampath Kumar",
-        description: "Lead Generation Course",
+        description: "Lead Generation Strategy Course",
         prefill: { name, email, contact: phone },
         handler: (response) => {
           lastCheckoutResponse.current = response;
