@@ -27,6 +27,7 @@ export const metadata: Metadata = {
  * from the first pixel, so the nav takes its ground immediately.
  */
 export default function SchedulePage() {
+  const keyConfigured = Boolean(process.env.RAZORPAY_KEY_ID);
   return (
     <>
       <span id="top" />
@@ -43,7 +44,7 @@ export default function SchedulePage() {
         />
         <ScheduleTracks />
         <ScheduleCta />
-        <ScheduleForm />
+        <ScheduleForm keyConfigured={keyConfigured} />
         <ScheduleContact />
       </main>
 

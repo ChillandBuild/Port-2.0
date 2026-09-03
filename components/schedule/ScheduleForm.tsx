@@ -1,42 +1,74 @@
 "use client";
 
 /**
- * The page's actual ask. Four fields, because everything a longer form would
- * collect — product or service, region, industries, 30/60/90 goals — is the
- * published agenda of the free call itself, and asking twice is friction.
+ * The page's actual ask. State and validation are deliberately plain: one
+ * useState per field, inline regex, no form library.
  *
- * State and validation are deliberately plain: one useState per
- * field, inline regex, no form library. Posts to the shared /api/submissions
- * endpoint under the "schedule-call" source.
+ * Two branches from here, chosen by the call-type toggle:
+ *   "first"  → posts to the shared /api/submissions endpoint (unchanged),
+ *              free, notifies Sampath by email.
+ *   "second" → real Razorpay payment for the $350 setup call. Mirrors
+ *              EnrollDialog's order → Checkout.js → verify flow exactly,
+ *              sharing lib/frontend/razorpay-checkout.ts's script loader.
  */
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { SCHEDULE } from "@/lib/content";
+import { loadCheckoutScript, type RazorpayCheckoutResponse } from "@/lib/frontend/razorpay-checkout";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import styles from "./ScheduleForm.module.css";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+type CallType = "first" | "second";
 type Status = "idle" | "submitting" | "success" | "error";
+type PayPhase = "idle" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
+type PayErrorKind = "order" | "unverified" | "verify-network" | null;
 
-export function ScheduleForm() {
+const PAY_ERROR_COPY: Record<Exclude<PayErrorKind, null>, string> = {
+  order: SCHEDULE.form.payDialogErrorOrder,
+  unverified: SCHEDULE.form.payDialogErrorUnverified,
+  "verify-network": SCHEDULE.form.payDialogErrorVerifyNetwork,
+};
+
+interface ScheduleFormProps {
+  keyConfigured: boolean;
+}
+
+export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [callType, setCallType] = useState<CallType>("first");
   const [slot, setSlot] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
+  const [payPhase, setPayPhase] = useState<PayPhase>("idle");
+  const [payErrorKind, setPayErrorKind] = useState<PayErrorKind>(null);
+  const lastCheckoutResponse = useRef<RazorpayCheckoutResponse | null>(null);
   const formId = useId();
 
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (name.trim().length < 1) return setFieldError(SCHEDULE.form.nameInvalid);
-    if (!EMAIL_RE.test(email.trim())) return setFieldError(SCHEDULE.form.emailInvalid);
-    if (phone.replace(/\D/g, "").length < 7) return setFieldError(SCHEDULE.form.phoneInvalid);
+  function validate(): boolean {
+    if (name.trim().length < 1) {
+      setFieldError(SCHEDULE.form.nameInvalid);
+      return false;
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      setFieldError(SCHEDULE.form.emailInvalid);
+      return false;
+    }
+    if (phone.replace(/\D/g, "").length < 7) {
+      setFieldError(SCHEDULE.form.phoneInvalid);
+      return false;
+    }
     setFieldError(null);
-    setStatus("submitting");
+    return true;
+  }
 
+  const submitFreeCall = async () => {
+    setStatus("submitting");
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
@@ -46,10 +78,12 @@ export function ScheduleForm() {
           name: name.trim(),
           email: email.trim(),
           phone: phone.trim(),
+          callType: "first",
           // Omitted rather than sent empty: the column is nullable and the
           // route trims to null anyway, but an absent key keeps the payload
           // honest about what was actually filled in.
           ...(company.trim() ? { companyName: company.trim() } : {}),
+          ...(purpose.trim() ? { purpose: purpose.trim() } : {}),
           // The calendar slot has no dedicated column, so it rides along to
           // the email notification only — the Supabase insert is untouched.
           ...(slot ? { slot } : {}),
@@ -61,6 +95,102 @@ export function ScheduleForm() {
       setStatus("error");
     }
   };
+
+  async function verifyPayment(response: RazorpayCheckoutResponse) {
+    setPayPhase("verifying");
+    try {
+      const verifyResponse = await fetch("/api/schedule/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...response,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          companyName: company.trim(),
+          purpose: purpose.trim(),
+          slot: slot ?? "",
+        }),
+      });
+      const payload = (await verifyResponse.json()) as { success: boolean; error?: string };
+      if (payload.success) {
+        setPayPhase("success");
+        return;
+      }
+      if (payload.error === "grant-pending") {
+        setPayPhase("pending");
+        return;
+      }
+      setPayPhase("error");
+      setPayErrorKind("unverified");
+    } catch {
+      setPayPhase("error");
+      setPayErrorKind("verify-network");
+    }
+  }
+
+  const submitPaidCall = async () => {
+    setPayPhase("creating-order");
+    setPayErrorKind(null);
+    try {
+      const [orderResponse] = await Promise.all([
+        fetch("/api/schedule/order", { method: "POST" }),
+        loadCheckoutScript(),
+      ]);
+      const order = (await orderResponse.json()) as {
+        success: boolean;
+        orderId?: string;
+        amount?: number;
+        currency?: string;
+        keyId?: string;
+      };
+      if (!order.success || !order.orderId || !order.keyId || !order.amount || !order.currency || !window.Razorpay) {
+        throw new Error("order failed");
+      }
+      setPayPhase("checkout");
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        order_id: order.orderId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Sampath Kumar",
+        description: "Setup call — infrastructure, tool estimation, methodology, process flow",
+        prefill: { name: name.trim(), email: email.trim(), contact: phone.trim() },
+        handler: (response) => {
+          lastCheckoutResponse.current = response;
+          void verifyPayment(response);
+        },
+        modal: {
+          ondismiss: () => setPayPhase("idle"),
+        },
+      });
+      checkout.open();
+    } catch {
+      setPayPhase("error");
+      setPayErrorKind("order");
+    }
+  };
+
+  function retryPayment() {
+    if (payErrorKind === "verify-network" && lastCheckoutResponse.current) {
+      void verifyPayment(lastCheckoutResponse.current);
+      return;
+    }
+    setPayPhase("idle");
+    setPayErrorKind(null);
+  }
+
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!validate()) return;
+    if (callType === "first") {
+      void submitFreeCall();
+    } else {
+      void submitPaidCall();
+    }
+  };
+
+  const paying = payPhase !== "idle" && payPhase !== "error";
 
   return (
     <section className={styles.section} aria-labelledby="schedule-form-heading" id="book">
@@ -76,6 +206,16 @@ export function ScheduleForm() {
         <p className={styles.success} role="status">
           {SCHEDULE.form.success}
         </p>
+      ) : payPhase === "success" ? (
+        <div className={styles.success} role="status">
+          <h3>{SCHEDULE.form.payDialogSuccessHeading}</h3>
+          <p>{SCHEDULE.form.payDialogSuccessBody}</p>
+        </div>
+      ) : payPhase === "pending" ? (
+        <div className={styles.success} role="status">
+          <h3>{SCHEDULE.form.payDialogPendingHeading}</h3>
+          <p>{SCHEDULE.form.payDialogPendingBody}</p>
+        </div>
       ) : (
         <form className={styles.form} onSubmit={submit} noValidate>
           <ScheduleCalendar selected={slot} onSelect={setSlot} />
@@ -92,6 +232,7 @@ export function ScheduleForm() {
                 onChange={(event) => setName(event.target.value)}
                 placeholder={SCHEDULE.form.namePlaceholder}
                 aria-invalid={fieldError === SCHEDULE.form.nameInvalid}
+                disabled={paying}
               />
             </label>
             <label className={styles.field}>
@@ -107,6 +248,7 @@ export function ScheduleForm() {
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder={SCHEDULE.form.emailPlaceholder}
                 aria-invalid={fieldError === SCHEDULE.form.emailInvalid}
+                disabled={paying}
               />
             </label>
             <label className={styles.field}>
@@ -120,6 +262,7 @@ export function ScheduleForm() {
                 value={company}
                 onChange={(event) => setCompany(event.target.value)}
                 placeholder={SCHEDULE.form.companyPlaceholder}
+                disabled={paying}
               />
             </label>
             <label className={styles.field}>
@@ -135,8 +278,49 @@ export function ScheduleForm() {
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder={SCHEDULE.form.phonePlaceholder}
                 aria-invalid={fieldError === SCHEDULE.form.phoneInvalid}
+                disabled={paying}
               />
             </label>
+            <label className={styles.field}>
+              <span className={`mono ${styles.label}`}>{SCHEDULE.form.purposeLabel}</span>
+              <input
+                className={styles.input}
+                type="text"
+                name="purpose"
+                id={`${formId}-purpose`}
+                value={purpose}
+                onChange={(event) => setPurpose(event.target.value)}
+                placeholder={SCHEDULE.form.purposePlaceholder}
+                disabled={paying}
+              />
+            </label>
+            <div className={styles.field}>
+              <span className={`mono ${styles.label}`}>{SCHEDULE.form.callTypeLabel}</span>
+              <div className={styles.toggle} role="radiogroup" aria-label={SCHEDULE.form.callTypeLabel}>
+                <button
+                  type="button"
+                  className={styles.toggleOption}
+                  data-active={callType === "first"}
+                  role="radio"
+                  aria-checked={callType === "first"}
+                  onClick={() => setCallType("first")}
+                  disabled={paying}
+                >
+                  {SCHEDULE.form.callTypeFirstLabel}
+                </button>
+                <button
+                  type="button"
+                  className={styles.toggleOption}
+                  data-active={callType === "second"}
+                  role="radio"
+                  aria-checked={callType === "second"}
+                  onClick={() => setCallType("second")}
+                  disabled={paying}
+                >
+                  {SCHEDULE.form.callTypeSecondLabel}
+                </button>
+              </div>
+            </div>
           </div>
 
           {fieldError ? (
@@ -149,10 +333,33 @@ export function ScheduleForm() {
               {SCHEDULE.form.error}
             </p>
           ) : null}
+          {payPhase === "error" && payErrorKind ? (
+            <p className={styles.error} role="alert">
+              {PAY_ERROR_COPY[payErrorKind]}
+            </p>
+          ) : null}
 
-          <button className={styles.submit} type="submit" disabled={status === "submitting"}>
-            {status === "submitting" ? SCHEDULE.form.sending : SCHEDULE.form.submit}
-          </button>
+          {payPhase === "error" ? (
+            payErrorKind !== "unverified" ? (
+              <button type="button" className={styles.submit} onClick={retryPayment}>
+                {SCHEDULE.form.payDialogRetry}
+              </button>
+            ) : null
+          ) : callType === "second" && !keyConfigured ? (
+            <a className={styles.submit} href={SCHEDULE.fallback.primaryCta.href} target="_blank" rel="noreferrer noopener">
+              {SCHEDULE.form.payingSubmit}
+            </a>
+          ) : (
+            <button className={styles.submit} type="submit" disabled={status === "submitting" || paying}>
+              {status === "submitting" || payPhase === "creating-order" || payPhase === "checkout"
+                ? SCHEDULE.form.sending
+                : payPhase === "verifying"
+                  ? SCHEDULE.form.payDialogVerifying
+                  : callType === "first"
+                    ? SCHEDULE.form.submit
+                    : SCHEDULE.form.payingSubmit}
+            </button>
+          )}
           <p className={styles.note}>{SCHEDULE.form.note}</p>
         </form>
       )}

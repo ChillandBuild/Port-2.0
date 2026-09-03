@@ -16,7 +16,7 @@ export async function POST(): Promise<Response> {
   }
 
   try {
-    const order = await createOrder(COURSE_PRICE_USD * 100, COURSE_CURRENCY);
+    const order = await createOrder(COURSE_PRICE_USD * 100, COURSE_CURRENCY, "lead-gen-course");
     return Response.json({
       success: true,
       orderId: order.id,

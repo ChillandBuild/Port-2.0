@@ -9,6 +9,9 @@ export const IDENTITY = {
   location: "Coimbatore, Tamil Nadu, India",
   phone: "+91 99949 69699",
   phoneHref: "tel:+919994969699",
+  /** Empty until the address is decided; the reply card renders the row either way. */
+  email: "",
+  emailHref: "",
   linkedin: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699",
   resume: "/assets/sampath-kumar-resume.pdf",
   tagline: "Every deal begins with hello.",
@@ -1249,8 +1252,8 @@ export const SCHEDULE = {
   },
 
   form: {
-    eyebrow: "Book the free call",
-    heading: "Four fields. Then we talk.",
+    eyebrow: "Book a call",
+    heading: "A few fields. Then we talk.",
     body:
       "Pick a slot, leave enough to check you're real, and I'll get back to you with a confirmation. Everything else is what the call itself is for — no questionnaire.",
     nameLabel: "Your name",
@@ -1264,13 +1267,30 @@ export const SCHEDULE = {
     phoneLabel: "Phone",
     phonePlaceholder: "Your phone number",
     phoneInvalid: "Enter a valid phone number.",
+    purposeLabel: "Purpose of call (optional)",
+    purposePlaceholder: "e.g. Scaling outbound for a B2B SaaS team",
+    callTypeLabel: "Which call is this?",
+    callTypeFirstLabel: "Free first call",
+    callTypeSecondLabel: "Second call — $350",
     submit: "Request the free call",
+    payingSubmit: "Pay $350 & book the second call",
     sending: "Sending…",
+    payDialogHeading: "Book the second call",
+    payDialogCreatingOrder: "Preparing payment…",
+    payDialogVerifying: "Confirming your payment…",
+    payDialogSuccessHeading: "Paid — you're booked.",
+    payDialogSuccessBody:
+      "Payment received. A receipt is on its way to your email, and I'll confirm the exact time separately.",
+    payDialogPendingHeading: "Payment received.",
+    payDialogPendingBody: "Your payment went through — your receipt is on its way by email.",
+    payDialogErrorOrder: "Couldn't start the payment. Try again.",
+    payDialogErrorUnverified: "We couldn't confirm your payment — check your email or contact support.",
+    payDialogErrorVerifyNetwork: "Couldn't confirm the payment just now. Try again.",
+    payDialogRetry: "Try again",
     success:
-      "Got it. You'll hear back from me confirming the slot you picked. Payment setup isn't live yet, so payment instructions for the second call come by email once the first one is done.",
+      "Got it. You'll hear back from me confirming the slot you picked.",
     error: "That didn't send. Try again, or reach me on LinkedIn below.",
-    note:
-      "Pick a slot above and send the form — you'll get a confirmation by email. Payment for the second call is arranged separately.",
+    note: "Pick a slot above and send the form — you'll get a confirmation by email.",
   },
 
   fallback: {

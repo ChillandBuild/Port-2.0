@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
+import type { SchedulePayment } from "@/lib/backend/schedule-payment";
 import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
 
 // Matches metadataBase in app/layout.tsx; overridable per environment. The
@@ -20,6 +21,7 @@ function formatLines(payload: SubmissionPayload): string {
   if (payload.companyName) lines.push(`Company: ${payload.companyName}`);
   if (payload.phone) lines.push(`Phone: ${payload.phone}`);
   if (payload.slot) lines.push(`Requested slot: ${payload.slot}`);
+  if (payload.purpose) lines.push(`Purpose of call: ${payload.purpose}`);
   return lines.join("\n");
 }
 
@@ -106,6 +108,83 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
     });
   } catch (error) {
     console.error(`sendCourseAccessEmail failed for ${access.email}`, error);
+  }
+}
+
+/**
+ * Mails the buyer a receipt for the paid second-call setup. Buyer-facing, so
+ * failures log loudly rather than no-op silently — same policy as
+ * sendCourseAccessEmail. The Supabase row is still the source of truth.
+ */
+export async function sendSchedulePaymentReceiptEmail(payment: SchedulePayment): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !from) {
+    console.error(`schedule payment receipt skipped for ${payment.email} — Resend not configured`);
+    return;
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from,
+      to: payment.email,
+      subject: "Receipt — your setup call payment",
+      text: [
+        payment.name ? `Thank you, ${payment.name}.` : "Thank you.",
+        "",
+        `We've received your payment of USD ${payment.amountUsd} for the one-time setup call — infrastructure, tool estimation, methodology and process flow.`,
+        payment.slot ? `Requested slot: ${payment.slot}` : "",
+        payment.purpose ? `Purpose: ${payment.purpose}` : "",
+        "",
+        "Sampath will confirm the exact time by email shortly.",
+        "",
+        `Payment reference: ${payment.paymentId}`,
+        "",
+        "— Sampath Kumar",
+      ]
+        .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
+        .join("\n"),
+    });
+  } catch (error) {
+    console.error(`sendSchedulePaymentReceiptEmail failed for ${payment.email}`, error);
+  }
+}
+
+/**
+ * Notifies Sampath that the paid second call was booked and paid — full
+ * contact details, purpose and the amount, so no manual follow-up on
+ * whether payment happened is needed. Best-effort, same policy as
+ * sendSubmissionNotification: the Supabase row already landed either way.
+ */
+export async function sendSchedulePaymentNotification(payment: SchedulePayment): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.HIRE_NOTIFY_TO;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !to || !from) return;
+
+  const lines = [
+    "Source: Schedule — paid second call",
+    payment.name ? `Name: ${payment.name}` : null,
+    `Email: ${payment.email}`,
+    payment.phone ? `Phone: ${payment.phone}` : null,
+    payment.companyName ? `Company: ${payment.companyName}` : null,
+    payment.purpose ? `Purpose of call: ${payment.purpose}` : null,
+    payment.slot ? `Requested slot: ${payment.slot}` : null,
+    `Amount paid: USD ${payment.amountUsd}`,
+    `Payment reference: ${payment.paymentId}`,
+  ].filter((line): line is string => Boolean(line));
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from,
+      to,
+      subject: "Second call paid — USD 350",
+      text: lines.join("\n"),
+    });
+  } catch (error) {
+    console.error("sendSchedulePaymentNotification failed", error);
   }
 }
 

@@ -3,59 +3,12 @@
 import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { COURSE } from "@/lib/content/course";
+import { loadCheckoutScript, type RazorpayCheckoutResponse } from "@/lib/frontend/razorpay-checkout";
 import styles from "./CourseSales.module.css";
 
 type Phase = "details" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
 
 type ErrorKind = "order" | "unverified" | "verify-network" | null;
-
-interface RazorpayCheckoutResponse {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayCheckoutOptions {
-  key: string;
-  order_id: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  prefill: { name: string; email: string; contact: string };
-  handler: (response: RazorpayCheckoutResponse) => void;
-  modal: { ondismiss: () => void };
-}
-
-interface RazorpayCheckoutInstance {
-  open: () => void;
-}
-
-declare global {
-  interface Window {
-    Razorpay?: new (options: RazorpayCheckoutOptions) => RazorpayCheckoutInstance;
-  }
-}
-
-/** Module-scoped so repeated checkouts don't re-inject the script tag. */
-let checkoutScriptPromise: Promise<void> | null = null;
-
-function loadCheckoutScript(): Promise<void> {
-  if (checkoutScriptPromise) return checkoutScriptPromise;
-  checkoutScriptPromise = new Promise((resolve, reject) => {
-    if (window.Razorpay) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Checkout script failed to load."));
-    document.body.appendChild(script);
-  });
-  return checkoutScriptPromise;
-}
 
 const ERROR_COPY: Record<Exclude<ErrorKind, null>, string> = {
   order: COURSE.gate.dialogErrorOrder,

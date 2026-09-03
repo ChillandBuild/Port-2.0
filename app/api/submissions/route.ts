@@ -17,6 +17,8 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (b.companyName !== undefined && typeof b.companyName !== "string") return false;
   if (b.phone !== undefined && typeof b.phone !== "string") return false;
   if (b.slot !== undefined && typeof b.slot !== "string") return false;
+  if (b.purpose !== undefined && typeof b.purpose !== "string") return false;
+  if (b.callType !== undefined && b.callType !== "first" && b.callType !== "second") return false;
   // Phone is the one field the schedule form treats as mandatory, not optional.
   if (b.source === "schedule-call" && !(typeof b.phone === "string" && b.phone.trim())) return false;
   return true;

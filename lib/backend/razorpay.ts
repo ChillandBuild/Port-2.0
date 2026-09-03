@@ -33,6 +33,8 @@ export function generateAccessCode(): string {
 export interface RazorpayPayment {
   id: string;
   email: string | null;
+  /** The product tag stamped into the order's notes at createOrder() time — null if absent (e.g. an old order predating this field). */
+  product: RazorpayProduct | null;
 }
 
 export interface RazorpayOrder {
@@ -41,16 +43,25 @@ export interface RazorpayOrder {
   currency: string;
 }
 
+export type RazorpayProduct = "lead-gen-course" | "schedule-second-call";
+
 /**
  * Creates a Razorpay Order for the on-site checkout flow. The amount is
  * always set here, server-side, from the caller — never trust a client-
  * supplied price. No `razorpay` SDK is installed for one endpoint; a raw
  * REST call keeps the dependency list unchanged.
  *
+ * `product` is stamped into the order's notes so the webhook (which product
+ * a payment.captured event belongs to) can route to the right grant path.
+ *
  * Requires International Payments enabled on the Razorpay account for any
  * currency other than INR — otherwise the order create call fails.
  */
-export async function createOrder(amountMinorUnits: number, currency: string): Promise<RazorpayOrder> {
+export async function createOrder(
+  amountMinorUnits: number,
+  currency: string,
+  product: RazorpayProduct,
+): Promise<RazorpayOrder> {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
   if (!keyId || !keySecret) throw new Error("Razorpay keys not configured.");
@@ -65,8 +76,8 @@ export async function createOrder(amountMinorUnits: number, currency: string): P
     body: JSON.stringify({
       amount: amountMinorUnits,
       currency,
-      receipt: `course_${Date.now()}`,
-      notes: { product: "lead-gen-course" },
+      receipt: `${product}_${Date.now()}`,
+      notes: { product },
     }),
   });
   if (!response.ok) throw new Error(`Razorpay order creation failed (${response.status}).`);
@@ -115,5 +126,7 @@ export function extractPayment(payload: unknown): RazorpayPayment | null {
   const email = [e.email, notes.email].find(
     (value): value is string => typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
   );
-  return { id: e.id, email: email ? email.trim().toLowerCase() : null };
+  const product =
+    notes.product === "lead-gen-course" || notes.product === "schedule-second-call" ? notes.product : null;
+  return { id: e.id, email: email ? email.trim().toLowerCase() : null, product };
 }
