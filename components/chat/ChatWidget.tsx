@@ -27,11 +27,23 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
+  const [footerInView, setFooterInView] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
+
+  // The dock floats exactly where the footer's contact lines and fine print sit,
+  // so once the colophon scrolls into view the dock steps aside instead of
+  // sitting on it. An open panel is a dialog and keeps its place.
+  useEffect(() => {
+    const footer = document.querySelector("footer");
+    if (!footer || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setFooterInView(entry.isIntersecting));
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -56,7 +68,10 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
   }
 
   return (
-    <div className={`${styles.dock} ${inline ? styles.dockInline : ""}`} aria-live="polite">
+    <div
+      className={`${styles.dock} ${inline ? styles.dockInline : ""} ${footerInView && !open ? styles.dockClear : ""}`}
+      aria-live="polite"
+    >
       {open && (
         <div className={styles.panel} role="dialog" aria-label="Hello bot chat">
           <div className={styles.head}>
@@ -126,7 +141,7 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
 
       <button className={styles.bubble} onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="chat-panel">
         <span className={styles.bubbleDot} aria-hidden />
-        {open ? "Close" : "Ask about Sampath"}
+        <span className={styles.bubbleLabel}>{open ? "Close" : "Ask about Sampath"}</span>
       </button>
     </div>
   );

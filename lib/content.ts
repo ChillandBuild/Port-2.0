@@ -1254,7 +1254,7 @@ export const SCHEDULE = {
     body:
       "Pick a slot, leave enough to check you're real, and I'll get back to you with a confirmation. Everything else is what the call itself is for — no questionnaire.",
     nameLabel: "Your name",
-    namePlaceholder: "Sampath Kumar",
+    namePlaceholder: "Your name",
     nameInvalid: "Please add your name.",
     emailLabel: "Email",
     emailPlaceholder: "you@company.com",
@@ -1262,7 +1262,7 @@ export const SCHEDULE = {
     companyLabel: "Company name (optional)",
     companyPlaceholder: "Acme Inc.",
     phoneLabel: "Phone",
-    phonePlaceholder: "+91 99949 69699",
+    phonePlaceholder: "Your phone number",
     phoneInvalid: "Enter a valid phone number.",
     submit: "Request the free call",
     sending: "Sending…",
@@ -1342,7 +1342,7 @@ export interface LegalDoc {
 /** Shared close for all three policy pages. The contact channels are IDENTITY's. */
 export const LEGAL_CONTACT = {
   eyebrow: "Questions",
-  body: "Questions about this policy go through LinkedIn or the phone number on this site.",
+  body: "Questions go through LinkedIn or the phone number on this site.",
   linkedinLabel: "Connect on LinkedIn",
   phoneLabel: IDENTITY.phone,
 } as const;
@@ -1476,11 +1476,11 @@ export const REFUNDS: LegalDoc = {
     {
       heading: "Late cancellation or no-show",
       body: [
-        "Cancellations made less than 24 hours before the session, or a missed session without notice, may not qualify for a refund. A reschedule may be offered at his discretion.",
+        "Cancellations made less than 24 hours before the session, or a missed session without notice, may not qualify for a refund. A reschedule may be offered at my discretion.",
       ],
     },
     {
-      heading: "If he cancels",
+      heading: "If I cancel",
       body: [
         "The client may choose a replacement time or receive a full refund for the undelivered session.",
       ],

@@ -33,14 +33,18 @@
 
 /* Once the hero is behind us the bar takes a real chrome ground and a hairline,
    the way the reference does — a transparent bar over the scrolling dossier was
-   unreadable about a third of the time. The ink swaps on the same trigger. */
+   unreadable about a third of the time. The ink swaps on the same trigger. The
+   ground stays translucent but frosted: section headings scroll under the bar,
+   and an unfrosted tint lets them collide with the links. */
 .nav[data-grounded="true"] {
   color: var(--on-chrome);
   border-bottom-color: var(--rule);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .nav[data-grounded="true"]::before {
-  background: color-mix(in srgb, var(--surface-page) 82%, transparent);
+  background: color-mix(in srgb, var(--surface-page) 80%, transparent);
 }
 
 .home {
