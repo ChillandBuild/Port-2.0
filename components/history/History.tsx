@@ -22,6 +22,7 @@ export function History() {
 
       <ol className={styles.list}>
         <span className={styles.spine} data-spine aria-hidden="true" />
+        <span className={styles.spineHead} data-spine-head aria-hidden="true" />
         {ROLES.map((role) => (
           <li className={styles.role} key={role.company + role.dates} data-reveal>
             <p className={`mono ${styles.dates}`}>{role.dates}</p>

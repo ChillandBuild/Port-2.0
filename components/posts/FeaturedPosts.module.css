@@ -41,6 +41,9 @@
 .rail {
   position: relative;
   overflow: hidden;
+  /* Cards enter and leave the rail as a fade, not a hard clip. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
 
 .rail:focus-visible {

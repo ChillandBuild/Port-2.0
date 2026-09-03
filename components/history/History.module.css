@@ -43,6 +43,25 @@
   transform-origin: top;
 }
 
+/* The read-head: travels the spine's own box height (see ScrollFX), landing
+   on the role currently under discussion — "you are here" in seven years. */
+.spineHead {
+  position: absolute;
+  left: -3px;
+  top: 0.4rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spineHead {
+    display: none;
+  }
+}
+
 .role {
   position: relative;
   display: grid;

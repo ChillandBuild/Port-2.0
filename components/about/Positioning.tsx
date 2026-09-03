@@ -19,7 +19,10 @@ export function Positioning() {
 
           <div className={styles.exchange} data-reveal data-reveal-children>
             <p className={styles.asked}>&ldquo;{ABOUT.exchange.asked}&rdquo;</p>
-            <p className={styles.answered}>&ldquo;{ABOUT.exchange.answered}&rdquo;</p>
+            <p className={styles.answered}>
+              &ldquo;{ABOUT.exchange.answered}&rdquo;
+              <span className={styles.answeredMark} aria-hidden="true" data-reveal-mark="x" />
+            </p>
           </div>
         </div>
 

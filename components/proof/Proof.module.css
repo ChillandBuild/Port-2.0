@@ -69,6 +69,32 @@
   transition: transform 320ms var(--ease-out-expo);
 }
 
+/* The meter: fills at the same rate the count above it ticks, so the number
+   reads as a measurement taken live rather than a printed label. */
+.bar {
+  position: relative;
+  display: block;
+  height: 2px;
+  max-width: 9rem;
+  margin-top: 0.65rem;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    transform: scaleX(1);
+  }
+}
+
 .row:hover .value {
   transform: translateX(6px);
 }

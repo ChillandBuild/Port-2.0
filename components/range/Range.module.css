@@ -35,6 +35,7 @@
 }
 
 .row {
+  position: relative;
   display: grid;
   grid-template-columns: 4.5rem 22rem minmax(0, 1fr) auto;
   align-items: baseline;
@@ -44,6 +45,18 @@
   transition:
     background-color 220ms var(--ease-out-expo),
     transform 260ms var(--ease-out-expo);
+}
+
+/* Each row draws its own tick as it enters, top to bottom — the index filling
+   in one entry at a time instead of the whole ledger just fading up. */
+.rowMark {
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 2px;
+  background: var(--accent);
+  transform-origin: top;
 }
 
 /* The row itself travels, not a card inside it: the shift reads as the entry

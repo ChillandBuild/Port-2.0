@@ -110,6 +110,12 @@
   letter-spacing: -0.01em;
 }
 
+/* inline-block so each word can carry its own reveal transform — the phrase
+   cascades in on top of the heading block's own lift. */
+.sayWord {
+  display: inline-block;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

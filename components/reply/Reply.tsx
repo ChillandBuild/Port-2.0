@@ -2,6 +2,8 @@ import Link from "next/link";
 import { IDENTITY } from "@/lib/content";
 import styles from "./Reply.module.css";
 
+const SAY_WORDS = "Say hello and it runs for you.".split(" ");
+
 /**
  * The close. The run that started in the world is totalled here and stops, and
  * the page arrives somewhere rather than trailing into a footer.
@@ -18,7 +20,14 @@ export function Reply() {
           <h2 className={styles.heading} id="reply-heading" data-reveal data-reveal-tier="lift">
             You just watched the whole thing run once.
             <br />
-            <span className={styles.say}>Say hello and it runs for you.</span>
+            <span className={styles.say} data-reveal data-reveal-tier="subtle" data-reveal-children>
+              {SAY_WORDS.map((word, i) => (
+                <span className={styles.sayWord} key={word + i}>
+                  {word}
+                  {i < SAY_WORDS.length - 1 ? " " : ""}
+                </span>
+              ))}
+            </span>
           </h2>
 
           <div className={styles.actions} data-reveal data-reveal-children>

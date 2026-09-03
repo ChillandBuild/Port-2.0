@@ -22,17 +22,22 @@ export function Proof() {
 
       <dl className={styles.ledger} data-reveal data-reveal-tier="subtle" data-reveal-children>
         {LEDGER.map((row) => (
-          <div className={styles.row} key={row.label}>
+          <div className={styles.row} key={row.label} data-count-row>
             <dt className={`${styles.value} tabular`}>
               {row.count ? (
-                <span
-                  data-count={row.count.to}
-                  data-count-prefix={row.count.prefix ?? ""}
-                  data-count-suffix={row.count.suffix ?? ""}
-                  data-count-decimals={row.count.decimals ?? 0}
-                >
-                  {row.value}
-                </span>
+                <>
+                  <span
+                    data-count={row.count.to}
+                    data-count-prefix={row.count.prefix ?? ""}
+                    data-count-suffix={row.count.suffix ?? ""}
+                    data-count-decimals={row.count.decimals ?? 0}
+                  >
+                    {row.value}
+                  </span>
+                  <span className={styles.bar} aria-hidden="true">
+                    <span className={styles.barFill} data-count-bar />
+                  </span>
+                </>
               ) : row.countRange ? (
                 <span
                   data-count-range

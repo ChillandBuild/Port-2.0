@@ -70,6 +70,22 @@ export function ScrollFX() {
             stagger: reduced ? 0 : tier.stagger,
             scrollTrigger: { trigger: el, start: "top 86%", once: true },
           });
+
+          // A hairline that draws alongside its own reveal instead of just
+          // fading — the underline under Positioning's thesis, the per-row
+          // tick in Range's index. `data-reveal-mark="x"` draws left-to-right
+          // (an underline); anything else draws top-to-bottom (a tick).
+          const marks = Array.from(el.querySelectorAll<HTMLElement>("[data-reveal-mark]"));
+          if (marks.length) {
+            const axis = marks[0].dataset.revealMark === "x" ? "scaleX" : "scaleY";
+            gsap.from(marks, {
+              [axis]: 0,
+              duration: reduced ? 0 : tier.duration * 0.8,
+              ease: tier.ease,
+              stagger: reduced ? 0 : tier.stagger,
+              scrollTrigger: { trigger: el, start: "top 86%", once: true },
+            });
+          }
         });
 
         gsap.utils.toArray<HTMLElement>("[data-count]").forEach((el) => {
@@ -78,6 +94,10 @@ export function ScrollFX() {
           const prefix = el.dataset.countPrefix ?? "";
           const suffix = el.dataset.countSuffix ?? "";
           const decimals = Number(el.dataset.countDecimals ?? 0);
+          // Proof's ledger rows carry an optional hairline meter alongside the
+          // number — it fills at the same rate the count ticks, so the number
+          // reads as a measurement rather than a label.
+          const bar = el.closest("[data-count-row]")?.querySelector<HTMLElement>("[data-count-bar]");
           const obj = { n: 0 };
           gsap.to(obj, {
             n: target,
@@ -89,6 +109,7 @@ export function ScrollFX() {
                 minimumFractionDigits: decimals,
                 maximumFractionDigits: decimals,
               })}${suffix}`;
+              if (bar) bar.style.transform = `scaleX(${obj.n / (target || 1)})`;
             },
           });
         });
@@ -230,6 +251,28 @@ export function ScrollFX() {
                 },
               },
             );
+
+            // A read-head that travels the spine's own height (not a percentage
+            // of it — scaleY changes the paint, not the box) so it always lands
+            // exactly on the last role as the section ends.
+            const head = spine.parentElement?.querySelector<HTMLElement>("[data-spine-head]");
+            if (head) {
+              gsap.fromTo(
+                head,
+                { y: 0 },
+                {
+                  y: () => spine.offsetHeight,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: spine.parentElement ?? spine,
+                    start: "top 70%",
+                    end: "bottom 80%",
+                    scrub: 0.4,
+                    invalidateOnRefresh: true,
+                  },
+                },
+              );
+            }
           });
 
           // The footer's wordmark is set wider than the viewport; the scroll

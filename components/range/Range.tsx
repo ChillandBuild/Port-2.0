@@ -28,6 +28,7 @@ export function Range() {
             className={`${styles.row} ${sector.core ? styles.rowCore : ""}`}
             key={sector.title}
           >
+            <span className={styles.rowMark} aria-hidden="true" data-reveal-mark />
             <span className={`mono ${styles.idx}`}>{String(i + 1).padStart(2, "0")}</span>
             <h3 className={styles.title}>
               {sector.title}

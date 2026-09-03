@@ -87,11 +87,25 @@
 
 /* The answer is the one line that earns a different voice on this ground. */
 .answered {
+  position: relative;
+  display: inline-block;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: var(--text-h3);
   line-height: 1.25;
   color: var(--accent);
+}
+
+/* Underlines the thesis after it lands, the way you'd mark the one line worth
+   keeping in a printed page. */
+.answeredMark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.1em;
+  height: 1px;
+  background: var(--accent);
+  transform-origin: left;
 }
 
 .detail {

@@ -81,6 +81,17 @@
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 460ms var(--ease-out-expo);
+  animation: lineDraw 520ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 260ms);
+}
+
+@keyframes lineDraw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .group:hover::before {
@@ -196,5 +207,10 @@
   .head,
   .group {
     animation: none;
+  }
+
+  .group::before {
+    animation: none;
+    transform: scaleX(1);
   }
 }
