@@ -9,7 +9,81 @@
 
 .inner {
   width: 100%;
-  max-width: 72rem;
+  max-width: 78rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: var(--space-gap);
+  align-items: end;
+}
+
+.lead {
+  min-width: 0;
+}
+
+/* The one raised surface on the page. Everything above this point is printed
+   flat on its ground — hairlines, no boxes — so a single card at the close
+   reads as the thing being handed over rather than as another band. The lift
+   is carried by a tinted ground plus one soft shadow, not a border, so it
+   still belongs to the paper it sits on. */
+.card {
+  min-width: 0;
+  padding: clamp(1.5rem, 2.6vw, 2.25rem);
+  background: color-mix(in srgb, var(--surface-page) 62%, transparent);
+  border: 1px solid var(--rule);
+  box-shadow: 0 1px 2px rgba(11, 27, 42, 0.04), 0 18px 40px -24px rgba(11, 27, 42, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.cardLabel {
+  color: var(--accent-meta);
+  margin-bottom: 1.1rem;
+}
+
+.cardName {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-h3);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--on-close);
+}
+
+.cardRole {
+  color: var(--on-close-soft);
+  margin-top: 0.4rem;
+}
+
+.meta {
+  margin-top: 1.5rem;
+}
+
+.metaRow {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding-block: 0.7rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-sm);
+}
+
+.metaRow dt {
+  color: var(--on-close-soft);
+}
+
+.metaRow dd {
+  color: var(--on-close);
+}
+
+.metaLink {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-strong);
+  transition: border-color 140ms var(--ease-out-quint);
+}
+
+.metaLink:hover {
+  border-color: var(--accent);
 }
 
 .kicker {
@@ -98,4 +172,18 @@
 
 .ghost:active {
   filter: brightness(0.92);
+}
+
+
+@media (max-width: 900px) {
+  /* Stacked, the card follows the buttons instead of sitting beside them — it
+     is the same offer written out, so it reads as the footnote to the CTA row. */
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .card {
+    margin-top: clamp(2rem, 6vw, 3rem);
+  }
 }

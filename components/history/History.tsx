@@ -10,7 +10,7 @@ import styles from "./History.module.css";
 export function History() {
   return (
     <section className={styles.history} id="history" aria-labelledby="history-heading">
-      <div className={styles.head} data-reveal data-reveal-children>
+      <div className={styles.head} data-reveal data-reveal-tier="lift" data-reveal-children>
         <h2 className={styles.heading} id="history-heading">
           Seven years of doing exactly this.
         </h2>

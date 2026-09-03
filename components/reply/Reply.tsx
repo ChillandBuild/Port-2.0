@@ -8,30 +8,68 @@ import styles from "./Reply.module.css";
  */
 export function Reply() {
   return (
-    <section className={`spot ${styles.reply}`} id="contact" data-spot aria-labelledby="reply-heading">
+    <section className={`spot grained ${styles.reply}`} id="contact" data-spot aria-labelledby="reply-heading">
       <div className={styles.inner}>
-        <p className={`mono ${styles.kicker}`}>End of run</p>
+        <div className={styles.lead}>
+          <p className={`mono ${styles.kicker}`} data-reveal data-reveal-tier="subtle">
+            End of run
+          </p>
 
-        <h2 className={styles.heading} id="reply-heading">
-          You just watched the whole thing run once.
-          <br />
-          <span className={styles.say}>Say hello and it runs for you.</span>
-        </h2>
+          <h2 className={styles.heading} id="reply-heading" data-reveal data-reveal-tier="lift">
+            You just watched the whole thing run once.
+            <br />
+            <span className={styles.say}>Say hello and it runs for you.</span>
+          </h2>
 
-        <div className={styles.actions}>
-          <a
-            className={styles.primary}
-            href={IDENTITY.linkedin}
-            rel="noreferrer noopener"
-            target="_blank"
-            data-magnet="0.22"
-          >
-            Connect on LinkedIn
-          </a>
-          <Link className={styles.ghost} href="/schedule" data-magnet="0.22">
-            Schedule a call
-          </Link>
+          <div className={styles.actions} data-reveal data-reveal-children>
+            <a
+              className={styles.primary}
+              href={IDENTITY.linkedin}
+              rel="noreferrer noopener"
+              target="_blank"
+              data-magnet="0.22"
+            >
+              Connect on LinkedIn
+            </a>
+            <Link className={styles.ghost} href="/schedule" data-magnet="0.22">
+              Schedule a call
+            </Link>
+          </div>
         </div>
+
+        {/* The right half of the close was empty at every width above 900px.
+            The card is the return address the two buttons imply — the same four
+            facts the envelope rail opens the page with, closing it. Reachable
+            in its own right (the phone dials), so it is content, not filler. */}
+        <aside
+          className={styles.card}
+          data-reveal
+          data-reveal-children
+          data-tilt="3.5"
+          aria-label="Direct contact"
+        >
+          <p className={`mono ${styles.cardLabel}`}>Reply to</p>
+          <p className={styles.cardName}>{IDENTITY.name}</p>
+          <p className={`mono ${styles.cardRole}`}>{IDENTITY.role}</p>
+          <dl className={styles.meta}>
+            <div className={styles.metaRow}>
+              <dt className="mono">Based</dt>
+              <dd>{IDENTITY.location}</dd>
+            </div>
+            <div className={styles.metaRow}>
+              <dt className="mono">Direct</dt>
+              <dd>
+                <a className={styles.metaLink} href={IDENTITY.phoneHref}>
+                  {IDENTITY.phone}
+                </a>
+              </dd>
+            </div>
+            <div className={styles.metaRow}>
+              <dt className="mono">Markets</dt>
+              <dd>24 · NA · EU · APAC · MENA</dd>
+            </div>
+          </dl>
+        </aside>
       </div>
     </section>
   );

@@ -42,16 +42,32 @@ export function ScrollFX() {
       const ctx = gsap.context(() => {
         // Entrances fire once. Content that re-hides on the way back up is a
         // defect, not an effect.
+        //
+        // One tween for every element on the page reads as a template: the
+        // close would arrive with the same weight as a caption. `data-reveal-tier`
+        // picks the register instead — "subtle" for supporting copy and long
+        // lists, the default for section bodies, "lift" for the moments the page
+        // is meant to land on. Distance and duration move together, so a heavier
+        // tier is slower as well as further, the way real weight is.
+        const TIERS = {
+          subtle: { y: 10, duration: 0.5, stagger: 0.035, ease: "power2.out" },
+          standard: { y: 26, duration: 0.9, stagger: 0.06, ease: "power3.out" },
+          lift: { y: 44, duration: 1.15, stagger: 0.12, ease: "expo.out" },
+        } as const;
+
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
           const children = el.hasAttribute("data-reveal-children")
             ? Array.from(el.children)
             : [el];
+          const tier =
+            TIERS[(el.dataset.revealTier as keyof typeof TIERS) ?? "standard"] ??
+            TIERS.standard;
           gsap.from(children, {
             opacity: 0,
-            y: reduced ? 0 : 26,
-            duration: reduced ? 0.3 : 0.9,
-            ease: "power3.out",
-            stagger: reduced ? 0 : 0.06,
+            y: reduced ? 0 : tier.y,
+            duration: reduced ? 0.3 : tier.duration,
+            ease: tier.ease,
+            stagger: reduced ? 0 : tier.stagger,
             scrollTrigger: { trigger: el, start: "top 86%", once: true },
           });
         });

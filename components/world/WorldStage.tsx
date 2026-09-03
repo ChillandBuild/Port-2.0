@@ -12,9 +12,7 @@
  * the world never comes back.
  */
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
-import heroImage from "@/public/assets/hero-image.png";
 import { HERO, PIPELINE } from "@/lib/content";
 import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/frontend/world";
 import { CLUSTERS, COHORT, FIELD } from "@/lib/frontend/world-instance";
@@ -31,14 +29,7 @@ import { subscribeTheme } from "@/lib/frontend/theme";
 import styles from "./WorldStage.module.css";
 
 /** Length of the travel, in viewport-heights. The peak owns most of it. */
-/** The photo holds the first screen before it settles into the field, so the
- *  travel is a little longer than it was. */
 export const WORLD_VH = 7.4;
-
-
-
-/** How much of the travel the photograph holds before the field takes over. */
-const HERO_DISSOLVE = 0.09;
 
 interface Cue {
   from: number;
@@ -107,7 +98,6 @@ export function WorldStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
-  const photoRef = useRef<HTMLDivElement>(null);
   const heroScrimRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -239,20 +229,6 @@ export function WorldStage() {
         heroScrimRef.current.style.opacity = cueAt(t, CUES.hero).toFixed(3);
       }
 
-      if (photoRef.current) {
-        // Opens at true scale, then eases in by six percent as it fades, so the
-        // world appears to come through the frame rather than replace it. The
-        // travel stays at or above 1: below it the box edges would expose the
-        // ground behind while the photograph is still partly opaque.
-        const held = Math.max(0, Math.min(1, t / HERO_DISSOLVE));
-        const eased = held * held * (3 - 2 * held);
-        photoRef.current.style.opacity = (1 - eased).toFixed(3);
-        photoRef.current.style.transform = `scale(${(1 + eased * 0.06).toFixed(4)})`;
-        // The world's own atmosphere waits for the photograph to clear: its
-        // leading lobe lands on the subject, not on type.
-        stageEl.style.setProperty("--photo-hold", (1 - eased).toFixed(3));
-      }
-
       if (countRef.current) {
         const c = cueAt(t, CUES.field);
         const shown = Math.round(200 * Math.min(1, c * 1.35));
@@ -305,22 +281,6 @@ export function WorldStage() {
     >
       <div className={styles.stage} data-world-stage>
         <canvas className={styles.canvas} ref={canvasRef} data-world-canvas aria-hidden="true" />
-        {/* The hero photograph, settling into the record field rather than
-            cutting to it. next/image so the browser is served AVIF or WebP at
-            the size it actually needs: the source is a 1.9MB PNG and this is the
-            page's largest paint. */}
-        <div className={styles.photo} ref={photoRef} aria-hidden="true">
-          <Image
-            src={heroImage}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            placeholder="blur"
-            className={styles.photoImage}
-          />
-        </div>
-
         <div className={styles.heroScrim} ref={heroScrimRef} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
         <div className={styles.scrim} aria-hidden="true" />

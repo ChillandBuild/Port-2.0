@@ -142,6 +142,9 @@
   --world-scrim-lead: rgba(46, 16, 101, 0.5);
   --world-scrim-trail: rgba(46, 16, 101, 0.38);
   --world-grain: 0.05;
+  /* Tooth on the dossier's wide grounds. Deliberately below the world's own
+     grain: down here it is paper texture, not weather. */
+  --panel-grain: 0.035;
 }
 
 :root[data-theme="dark"] {
@@ -221,6 +224,7 @@
   --world-scrim-lead: rgba(3, 10, 18, 0.82);
   --world-scrim-trail: rgba(3, 10, 18, 0.6);
   --world-grain: 0.05;
+  --panel-grain: 0.055;
 }
 
 :root {

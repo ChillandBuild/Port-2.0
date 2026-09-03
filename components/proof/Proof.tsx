@@ -13,16 +13,16 @@ import styles from "./Proof.module.css";
 export function Proof() {
   return (
     <section className={styles.proof} id="proof" aria-labelledby="proof-heading">
-      <div className={styles.intro} data-reveal data-reveal-children>
+      <div className={styles.intro} data-reveal data-reveal-tier="lift" data-reveal-children>
         <p className="mono">Verified</p>
         <h2 className={styles.heading} id="proof-heading">
           That was the method. These are the results, with their sources attached.
         </h2>
       </div>
 
-      <dl className={styles.ledger}>
+      <dl className={styles.ledger} data-reveal data-reveal-tier="subtle" data-reveal-children>
         {LEDGER.map((row) => (
-          <div className={styles.row} key={row.label} data-reveal>
+          <div className={styles.row} key={row.label}>
             <dt className={`${styles.value} tabular`}>
               {row.count ? (
                 <span

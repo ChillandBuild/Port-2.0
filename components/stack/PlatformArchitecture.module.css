@@ -161,15 +161,33 @@
   opacity: 0.8;
 }
 
+/* Two columns that FLOW, not a two-column grid.
+   The groups are deliberately uneven — 41 tools against 13 — and in a grid the
+   two cards on a row share a row height, so the short one left a ~330px hole
+   next to the long one at every width above 860px. Multi-column packs instead:
+   each card is atomic (`break-inside: avoid`) and the next one starts wherever
+   the last ended, so the unevenness stops being a hole and becomes the reason
+   the two columns end level.
+
+   Reading order is unchanged from the DOM — column-major is what multi-column
+   means, and it is the order a reader of two columns expects. */
 @media (min-width: 860px) {
   .groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: block;
+    columns: 2;
+    column-gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .group {
+    break-inside: avoid;
+    /* `gap` does not apply outside grid/flex, so the rhythm between stacked
+       cards is carried by margin here. */
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
   }
 }
 
 @media (min-width: 1200px) {
   .groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: clamp(2.5rem, 5vw, 4rem);
   }
 }

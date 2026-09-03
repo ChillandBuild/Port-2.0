@@ -9,8 +9,8 @@ import styles from "./Range.module.css";
  */
 export function Range() {
   return (
-    <section className={`spot ${styles.range}`} id="range" data-spot aria-labelledby="range-heading">
-      <div className={styles.head} data-reveal>
+    <section className={`spot grained ${styles.range}`} id="range" data-spot aria-labelledby="range-heading">
+      <div className={styles.head} data-reveal data-reveal-tier="lift" data-reveal-children>
         <h2 className={styles.heading} id="range-heading">
           Nine sectors.
           <br />
@@ -22,7 +22,7 @@ export function Range() {
         </p>
       </div>
 
-      <div className={styles.rows} data-reveal data-reveal-children>
+      <div className={styles.rows} data-reveal data-reveal-tier="subtle" data-reveal-children>
         {SECTORS.map((sector, i) => (
           <div
             className={`${styles.row} ${sector.core ? styles.rowCore : ""}`}
@@ -45,7 +45,7 @@ export function Range() {
 
       <p className={styles.closerBody} data-reveal>
         Buyer norms change at every border. Cadence timing, proof style and how
-        direct the first line can be are set per market, not per campaign.
+        direct the first line can be are all set per market, not per campaign.
       </p>
     </section>
   );

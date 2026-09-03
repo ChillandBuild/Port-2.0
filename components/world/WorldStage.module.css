@@ -7,8 +7,6 @@
 .stage {
   --world-veil: 1;
   --world-wipe: 0;
-  /* 1 while the photograph holds the frame, 0 once it has gone. */
-  --photo-hold: 1;
   position: sticky;
   top: 0;
   height: 100svh;
@@ -25,64 +23,6 @@
 
 /* A flat dark ground bands on real displays. Grain is the difference between
    "a dark page" and "a lit room". */
-/* The photograph. Above the field, below the copy, and it never scrolls on its
-   own: its whole life is the first tenth of the travel. */
-.photo {
-  position: absolute;
-  /* Full bleed to the top edge. Starting it below the bar left a band of bare
-     world ground across the first screen, which read as an opaque header bar —
-     the bar is transparent, so the photograph has to reach the top itself. */
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  overflow: hidden;
-  /* Sized to the source's own 3:2, so the frame fills this box exactly and the
-     only edge in play is the box's. Left it to the box that a contained image
-     ends part way across, and the strip of bare ground beside it reads as a
-     seam no scrim is dense enough to hide. */
-  width: min(100%, calc(100svh * 1.5));
-  /* Its own right edge, dissolved into the ground rather than cut against it.
-     The feather sits inside the scrim's opaque plateau, so nothing legible is
-     lost to it. */
-  --photo-edge: linear-gradient(to right, #000 0%, #000 76%, transparent 100%);
-  -webkit-mask-image: var(--photo-edge);
-  mask-image: var(--photo-edge);
-  /* Pinned at the top edge: the dissolve scales up, and from a centred origin
-     that growth would carry the frame back under the bar it was just moved out
-     of. */
-  transform-origin: 50% 0;
-  background: var(--surface-world-wide);
-  will-change: opacity, transform;
-}
-
-.photoImage {
-  /* The box is already the source's aspect, so cover crops nothing here. */
-  object-fit: cover;
-  object-position: 50% 50%;
-  /* A small push in, pinned to the top edge so the growth runs downward: the
-     subject's head moves *away* from the bar rather than up under it, and no
-     ground is exposed above the frame. Scaled here and not on .photo, which the
-     cue loop writes its own transform to on every frame. */
-  transform: scale(1.1);
-  transform-origin: 50% 0;
-  /* Load-in: the photograph settles from a deeper push into its resting 1.1,
-     fading up over the world ground while the headline rises. The final
-     keyframe is the resting state itself, so nothing snaps when it ends. */
-  animation: photoArrive 1400ms var(--ease-out-expo) both;
-}
-
-@keyframes photoArrive {
-  from {
-    opacity: 0;
-    transform: scale(1.16);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
 /* Deliberately unmistakable. It must not be possible to ship this by accident,
    so it announces what it is instead of imitating a photograph. */
 .photoNote {
@@ -156,7 +96,7 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: calc(var(--world-veil) * (1 - var(--photo-hold, 0)));
+  opacity: var(--world-veil);
   clip-path: inset(0 0 calc(var(--world-wipe) * 100%) 0);
   background:
     radial-gradient(120% 90% at 0% 100%, var(--world-scrim-lead) 0%, transparent 62%),
@@ -742,25 +682,6 @@
      right. A phone has no column: the copy is full width and sits low, so the
      ground it needs is the bottom of the frame, not one side of it. Measured
      over the subject's trousers the stat row was 1.04:1. */
-  /* contain is a desktop answer. A phone is 1:2 against a 3:2 source, so
-     containing it leaves a 260px strip floating in an 844px screen. The frame
-     goes back to filling, cropped to the subject. */
-  .photoImage {
-    object-position: 30% 26%;
-    /* The phone frame already crops hard to the subject; a second push in on
-       top of it puts the face into the copy. */
-    transform: none;
-  }
-
-  /* Full width and cropped to the subject: a phone is 1:2 against a 3:2 source,
-     so holding the source's aspect would leave a 260px strip in an 844px
-     screen. Nothing to feather once the box spans the stage. */
-  .photo {
-    width: 100%;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
   .heroScrim {
     background: linear-gradient(
       to top,
@@ -894,7 +815,6 @@
 
 .world:not([data-ready]) .scrim,
 .world:not([data-ready]) .grain,
-.world:not([data-ready]) .photo,
 .world:not([data-ready]) .heroScrim {
   display: none;
 }
@@ -945,7 +865,6 @@
      whole section. */
   .scrim,
   .grain,
-  .photo,
   .heroScrim {
     display: none;
   }
@@ -1001,13 +920,11 @@
     transform: none;
   }
 
-  /* The load-in choreography goes with the travel: the hero copy reads at
-     once, and the photograph (display: none here anyway) never settles. */
+  /* The load-in choreography goes with the travel: the hero copy reads at once. */
   .eyebrow,
   .lede,
   .stats,
-  .actions,
-  .photoImage {
+  .actions {
     animation: none;
   }
 }

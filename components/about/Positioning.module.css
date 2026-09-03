@@ -34,12 +34,49 @@
   text-wrap: balance;
 }
 
+/* The column's slack lived here as a ~250px hole between the heading and the
+   quote, because `.exchange` took `margin-top: auto` and nothing occupied the
+   space it pushed through. The stamp takes the slack instead and spends it: the
+   one fact the section is really claiming, set at display scale so the void
+   reads as composition rather than as a gap the grid forgot.
+
+   `ABOUT.stamp` was already in the content file and had never been rendered
+   anywhere. Kept `aria-hidden` — "7+ years" is stated in prose in the adjacent
+   column, so to a screen reader this is a second reading of the same fact. */
+.stamp {
+  margin-top: auto;
+  padding-top: clamp(2rem, 4vw, 3.25rem);
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.stamp::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule-panel);
+  /* Baseline-aligned to the figure's optical bottom, not its box. */
+  transform: translateY(-0.35em);
+}
+
+.stampFigure {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 1.3rem + 4.8vw, 5.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--accent);
+  /* Sits behind the argument, not in front of it: this is the ground note the
+     column rests on, so it holds scale without taking the ink the heading has. */
+  opacity: 0.3;
+}
+
 .exchange {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  margin-top: auto;
-  padding-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: clamp(1.75rem, 3.5vw, 2.75rem);
   max-width: 26ch;
 }
 
@@ -65,6 +102,14 @@
   font-size: var(--text-base);
   line-height: 1.72;
   max-width: 56ch;
+}
+
+/* The prose is its own reveal group, so `.detail`'s gap now sits between the
+   two blocks rather than between every paragraph. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 }
 
 .facts {
@@ -101,6 +146,17 @@
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, there is no slack to spend and no void to fill — the stamp would
+     just be a large number between two paragraphs. It keeps its rule as a
+     section divider and drops to a size the flow can carry. */
+  .stamp {
+    margin-top: 0;
+  }
+
+  .stampFigure {
+    font-size: clamp(2.75rem, 1.5rem + 5vw, 4rem);
   }
 }
 

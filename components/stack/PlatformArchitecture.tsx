@@ -20,7 +20,7 @@ import styles from "./PlatformArchitecture.module.css";
  */
 export function PlatformArchitecture() {
   return (
-    <section className={styles.stack} id="stack" aria-labelledby="stack-heading">
+    <section className={`grained ${styles.stack}`} id="stack" aria-labelledby="stack-heading">
       <div className={styles.head}>
         <h2 className={styles.heading} id="stack-heading">
           The stack behind every cadence.

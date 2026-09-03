@@ -100,6 +100,43 @@ a {
   z-index: 1;
 }
 
+/* Tooth. The dossier half of the page is flat colour on flat colour, which is
+   what makes a large violet band read as a filled rectangle rather than as
+   paper. This is the same fractal-noise tile the world uses for its grain,
+   applied at a much lower alpha: not a visible texture, just enough break-up
+   that a wide ground stops looking like a swatch.
+
+   `::after` rather than `::before` so it composes with `.spot`, which owns
+   `::before` on the two sections that carry both. Both sit at z-index 0 under
+   `.spot > *`, so content is unaffected either way. */
+.grained {
+  position: relative;
+}
+
+.grained::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--panel-grain);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* On the dark theme the tile has to lighten rather than darken, or it simply
+   fills the ground in with more black and nothing reads. */
+:root[data-theme="dark"] .grained::after {
+  mix-blend-mode: screen;
+}
+
+/* Content above the tooth, matching what `.spot` already does for its light.
+   Harmless when both classes are on the same element. */
+.grained > * {
+  position: relative;
+  z-index: 1;
+}
+
 .skip-link {
   position: absolute;
   left: var(--space-shell);

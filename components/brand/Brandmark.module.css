@@ -1,9 +1,11 @@
 .wordmark {
   position: relative;
   display: inline-block;
-  padding: 0.35rem 0.6rem 0.45rem 0.3rem;
-  background: #fff;
-  border-radius: 4px;
+  /* No ground of its own. The signature sits straight on the hero photograph;
+     the bar's own --nav-veil is what lifts it, the same veil that carries the
+     nav links beside it. Anything else here — a filled box, or a wash — reads
+     as a sticker pasted onto the picture. */
+  padding: 0.35rem 0.5rem 0.45rem 0.3rem;
   font-family: var(--font-signature);
   font-weight: 400;
   font-size: clamp(1.5rem, 0.9rem + 1.1vw, 1.85rem);
