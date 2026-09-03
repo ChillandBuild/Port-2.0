@@ -3,6 +3,7 @@ import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
 import type { SchedulePayment } from "@/lib/backend/schedule-payment";
 import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
+import { COURSE_CURRENCY, COURSE_PRICE_USD } from "@/lib/content/course";
 
 // Matches metadataBase in app/layout.tsx; overridable per environment. The
 // fallback is the real domain, not a placeholder: this builds the links a
@@ -108,6 +109,51 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
     });
   } catch (error) {
     console.error(`sendCourseAccessEmail failed for ${access.email}`, error);
+  }
+}
+
+export interface CourseAccessNotificationDetails {
+  access: CourseAccess;
+  paymentId: string;
+  /** Collected for the Checkout.js prefill, not persisted — only available from the primary verify path, not the webhook backup. */
+  name?: string;
+  phone?: string;
+}
+
+/**
+ * Notifies Sampath that the course was paid for — mirrors
+ * sendSchedulePaymentNotification's reasoning: a payment is a lead worth
+ * knowing about immediately, unlike a plain content-gate unlock. Best-effort,
+ * same recipient-resolution as sendSubmissionNotification.
+ */
+export async function sendCourseAccessNotification(details: CourseAccessNotificationDetails): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.HIRE_NOTIFY_TO;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !to || !from) return;
+
+  const { access, paymentId, name, phone } = details;
+  const lines = [
+    "Source: Course — paid enrollment",
+    name ? `Name: ${name}` : null,
+    `Email: ${access.email ?? "unknown"}`,
+    phone ? `Phone: ${phone}` : null,
+    `Amount paid: ${COURSE_CURRENCY} ${COURSE_PRICE_USD}`,
+    `Access code: ${access.accessCode}`,
+    access.expiresAt ? `Access valid until: ${access.expiresAt}` : null,
+    `Payment reference: ${paymentId}`,
+  ].filter((line): line is string => Boolean(line));
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from,
+      to,
+      subject: "Course paid — USD 59",
+      text: lines.join("\n"),
+    });
+  } catch (error) {
+    console.error("sendCourseAccessNotification failed", error);
   }
 }
 

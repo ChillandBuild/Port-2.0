@@ -61,8 +61,11 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // Fire-and-forget: an email failure must never turn a saved submission
-  // into a client-visible error.
-  void sendSubmissionNotification(payload);
+  // into a client-visible error. Case-studies-gate unlocks are just content
+  // access, not a lead — no email for those, only schedule-call.
+  if (payload.source === "schedule-call") {
+    void sendSubmissionNotification(payload);
+  }
 
   return Response.json({ success: true });
 }

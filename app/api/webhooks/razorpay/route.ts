@@ -3,6 +3,7 @@ import { grantCourseAccess } from "@/lib/backend/course-access";
 import { grantSchedulePayment } from "@/lib/backend/schedule-payment";
 import {
   sendCourseAccessEmail,
+  sendCourseAccessNotification,
   sendSchedulePaymentNotification,
   sendSchedulePaymentReceiptEmail,
 } from "@/lib/backend/email";
@@ -79,6 +80,7 @@ export async function POST(request: Request): Promise<Response> {
   // Best-effort, same policy as submission notifications: the row is the
   // source of truth, a failed email can be resent manually.
   void sendCourseAccessEmail(access);
+  void sendCourseAccessNotification({ access, paymentId: payment.id });
 
   return Response.json({ success: true, handled: true });
 }

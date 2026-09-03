@@ -5,7 +5,7 @@ import {
   COURSE_ACCESS_COOKIE_MAX_AGE,
   grantCourseAccess,
 } from "@/lib/backend/course-access";
-import { sendCourseAccessEmail } from "@/lib/backend/email";
+import { sendCourseAccessEmail, sendCourseAccessNotification } from "@/lib/backend/email";
 
 export const runtime = "nodejs";
 
@@ -69,6 +69,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   void sendCourseAccessEmail(access);
+  void sendCourseAccessNotification({ access, paymentId, name: name || undefined, phone: phone || undefined });
 
   const response = NextResponse.json({
     success: true,

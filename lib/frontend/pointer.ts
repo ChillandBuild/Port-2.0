@@ -90,6 +90,56 @@ function stop() {
 /** How far outside its own box an element still feels the pointer. */
 const REACH = 130;
 
+/** Minimum gap two magnet siblings keep between each other while pulled. */
+const COLLIDE_GAP = 12;
+
+/**
+ * Magnet pulls are computed per element, so two side-by-side targets pulled
+ * toward the same pointer can drift over each other. This pass runs after the
+ * per-element update and splits the overlap between the pair, so they separate
+ * like objects sharing space rather than one ghosting over the other. Vertical
+ * overlap is required first so a magnet column above a magnet row never reacts
+ * to its neighbour's horizontal drift.
+ */
+function resolveMagnetCollisions() {
+  for (let i = 0; i < tracked.length; i++) {
+    const a = tracked[i];
+    if (!a.magnet) continue;
+    for (let j = i + 1; j < tracked.length; j++) {
+      const b = tracked[j];
+      if (!b.magnet || a.el.parentElement !== b.el.parentElement) continue;
+
+      const ra = a.el.getBoundingClientRect();
+      const rb = b.el.getBoundingClientRect();
+      // Rects come back with the transforms already applied this frame; strip
+      // them to compare the boxes at rest.
+      let left = tracked[i];
+      let right = tracked[j];
+      let leftRect = ra;
+      let rightRect = rb;
+      if (leftRect.left - left.mx > rightRect.left - right.mx) {
+        // tracked order is registration order, not reading order — the pair is
+        // compared left-to-right so the clamp always separates, never squeezes.
+        [left, right] = [right, left];
+        [leftRect, rightRect] = [rightRect, leftRect];
+      }
+
+      const aTop = leftRect.top - left.my;
+      const aBottom = leftRect.bottom - left.my;
+      const bTop = rightRect.top - right.my;
+      const bBottom = rightRect.bottom - right.my;
+      if (Math.min(aBottom, bBottom) - Math.max(aTop, bTop) <= 0) continue;
+
+      // leftRect.right and rightRect.left are the transformed edges this frame.
+      const overlap = leftRect.right + COLLIDE_GAP - rightRect.left;
+      if (overlap <= 0) continue;
+
+      left.mx -= overlap / 2;
+      right.mx += overlap / 2;
+    }
+  }
+}
+
 function tick() {
   if (!running) return;
   if (hasPointer) {
@@ -133,7 +183,11 @@ function tick() {
         item.mx += (dx * pull - item.mx) * LERP;
         item.my += (dy * pull - item.my) * LERP;
       }
+    }
 
+    resolveMagnetCollisions();
+
+    for (const item of tracked) {
       if (item.tilt || item.magnet) {
         const t: string[] = [];
         if (item.magnet) t.push(`translate3d(${item.mx.toFixed(2)}px, ${item.my.toFixed(2)}px, 0)`);

@@ -40,7 +40,7 @@ export function Reply() {
             >
               Connect on LinkedIn
             </a>
-            <Link className={styles.ghost} href="/schedule" data-magnet="0.22">
+            <Link className={styles.primary} href="/schedule" data-magnet="0.22">
               Schedule a call
             </Link>
           </div>
@@ -74,8 +74,17 @@ export function Reply() {
               </dd>
             </div>
             <div className={styles.metaRow}>
-              <dt className="mono">Markets</dt>
-              <dd>24 · NA · EU · APAC · MENA</dd>
+              <dt className="mono">Email</dt>
+              <dd>
+                {IDENTITY.email ? (
+                  <a className={styles.metaLink} href={IDENTITY.emailHref}>
+                    {IDENTITY.email}
+                  </a>
+                ) : (
+                  // Placeholder keeps the row's height until the address lands.
+                  <span className={styles.metaPending}>—</span>
+                )}
+              </dd>
             </div>
           </dl>
         </aside>
