@@ -1,41 +1,32 @@
 "use client";
 
 /**
- * Slot picker for the free call. A two-month date grid plus a per-day slot
- * row, with some slots pre-marked as booked — availability is a deterministic
- * hash of the date string, so the pattern is stable across reloads without a
- * backend, and the calendar reads as a real, partially-filled schedule.
+ * Slot picker for the free call. Fetches real open slots from
+ * /api/schedule/availability (backed by availability_slots, managed from
+ * /admin/availability) — a day is selectable only if Sampath has actually
+ * opened a slot on it. Booking itself is claimed atomically server-side when
+ * the form submits; this component only picks, it never reserves.
  *
- * Everything renders only after mount: the booked pattern is derived from the
- * viewer's local clock, which can differ from the server's, so a static
- * prerender would mismatch on hydration. All buttons are type="button" because
- * the picker sits inside the booking form.
+ * Everything renders only after mount: "today" depends on the viewer's local
+ * clock, which can differ from the server's, so a static prerender would
+ * mismatch on hydration. All buttons are type="button" because the picker
+ * sits inside the booking form.
  */
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "./ScheduleCalendar.module.css";
 
 const noopSubscribe = () => () => {};
 
-const TIME_SLOTS = ["09:30", "11:00", "14:30", "16:30", "18:00"];
 const WEEKDAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 const MONTHS_SHOWN = 2;
-/** Roughly half the slots read as taken — enough to signal demand without closing the week out. */
-const BOOKED_THRESHOLD = 45;
 
-type Cell = { key: string; day: number; bookedAll: boolean } | null;
+type Cell = { key: string; day: number; hasOpenSlots: boolean; inRange: boolean } | null;
 
-function hash(input: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-function isSlotBooked(dateKey: string, time: string): boolean {
-  return hash(`${dateKey}T${time}`) % 100 < BOOKED_THRESHOLD;
+export interface PickedSlot {
+  date: string;
+  time: string;
+  label: string;
 }
 
 function dateKeyOf(date: Date): string {
@@ -46,20 +37,49 @@ function dateKeyOf(date: Date): string {
 }
 
 interface ScheduleCalendarProps {
-  selected: string | null;
-  onSelect: (slot: string | null) => void;
+  selected: PickedSlot | null;
+  onSelect: (slot: PickedSlot | null) => void;
 }
 
 export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) {
   // Hydration-safe mount flag: the server snapshot is false so the prerendered
-  // HTML matches the first client render, and the grid (which depends on the
-  // local clock) only appears on the post-hydration render.
+  // HTML matches the first client render, and the grid only appears once the
+  // viewer's local "today" is known.
   const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  // null = "auto" — the user hasn't navigated months yet, so the view follows
-  // the default below.
   const [monthOffset, setMonthOffset] = useState<number | null>(null);
   const [dateKey, setDateKey] = useState<string | null>(null);
-  const [pickedTime, setPickedTime] = useState<string | null>(null);
+  const [openByDate, setOpenByDate] = useState<Record<string, string[]> | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const today = new Date();
+    const from = dateKeyOf(today);
+    const to = dateKeyOf(new Date(today.getFullYear(), today.getMonth() + MONTHS_SHOWN, 0));
+    let cancelled = false;
+
+    fetch(`/api/schedule/availability?from=${from}&to=${to}`)
+      .then((res) => res.json())
+      .then((payload: { success: boolean; slots?: { date: string; time: string }[] }) => {
+        if (cancelled) return;
+        if (!payload.success || !payload.slots) {
+          setLoadError(true);
+          return;
+        }
+        const grouped: Record<string, string[]> = {};
+        for (const slot of payload.slots) {
+          (grouped[slot.date] ??= []).push(slot.time);
+        }
+        setOpenByDate(grouped);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted]);
 
   // If the current month is nearly spent, open on next month so the grid
   // doesn't present a wall of crossed-out days.
@@ -75,17 +95,14 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
   }, [mounted]);
   const activeOffset = monthOffset ?? autoOffset;
 
-  // First of activeOffset months from now, normalized to the 1st so the grid
-  // never shifts mid-session.
   const viewMonth = useMemo(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth() + activeOffset, 1);
   }, [activeOffset]);
 
-  const { weeks } = useMemo(() => {
+  const weeks = useMemo(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const minKeyLocal = dateKeyOf(today);
     const maxDay = new Date(today.getFullYear(), today.getMonth() + MONTHS_SHOWN, 0);
 
     const first = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
@@ -97,23 +114,21 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
     for (let day = 1; day <= dayCount; day++) {
       const date = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), day);
       const key = dateKeyOf(date);
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
       const inRange = date >= today && date <= maxDay;
-      const bookedAll =
-        !isWeekend && inRange && TIME_SLOTS.every((time) => isSlotBooked(key, time));
-      cells.push({ key, day, bookedAll: !inRange || isWeekend || bookedAll });
+      const hasOpenSlots = inRange && Boolean(openByDate?.[key]?.length);
+      cells.push({ key, day, hasOpenSlots, inRange });
     }
     while (cells.length % 7 !== 0) cells.push(null);
 
     const result: Cell[][] = [];
     for (let i = 0; i < cells.length; i += 7) result.push(cells.slice(i, i + 7));
-    return { weeks: result, minKey: minKeyLocal };
-  }, [viewMonth]);
+    return result;
+  }, [viewMonth, openByDate]);
 
-  const slots = useMemo(() => {
+  const times = useMemo(() => {
     if (!dateKey) return [];
-    return TIME_SLOTS.map((time) => ({ time, booked: isSlotBooked(dateKey, time) }));
-  }, [dateKey]);
+    return [...(openByDate?.[dateKey] ?? [])].sort();
+  }, [dateKey, openByDate]);
 
   const monthLabel = viewMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   const lastMonthOffset = MONTHS_SHOWN - 1;
@@ -122,13 +137,11 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
     if (!dateKey) return;
     const date = new Date(`${dateKey}T00:00:00`);
     const label = date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-    setPickedTime(time);
-    onSelect(`${label} · ${time}`);
+    onSelect({ date: dateKey, time, label: `${label} · ${time}` });
   };
 
   const clear = () => {
     setDateKey(null);
-    setPickedTime(null);
     onSelect(null);
   };
 
@@ -138,6 +151,11 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
 
       {!mounted ? (
         <div className={styles.placeholder} aria-hidden="true" />
+      ) : loadError ? (
+        <p className={styles.hint}>
+          Couldn&rsquo;t load open times right now. You can still send the form below — mention a time that works
+          and it&rsquo;ll be confirmed by email.
+        </p>
       ) : (
         <>
           <div className={styles.monthNav}>
@@ -179,11 +197,11 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
                       type="button"
                       role="gridcell"
                       className={`${styles.day} ${dateKey === cell.key ? styles.daySelected : ""} ${
-                        cell.bookedAll ? styles.dayFull : ""
+                        cell.hasOpenSlots ? "" : styles.dayFull
                       }`}
-                      disabled={cell.bookedAll}
+                      disabled={!cell.hasOpenSlots}
                       aria-label={
-                        cell.bookedAll
+                        !cell.hasOpenSlots
                           ? `${cell.day} — unavailable`
                           : dateKey === cell.key
                             ? `${cell.day} — selected, showing slots`
@@ -202,29 +220,29 @@ export function ScheduleCalendar({ selected, onSelect }: ScheduleCalendarProps) 
           </div>
 
           {dateKey ? (
-            <div className={styles.slots}>
-              {slots.map(({ time, booked }) => (
-                <button
-                  key={time}
-                  type="button"
-                  className={`${styles.slot} ${pickedTime === time ? styles.slotSelected : ""}`}
-                  disabled={booked}
-                  onClick={() => pickSlot(time)}
-                >
-                  {time}
-                  {booked ? <span className={`mono ${styles.booked}`}>booked</span> : null}
-                </button>
-              ))}
-            </div>
+            times.length === 0 ? (
+              <p className={styles.hint}>No open times left on this day — pick another.</p>
+            ) : (
+              <div className={styles.slots}>
+                {times.map((time) => (
+                  <button
+                    key={time}
+                    type="button"
+                    className={`${styles.slot} ${selected?.date === dateKey && selected?.time === time ? styles.slotSelected : ""}`}
+                    onClick={() => pickSlot(time)}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            )
           ) : (
-            <p className={styles.hint}>
-              Choose a day to see open times. Crossed-out slots are already taken.
-            </p>
+            <p className={styles.hint}>Choose a day to see open times.</p>
           )}
 
           {selected ? (
             <p className={styles.picked}>
-              You picked <strong>{selected}</strong>
+              You picked <strong>{selected.label}</strong>
               <button type="button" className={styles.clear} onClick={clear}>
                 change
               </button>

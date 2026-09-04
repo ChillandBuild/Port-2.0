@@ -1296,6 +1296,7 @@ export const SCHEDULE = {
     success:
       "Got it. You'll hear back from me confirming the slot you picked.",
     error: "That didn't send. Try again, or reach me on LinkedIn below.",
+    slotTaken: "That slot was just taken — pick another time above.",
     note: "Pick a slot above and send the form — you'll get a confirmation by email.",
   },
 

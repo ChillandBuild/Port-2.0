@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyCheckoutSignature } from "@/lib/backend/razorpay";
 import { grantSchedulePayment } from "@/lib/backend/schedule-payment";
 import { sendSchedulePaymentNotification, sendSchedulePaymentReceiptEmail } from "@/lib/backend/email";
+import { bookSlot } from "@/lib/backend/availability";
 import { SCHEDULE_CURRENCY } from "@/lib/content/schedule-payment";
 import { getSchedulePricing } from "@/lib/backend/site-content-loaders";
 
@@ -17,9 +18,14 @@ interface VerifyBody {
   companyName?: unknown;
   purpose?: unknown;
   slot?: unknown;
+  slotDate?: unknown;
+  slotTime?: unknown;
   /** Echoed back from the order response — records what was actually charged, not what the client claims it wants now. */
   currency?: unknown;
 }
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^\d{2}:\d{2}$/;
 
 function str(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
@@ -63,6 +69,22 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ success: false, error: "unverified" }, { status: 401 });
   }
 
+  // Money already moved by this point — a lost slot race must never turn
+  // into a failed response. If the claim fails, the payment is still
+  // recorded and Sampath's notification flags it for manual follow-up.
+  const slotDate = str(body.slotDate);
+  const slotTime = str(body.slotTime);
+  let slotConflict = false;
+  if (DATE_RE.test(slotDate) && TIME_RE.test(slotTime)) {
+    try {
+      const claimed = await bookSlot(slotDate, slotTime, paymentId);
+      slotConflict = !claimed;
+    } catch (error) {
+      console.error("slot claim failed for paid booking", error);
+      slotConflict = true;
+    }
+  }
+
   let payment;
   try {
     payment = await grantSchedulePayment({
@@ -82,7 +104,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   void sendSchedulePaymentReceiptEmail(payment);
-  void sendSchedulePaymentNotification(payment);
+  void sendSchedulePaymentNotification(payment, slotConflict);
 
   return NextResponse.json({ success: true });
 }

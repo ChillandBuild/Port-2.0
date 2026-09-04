@@ -567,6 +567,10 @@
   cursor: default;
 }
 
+.slotRemove {
+  margin-left: 0.5rem;
+}
+
 .danger {
   color: var(--danger);
 }

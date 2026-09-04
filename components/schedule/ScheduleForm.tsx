@@ -15,14 +15,14 @@
 import { useId, useRef, useState } from "react";
 import { SCHEDULE } from "@/lib/content";
 import { loadCheckoutScript, type RazorpayCheckoutResponse } from "@/lib/frontend/razorpay-checkout";
-import { ScheduleCalendar } from "./ScheduleCalendar";
+import { ScheduleCalendar, type PickedSlot } from "./ScheduleCalendar";
 import styles from "./ScheduleForm.module.css";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type CallType = "first" | "second";
 type Currency = "USD" | "INR";
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success" | "error" | "slot-taken";
 type PayPhase = "idle" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
 type PayErrorKind = "order" | "unverified" | "verify-network" | null;
 
@@ -46,7 +46,7 @@ export function ScheduleForm({ keyConfigured, secondCallPriceUsd, secondCallPric
   const [purpose, setPurpose] = useState("");
   const [callType, setCallType] = useState<CallType>("first");
   const [currency, setCurrency] = useState<Currency>("USD");
-  const [slot, setSlot] = useState<string | null>(null);
+  const [slot, setSlot] = useState<PickedSlot | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [payPhase, setPayPhase] = useState<PayPhase>("idle");
@@ -88,11 +88,19 @@ export function ScheduleForm({ keyConfigured, secondCallPriceUsd, secondCallPric
           // honest about what was actually filled in.
           ...(company.trim() ? { companyName: company.trim() } : {}),
           ...(purpose.trim() ? { purpose: purpose.trim() } : {}),
-          // The calendar slot has no dedicated column, so it rides along to
-          // the email notification only — the Supabase insert is untouched.
-          ...(slot ? { slot } : {}),
+          // The label rides along for the email notification; date/time are
+          // what the route claims atomically against availability_slots.
+          ...(slot ? { slot: slot.label, slotDate: slot.date, slotTime: slot.time } : {}),
         }),
       });
+      if (response.status === 409) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        if (payload?.error === "slot-taken") {
+          setSlot(null);
+          setStatus("slot-taken");
+          return;
+        }
+      }
       if (!response.ok) throw new Error("Request failed");
       setStatus("success");
     } catch {
@@ -113,7 +121,9 @@ export function ScheduleForm({ keyConfigured, secondCallPriceUsd, secondCallPric
           phone: phone.trim(),
           companyName: company.trim(),
           purpose: purpose.trim(),
-          slot: slot ?? "",
+          slot: slot?.label ?? "",
+          slotDate: slot?.date ?? "",
+          slotTime: slot?.time ?? "",
           currency,
         }),
       });
@@ -369,6 +379,11 @@ export function ScheduleForm({ keyConfigured, secondCallPriceUsd, secondCallPric
           {status === "error" ? (
             <p className={styles.error} role="alert">
               {SCHEDULE.form.error}
+            </p>
+          ) : null}
+          {status === "slot-taken" ? (
+            <p className={styles.error} role="alert">
+              {SCHEDULE.form.slotTaken}
             </p>
           ) : null}
           {payPhase === "error" && payErrorKind ? (

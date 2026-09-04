@@ -6,6 +6,7 @@
 export const ADMIN = {
   nav: {
     grants: "Access links",
+    availability: "Availability",
     settings: "Settings",
   },
 

@@ -256,7 +256,10 @@ export async function sendSchedulePaymentReceiptEmail(payment: SchedulePayment):
  * whether payment happened is needed. Best-effort, same policy as
  * sendSubmissionNotification: the Supabase row already landed either way.
  */
-export async function sendSchedulePaymentNotification(payment: SchedulePayment): Promise<void> {
+export async function sendSchedulePaymentNotification(
+  payment: SchedulePayment,
+  slotConflict = false,
+): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.HIRE_NOTIFY_TO;
   const from = process.env.RESEND_FROM;
@@ -270,6 +273,9 @@ export async function sendSchedulePaymentNotification(payment: SchedulePayment):
     payment.companyName ? `Company: ${payment.companyName}` : null,
     payment.purpose ? `Purpose of call: ${payment.purpose}` : null,
     payment.slot ? `Requested slot: ${payment.slot}` : null,
+    slotConflict
+      ? "SLOT CONFLICT — that time was taken between selection and payment. Confirm a new time with them directly."
+      : null,
     `Amount paid: ${payment.currency} ${payment.amount}`,
     `Payment reference: ${payment.paymentId}`,
   ].filter((line): line is string => Boolean(line));

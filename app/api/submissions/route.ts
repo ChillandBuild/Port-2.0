@@ -1,10 +1,13 @@
 import { getSupabaseAdmin } from "@/lib/backend/supabase/admin";
 import { sendScheduleCallConfirmationEmail, sendSubmissionNotification } from "@/lib/backend/email";
+import { bookSlot, releaseSlot } from "@/lib/backend/availability";
 import type { SubmissionPayload, SubmissionSource } from "@/lib/submissions";
 
 export const runtime = "nodejs";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^\d{2}:\d{2}$/;
 const SOURCES: SubmissionSource[] = ["case-studies-gate", "schedule-call"];
 
 function isSubmissionPayload(body: unknown): body is SubmissionPayload {
@@ -17,6 +20,8 @@ function isSubmissionPayload(body: unknown): body is SubmissionPayload {
   if (b.companyName !== undefined && typeof b.companyName !== "string") return false;
   if (b.phone !== undefined && typeof b.phone !== "string") return false;
   if (b.slot !== undefined && typeof b.slot !== "string") return false;
+  if (b.slotDate !== undefined && typeof b.slotDate !== "string") return false;
+  if (b.slotTime !== undefined && typeof b.slotTime !== "string") return false;
   if (b.purpose !== undefined && typeof b.purpose !== "string") return false;
   if (b.callType !== undefined && b.callType !== "first" && b.callType !== "second") return false;
   // Phone is the one field the schedule form treats as mandatory, not optional.
@@ -44,6 +49,28 @@ export async function POST(request: Request): Promise<Response> {
 
   const payload = body;
 
+  // Opportunistic: most callers never pick a calendar slot at all. Only a
+  // well-formed date+time pair is worth an atomic claim; anything partial
+  // is treated the same as "no slot" rather than rejected outright.
+  const hasStructuredSlot =
+    typeof payload.slotDate === "string" &&
+    DATE_RE.test(payload.slotDate) &&
+    typeof payload.slotTime === "string" &&
+    TIME_RE.test(payload.slotTime);
+
+  if (hasStructuredSlot) {
+    let claimed = false;
+    try {
+      claimed = await bookSlot(payload.slotDate!, payload.slotTime!, `submission:${payload.email.trim()}`);
+    } catch (error) {
+      console.error("slot claim failed", error);
+      return Response.json({ success: false, error: "Could not save submission." }, { status: 500 });
+    }
+    if (!claimed) {
+      return Response.json({ success: false, error: "slot-taken" }, { status: 409 });
+    }
+  }
+
   try {
     const supabase = getSupabaseAdmin();
     const { error } = await supabase.from("submissions").insert({
@@ -57,6 +84,9 @@ export async function POST(request: Request): Promise<Response> {
     if (error) throw error;
   } catch (error) {
     console.error("submissions insert failed", error);
+    if (hasStructuredSlot) {
+      void releaseSlot(payload.slotDate!, payload.slotTime!, `submission:${payload.email.trim()}`);
+    }
     return Response.json({ success: false, error: "Could not save submission." }, { status: 500 });
   }
 
