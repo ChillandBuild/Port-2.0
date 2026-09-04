@@ -16,11 +16,15 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ success: false, error: "origin" }, { status: 403 });
   }
 
+  const loginUrl = new URL("/admin/login", request.url);
+
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return NextResponse.json({ success: true });
+  if (!url || !key) return NextResponse.redirect(loginUrl, { status: 303 });
 
-  const response = NextResponse.json({ success: true });
+  // 303: the browser's plain <form method="post"> submit must land on a GET
+  // of /admin/login, not re-POST to this route.
+  const response = NextResponse.redirect(loginUrl, { status: 303 });
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
