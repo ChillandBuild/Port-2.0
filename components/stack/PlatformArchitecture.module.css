@@ -131,6 +131,10 @@
 }
 
 .name {
+  /* Explicit, not inherited — a global h1/h2/h3 rule now sets a fixed matte
+     black by default, which would otherwise win over the light text these
+     dark/solid cards need regardless of the .card role's own color. */
+  color: inherit;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-xl);
