@@ -5,40 +5,58 @@
  * homepage's hero stat line, pipeline stages, sectors, proof-ledger rows,
  * about copy, work history, tool stack, LinkedIn posts, and case studies.
  * Every card is a real form — add/remove/reorder for the list, plain fields
- * for each entry. The one exception is each item's rarely-touched cosmetic
- * counter config (HeroStat.count, LedgerRow.count/countRange, Post.image) —
- * those stay a small optional JSON field rather than a bespoke number-input
- * subform, the same "friendly UI + JSON escape hatch for the odd corner"
- * split used on the course chapter editor.
+ * for every value, including each item's cosmetic counter config (HeroStat.
+ * count, LedgerRow.count/countRange, Post.image) — those activate whenever
+ * their first field (Count to / Range from / Image src) is non-blank, and
+ * stay omitted from the saved record otherwise.
  */
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { HeroContent, HeroStat, AboutContent, AboutFact } from "@/lib/backend/site-content-loaders";
 import type { Stage, Sector, LedgerRow, Role, ToolGroup, ToolItem, Post, CaseStudy } from "@/lib/content";
-import { saveKey, TextField, TextAreaField, JsonField, SaveRow, useEditableList, ListItemActions, type SaveStatus } from "./form-kit";
+import { saveKey, TextField, TextAreaField, SaveRow, useEditableList, ListItemActions, type SaveStatus } from "./form-kit";
 import styles from "./Admin.module.css";
-
-/** Parses an optional-JSON side field. Blank text means "omit this key." */
-function parseOptionalJson<T>(text: string, label: string): { value?: T; error?: string } {
-  if (!text.trim()) return { value: undefined };
-  try {
-    return { value: JSON.parse(text) as T };
-  } catch {
-    return { error: `${label} isn't valid JSON.` };
-  }
-}
 
 /* ----------------------------- Hero ----------------------------- */
 
 interface EditableStat {
   value: string;
   label: string;
-  countText: string;
+  countTo: string;
+  countPrefix: string;
+  countSuffix: string;
+  countDecimals: string;
 }
 
 function toEditableStat(stat: HeroStat): EditableStat {
-  return { value: stat.value, label: stat.label, countText: stat.count ? JSON.stringify(stat.count) : "" };
+  return {
+    value: stat.value,
+    label: stat.label,
+    countTo: stat.count ? String(stat.count.to) : "",
+    countPrefix: stat.count?.prefix ?? "",
+    countSuffix: stat.count?.suffix ?? "",
+    countDecimals: stat.count?.decimals !== undefined ? String(stat.count.decimals) : "",
+  };
+}
+
+function toHeroStat(stat: EditableStat): HeroStat {
+  const to = Number(stat.countTo);
+  const hasCount = stat.countTo.trim() !== "" && Number.isFinite(to);
+  return {
+    value: stat.value,
+    label: stat.label,
+    ...(hasCount
+      ? {
+          count: {
+            to,
+            ...(stat.countPrefix ? { prefix: stat.countPrefix } : {}),
+            ...(stat.countSuffix ? { suffix: stat.countSuffix } : {}),
+            ...(stat.countDecimals.trim() !== "" ? { decimals: Number(stat.countDecimals) } : {}),
+          },
+        }
+      : {}),
+  };
 }
 
 function HeroSection({ initial }: { initial: HeroContent }) {
@@ -46,24 +64,12 @@ function HeroSection({ initial }: { initial: HeroContent }) {
   const [lede, setLede] = useState(initial.lede);
   const stats = useEditableList<EditableStat>(initial.stats.map(toEditableStat));
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    const parsedStats: HeroStat[] = [];
-    for (const { value } of stats.items) {
-      const count = parseOptionalJson<HeroStat["count"]>(value.countText, `"${value.label || value.value}" count`);
-      if (count.error) {
-        setStatus("error");
-        setError(count.error);
-        return;
-      }
-      parsedStats.push({ value: value.value, label: value.label, ...(count.value ? { count: count.value } : {}) });
-    }
     setStatus("saving");
-    const ok = await saveKey("hero", { lede, stats: parsedStats });
+    const ok = await saveKey("hero", { lede, stats: stats.items.map((i) => toHeroStat(i.value)) });
     setStatus(ok ? "saved" : "error");
-    setError(undefined);
     if (ok) router.refresh();
   }
 
@@ -80,12 +86,29 @@ function HeroSection({ initial }: { initial: HeroContent }) {
               <TextField label="Value" value={item.value.value} onChange={(v) => stats.update(item.key, { ...item.value, value: v })} />
               <TextField label="Label" value={item.value.label} onChange={(v) => stats.update(item.key, { ...item.value, label: v })} />
             </div>
-            <JsonField
-              label="Count animation (JSON, optional — {to, prefix?, suffix?, decimals?})"
-              text={item.value.countText}
-              onChange={(v) => stats.update(item.key, { ...item.value, countText: v })}
-              rows={2}
-            />
+            <p className={styles.label}>Count-up animation (leave &ldquo;Count to&rdquo; blank for none)</p>
+            <div className={styles.settingsGrid}>
+              <TextField
+                label="Count to"
+                value={item.value.countTo}
+                onChange={(v) => stats.update(item.key, { ...item.value, countTo: v })}
+              />
+              <TextField
+                label="Prefix (optional)"
+                value={item.value.countPrefix}
+                onChange={(v) => stats.update(item.key, { ...item.value, countPrefix: v })}
+              />
+              <TextField
+                label="Suffix (optional)"
+                value={item.value.countSuffix}
+                onChange={(v) => stats.update(item.key, { ...item.value, countSuffix: v })}
+              />
+              <TextField
+                label="Decimals (optional)"
+                value={item.value.countDecimals}
+                onChange={(v) => stats.update(item.key, { ...item.value, countDecimals: v })}
+              />
+            </div>
             <ListItemActions
               onMoveUp={i > 0 ? () => stats.move(item.key, -1) : undefined}
               onMoveDown={i < stats.items.length - 1 ? () => stats.move(item.key, 1) : undefined}
@@ -95,11 +118,15 @@ function HeroSection({ initial }: { initial: HeroContent }) {
         ))}
       </div>
       <div className={styles.settingsSaveRow}>
-        <button type="button" className={styles.ghost} onClick={() => stats.add({ value: "", label: "", countText: "" })}>
+        <button
+          type="button"
+          className={styles.ghost}
+          onClick={() => stats.add({ value: "", label: "", countTo: "", countPrefix: "", countSuffix: "", countDecimals: "" })}
+        >
           Add stat
         </button>
       </div>
-      <SaveRow status={status} error={error} />
+      <SaveRow status={status} />
     </form>
   );
 }
@@ -219,8 +246,14 @@ interface EditableLedgerRow {
   suffix: string;
   label: string;
   source: string;
-  countText: string;
-  countRangeText: string;
+  countTo: string;
+  countPrefix: string;
+  countSuffix: string;
+  countDecimals: string;
+  countRangeFrom: string;
+  countRangeTo: string;
+  countRangePrefix: string;
+  countRangeSuffix: string;
 }
 
 function toEditableLedgerRow(row: LedgerRow): EditableLedgerRow {
@@ -229,8 +262,49 @@ function toEditableLedgerRow(row: LedgerRow): EditableLedgerRow {
     suffix: row.suffix ?? "",
     label: row.label,
     source: row.source,
-    countText: row.count ? JSON.stringify(row.count) : "",
-    countRangeText: row.countRange ? JSON.stringify(row.countRange) : "",
+    countTo: row.count ? String(row.count.to) : "",
+    countPrefix: row.count?.prefix ?? "",
+    countSuffix: row.count?.suffix ?? "",
+    countDecimals: row.count?.decimals !== undefined ? String(row.count.decimals) : "",
+    countRangeFrom: row.countRange ? String(row.countRange.from) : "",
+    countRangeTo: row.countRange ? String(row.countRange.to) : "",
+    countRangePrefix: row.countRange?.prefix ?? "",
+    countRangeSuffix: row.countRange?.suffix ?? "",
+  };
+}
+
+function toLedgerRow(row: EditableLedgerRow): LedgerRow {
+  const to = Number(row.countTo);
+  const hasCount = row.countTo.trim() !== "" && Number.isFinite(to);
+  const rangeFrom = Number(row.countRangeFrom);
+  const rangeTo = Number(row.countRangeTo);
+  const hasRange =
+    row.countRangeFrom.trim() !== "" && row.countRangeTo.trim() !== "" && Number.isFinite(rangeFrom) && Number.isFinite(rangeTo);
+  return {
+    value: row.value,
+    ...(row.suffix ? { suffix: row.suffix } : {}),
+    label: row.label,
+    source: row.source,
+    ...(hasCount
+      ? {
+          count: {
+            to,
+            ...(row.countPrefix ? { prefix: row.countPrefix } : {}),
+            ...(row.countSuffix ? { suffix: row.countSuffix } : {}),
+            ...(row.countDecimals.trim() !== "" ? { decimals: Number(row.countDecimals) } : {}),
+          },
+        }
+      : {}),
+    ...(hasRange
+      ? {
+          countRange: {
+            from: rangeFrom,
+            to: rangeTo,
+            ...(row.countRangePrefix ? { prefix: row.countRangePrefix } : {}),
+            ...(row.countRangeSuffix ? { suffix: row.countRangeSuffix } : {}),
+          },
+        }
+      : {}),
   };
 }
 
@@ -238,32 +312,12 @@ function LedgerSection({ initial }: { initial: LedgerRow[] }) {
   const router = useRouter();
   const list = useEditableList<EditableLedgerRow>(initial.map(toEditableLedgerRow));
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    const rows: LedgerRow[] = [];
-    for (const { value } of list.items) {
-      const count = parseOptionalJson<LedgerRow["count"]>(value.countText, `"${value.label}" count`);
-      const countRange = parseOptionalJson<LedgerRow["countRange"]>(value.countRangeText, `"${value.label}" countRange`);
-      if (count.error || countRange.error) {
-        setStatus("error");
-        setError(count.error ?? countRange.error);
-        return;
-      }
-      rows.push({
-        value: value.value,
-        ...(value.suffix ? { suffix: value.suffix } : {}),
-        label: value.label,
-        source: value.source,
-        ...(count.value ? { count: count.value } : {}),
-        ...(countRange.value ? { countRange: countRange.value } : {}),
-      });
-    }
     setStatus("saving");
-    const ok = await saveKey("ledger", rows);
+    const ok = await saveKey("ledger", list.items.map((i) => toLedgerRow(i.value)));
     setStatus(ok ? "saved" : "error");
-    setError(undefined);
     if (ok) router.refresh();
   }
 
@@ -280,18 +334,48 @@ function LedgerSection({ initial }: { initial: LedgerRow[] }) {
               <TextField label="Label" value={item.value.label} onChange={(v) => list.update(item.key, { ...item.value, label: v })} />
               <TextField label="Source" value={item.value.source} onChange={(v) => list.update(item.key, { ...item.value, source: v })} />
             </div>
-            <JsonField
-              label="Count animation (JSON, optional — {to, prefix?, suffix?, decimals?})"
-              text={item.value.countText}
-              onChange={(v) => list.update(item.key, { ...item.value, countText: v })}
-              rows={2}
-            />
-            <JsonField
-              label="Count range animation (JSON, optional — {from, to, prefix?, suffix?})"
-              text={item.value.countRangeText}
-              onChange={(v) => list.update(item.key, { ...item.value, countRangeText: v })}
-              rows={2}
-            />
+            <p className={styles.label}>Count-up animation (leave &ldquo;Count to&rdquo; blank for none)</p>
+            <div className={styles.settingsGrid}>
+              <TextField label="Count to" value={item.value.countTo} onChange={(v) => list.update(item.key, { ...item.value, countTo: v })} />
+              <TextField
+                label="Prefix (optional)"
+                value={item.value.countPrefix}
+                onChange={(v) => list.update(item.key, { ...item.value, countPrefix: v })}
+              />
+              <TextField
+                label="Suffix (optional)"
+                value={item.value.countSuffix}
+                onChange={(v) => list.update(item.key, { ...item.value, countSuffix: v })}
+              />
+              <TextField
+                label="Decimals (optional)"
+                value={item.value.countDecimals}
+                onChange={(v) => list.update(item.key, { ...item.value, countDecimals: v })}
+              />
+            </div>
+            <p className={styles.label}>Count-range animation (leave &ldquo;Range from&rdquo; blank for none)</p>
+            <div className={styles.settingsGrid}>
+              <TextField
+                label="Range from"
+                value={item.value.countRangeFrom}
+                onChange={(v) => list.update(item.key, { ...item.value, countRangeFrom: v })}
+              />
+              <TextField
+                label="Range to"
+                value={item.value.countRangeTo}
+                onChange={(v) => list.update(item.key, { ...item.value, countRangeTo: v })}
+              />
+              <TextField
+                label="Prefix (optional)"
+                value={item.value.countRangePrefix}
+                onChange={(v) => list.update(item.key, { ...item.value, countRangePrefix: v })}
+              />
+              <TextField
+                label="Suffix (optional)"
+                value={item.value.countRangeSuffix}
+                onChange={(v) => list.update(item.key, { ...item.value, countRangeSuffix: v })}
+              />
+            </div>
             <ListItemActions
               onMoveUp={i > 0 ? () => list.move(item.key, -1) : undefined}
               onMoveDown={i < list.items.length - 1 ? () => list.move(item.key, 1) : undefined}
@@ -304,12 +388,27 @@ function LedgerSection({ initial }: { initial: LedgerRow[] }) {
         <button
           type="button"
           className={styles.ghost}
-          onClick={() => list.add({ value: "", suffix: "", label: "", source: "", countText: "", countRangeText: "" })}
+          onClick={() =>
+            list.add({
+              value: "",
+              suffix: "",
+              label: "",
+              source: "",
+              countTo: "",
+              countPrefix: "",
+              countSuffix: "",
+              countDecimals: "",
+              countRangeFrom: "",
+              countRangeTo: "",
+              countRangePrefix: "",
+              countRangeSuffix: "",
+            })
+          }
         >
           Add row
         </button>
       </div>
-      <SaveRow status={status} error={error} />
+      <SaveRow status={status} />
     </form>
   );
 }
@@ -577,41 +676,46 @@ interface EditablePost {
   title: string;
   summary: string;
   url: string;
-  imageText: string;
+  imageSrc: string;
+  imageWidth: string;
+  imageHeight: string;
 }
 
 function toEditablePost(post: Post): EditablePost {
-  return { topic: post.topic, title: post.title, summary: post.summary, url: post.url, imageText: post.image ? JSON.stringify(post.image) : "" };
+  return {
+    topic: post.topic,
+    title: post.title,
+    summary: post.summary,
+    url: post.url,
+    imageSrc: post.image?.src ?? "",
+    imageWidth: post.image ? String(post.image.width) : "",
+    imageHeight: post.image ? String(post.image.height) : "",
+  };
+}
+
+function toPost(post: EditablePost): Post {
+  const width = Number(post.imageWidth);
+  const height = Number(post.imageHeight);
+  const hasImage = post.imageSrc.trim() !== "" && Number.isFinite(width) && Number.isFinite(height);
+  return {
+    topic: post.topic,
+    title: post.title,
+    summary: post.summary,
+    url: post.url,
+    ...(hasImage ? { image: { src: post.imageSrc, width, height } } : {}),
+  };
 }
 
 function PostsSection({ initial }: { initial: Post[] }) {
   const router = useRouter();
   const list = useEditableList<EditablePost>(initial.map(toEditablePost));
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    const posts: Post[] = [];
-    for (const { value } of list.items) {
-      const image = parseOptionalJson<Post["image"]>(value.imageText, `"${value.title}" image`);
-      if (image.error) {
-        setStatus("error");
-        setError(image.error);
-        return;
-      }
-      posts.push({
-        topic: value.topic,
-        title: value.title,
-        summary: value.summary,
-        url: value.url,
-        ...(image.value ? { image: image.value } : {}),
-      });
-    }
     setStatus("saving");
-    const ok = await saveKey("posts", posts);
+    const ok = await saveKey("posts", list.items.map((i) => toPost(i.value)));
     setStatus(ok ? "saved" : "error");
-    setError(undefined);
     if (ok) router.refresh();
   }
 
@@ -628,12 +732,24 @@ function PostsSection({ initial }: { initial: Post[] }) {
               <TextField label="URL" value={item.value.url} onChange={(v) => list.update(item.key, { ...item.value, url: v })} />
             </div>
             <TextAreaField label="Summary" value={item.value.summary} onChange={(v) => list.update(item.key, { ...item.value, summary: v })} rows={2} />
-            <JsonField
-              label="Image (JSON, optional — {src, width, height})"
-              text={item.value.imageText}
-              onChange={(v) => list.update(item.key, { ...item.value, imageText: v })}
-              rows={2}
-            />
+            <p className={styles.label}>Image (leave &ldquo;src&rdquo; blank for none — carousel/document posts have none)</p>
+            <div className={styles.settingsGrid}>
+              <TextField
+                label="Image src"
+                value={item.value.imageSrc}
+                onChange={(v) => list.update(item.key, { ...item.value, imageSrc: v })}
+              />
+              <TextField
+                label="Width"
+                value={item.value.imageWidth}
+                onChange={(v) => list.update(item.key, { ...item.value, imageWidth: v })}
+              />
+              <TextField
+                label="Height"
+                value={item.value.imageHeight}
+                onChange={(v) => list.update(item.key, { ...item.value, imageHeight: v })}
+              />
+            </div>
             <ListItemActions
               onMoveUp={i > 0 ? () => list.move(item.key, -1) : undefined}
               onMoveDown={i < list.items.length - 1 ? () => list.move(item.key, 1) : undefined}
@@ -646,12 +762,12 @@ function PostsSection({ initial }: { initial: Post[] }) {
         <button
           type="button"
           className={styles.ghost}
-          onClick={() => list.add({ topic: "", title: "", summary: "", url: "", imageText: "" })}
+          onClick={() => list.add({ topic: "", title: "", summary: "", url: "", imageSrc: "", imageWidth: "", imageHeight: "" })}
         >
           Add post
         </button>
       </div>
-      <SaveRow status={status} error={error} />
+      <SaveRow status={status} />
     </form>
   );
 }

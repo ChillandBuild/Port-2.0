@@ -328,25 +328,6 @@
   align-content: start;
 }
 
-.textarea {
-  width: 100%;
-  margin-top: 1.25rem;
-  padding: 0.75rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  line-height: 1.5;
-  color: var(--on-panel);
-  background: var(--surface-panel-alt);
-  border: 1px solid var(--rule-panel);
-  border-radius: 10px;
-  resize: vertical;
-}
-
-.textarea:focus-visible {
-  outline: none;
-  border-color: var(--accent);
-}
-
 .textareaProse {
   width: 100%;
   margin-top: 0;

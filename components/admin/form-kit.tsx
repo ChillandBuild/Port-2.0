@@ -179,29 +179,4 @@ export function SaveRow({ status, error }: { status: SaveStatus; error?: string 
   );
 }
 
-/** A JSON textarea that only overwrites its own field once the parse succeeds — an invalid edit stays visible with an error instead of silently reverting. */
-export function JsonField({
-  label,
-  text,
-  onChange,
-  rows = 10,
-}: {
-  label: string;
-  text: string;
-  onChange: (text: string) => void;
-  rows?: number;
-}) {
-  return (
-    <label className={styles.settingsField}>
-      <span className={styles.label}>{label}</span>
-      <textarea
-        className={styles.textarea}
-        rows={rows}
-        value={text}
-        onChange={(event) => onChange(event.target.value)}
-        spellCheck={false}
-      />
-    </label>
-  );
-}
 
