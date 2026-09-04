@@ -62,12 +62,22 @@ export function ScrollFX() {
           const tier =
             TIERS[(el.dataset.revealTier as keyof typeof TIERS) ?? "standard"] ??
             TIERS.standard;
+          // Per-instance overrides on top of a tier — Tool Stack's bento cards
+          // want a slower, blurred drop-in (y: -20, 0.4s stagger) that doesn't
+          // belong in the shared TIERS scale used everywhere else.
+          const y = el.dataset.revealY !== undefined ? Number(el.dataset.revealY) : tier.y;
+          const duration =
+            el.dataset.revealDuration !== undefined ? Number(el.dataset.revealDuration) : tier.duration;
+          const stagger =
+            el.dataset.revealStagger !== undefined ? Number(el.dataset.revealStagger) : tier.stagger;
+          const blur = el.hasAttribute("data-reveal-blur");
           gsap.from(children, {
             opacity: 0,
-            y: reduced ? 0 : tier.y,
-            duration: reduced ? 0.3 : tier.duration,
+            y: reduced ? 0 : y,
+            ...(blur ? { filter: reduced ? "blur(0px)" : "blur(10px)" } : {}),
+            duration: reduced ? 0.3 : duration,
             ease: tier.ease,
-            stagger: reduced ? 0 : tier.stagger,
+            stagger: reduced ? 0 : stagger,
             scrollTrigger: { trigger: el, start: "top 86%", once: true },
           });
 

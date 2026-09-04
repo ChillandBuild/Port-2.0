@@ -1,23 +1,41 @@
-import type { CSSProperties } from "react";
 import { getToolGroups } from "@/lib/backend/site-content-loaders";
 import styles from "./PlatformArchitecture.module.css";
 
 /**
- * Eight groups, one hairline grid — same shape as Terms' phases, because both
- * sections are enumerating a fixed set rather than ranking it. Tools are
- * listed, not described one by one: the group description carries the "why",
- * the tag list carries the "what".
+ * Bento cards, one per tool group. Three surface roles (tint / dark / solid)
+ * cycle across the 8 groups so the grid doesn't read as one repeated card
+ * stamped eight times; Prospecting (the largest group) gets the big slot
+ * since it's already first in the data and already the most tools.
  *
- * The groups are deliberately uneven — prospecting runs to 41 tools, CRM to 13
- * — so each one states its own count and the wide breakpoint is two columns,
- * not four. Half-width cards let a long chip list wrap into a few rows instead
- * of a narrow column fourteen rows deep.
+ * Icons are each tool's real favicon, fetched from Google's public favicon
+ * endpoint by hostname — same "hotlink, don't run through next/image"
+ * decision as FeaturedPosts' post covers: these are tiny, already-cached
+ * images with nothing for an optimisation pass to gain.
  *
- * Entrance runs on plain CSS `@keyframes` (fill-mode: forwards), not
- * ScrollFX's GSAP reveal — it plays and settles on mount regardless of scroll
- * position, so it can't get stuck at opacity 0 the way a scan that only runs
- * once on ScrollFX's own mount can when this section's DOM shows up later.
+ * Two different reveal mechanisms, deliberately:
+ *  - .head still plays on plain CSS @keyframes (fill-mode: forwards), not
+ *    ScrollFX — it settles on mount regardless of scroll position, so it
+ *    can't get stuck at opacity 0 if this section's DOM shows up after
+ *    ScrollFX's own once-per-mount scan.
+ *  - .bento uses ScrollFX's shared [data-reveal] system instead of a new
+ *    animation dependency — the blur/-20px/0.4s-stagger drop-in is a
+ *    per-instance override on that shared mechanism (see ScrollFX.tsx),
+ *    the same system every other section's scroll-triggered reveal uses.
  */
+
+const ROLE_BY_INDEX = ["tint", "dark", "solid", "tint", "tint", "dark", "solid", "tint"] as const;
+
+function faviconUrl(toolUrl: string): string {
+  let hostname = toolUrl;
+  try {
+    hostname = new URL(toolUrl).hostname;
+  } catch {
+    // Malformed url in the data — fall back to the raw string, which still
+    // resolves to *something* from the favicon service.
+  }
+  return `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(hostname)}`;
+}
+
 export async function PlatformArchitecture() {
   const TOOL_GROUPS = await getToolGroups();
   return (
@@ -36,36 +54,48 @@ export async function PlatformArchitecture() {
         </p>
       </div>
 
-      <div className={styles.groups}>
-        {TOOL_GROUPS.map((group, i) => (
-          <article
-            className={styles.group}
-            key={group.name}
-            style={{ "--i": i } as CSSProperties}
-          >
-            <div className={styles.nameRow}>
-              <h3 className={styles.name}>{group.name}</h3>
-              <p className={`mono ${styles.count}`}>{group.tools.length} tools</p>
-            </div>
-            <p className={styles.description}>{group.description}</p>
-            <ul className={styles.tools}>
-              {group.tools.map((tool) => (
-                <li key={tool.name}>
+      <div
+        className={styles.bento}
+        data-reveal
+        data-reveal-children
+        data-reveal-y="-20"
+        data-reveal-duration="0.5"
+        data-reveal-stagger="0.4"
+        data-reveal-blur
+      >
+        {TOOL_GROUPS.map((group, i) => {
+          const role = ROLE_BY_INDEX[i % ROLE_BY_INDEX.length];
+          const iconCap = i === 0 ? 8 : 5;
+          const shown = group.tools.slice(0, iconCap);
+          const rest = group.tools.length - shown.length;
+          return (
+            <article className={`${styles.card} ${styles[role]}${i === 0 ? ` ${styles.big}` : ""}`} key={group.name}>
+              {role === "tint" && <div className={styles.grid} aria-hidden="true" />}
+              <div className={styles.cardTop}>
+                <h3 className={styles.name}>{group.name}</h3>
+                <p className={`mono ${styles.count}`}>{group.tools.length} tools</p>
+                <p className={styles.description}>{group.description}</p>
+              </div>
+              <div className={styles.iconRow}>
+                {shown.map((tool) => (
                   <a
+                    key={tool.name}
+                    className={styles.icon}
                     href={tool.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`mono ${styles.tool}`}
                     title={`Visit ${tool.name} (opens in new tab)`}
                     aria-label={`${tool.name} website`}
                   >
-                    {tool.name}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={faviconUrl(tool.url)} alt="" width={20} height={20} loading="lazy" decoding="async" />
                   </a>
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
+                ))}
+                {rest > 0 && <span className={`mono ${styles.more}`}>+{rest} more</span>}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
