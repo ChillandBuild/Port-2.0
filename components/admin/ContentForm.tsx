@@ -13,7 +13,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { HeroContent, HeroStat, AboutContent, AboutFact } from "@/lib/backend/site-content-loaders";
+import type { HeroContent, HeroStat, AboutContent, AboutFact, VideoTeaserContent } from "@/lib/backend/site-content-loaders";
 import type { Stage, Sector, LedgerRow, Role, ToolGroup, ToolItem, Post, CaseStudy } from "@/lib/content";
 import { saveKey, TextField, TextAreaField, SaveRow, useEditableList, ListItemActions, type SaveStatus } from "./form-kit";
 import styles from "./Admin.module.css";
@@ -503,6 +503,37 @@ function AboutSection({ initial }: { initial: AboutContent }) {
   );
 }
 
+/* ----------------------------- Video teaser ----------------------------- */
+
+function VideoTeaserSection({ initial }: { initial: VideoTeaserContent }) {
+  const router = useRouter();
+  const [eyebrow, setEyebrow] = useState(initial.eyebrow);
+  const [heading, setHeading] = useState(initial.heading);
+  const [badge, setBadge] = useState(initial.badge);
+  const [status, setStatus] = useState<SaveStatus>("idle");
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setStatus("saving");
+    const ok = await saveKey("video_teaser", { eyebrow, heading, badge });
+    setStatus(ok ? "saved" : "error");
+    if (ok) router.refresh();
+  }
+
+  return (
+    <form className={styles.settingsCard} onSubmit={submit}>
+      <h2 className={styles.settingsCardHeading}>Video</h2>
+      <p className={styles.hint}>The presales video placeholder between About and Roles — swap this copy once the real video is ready.</p>
+      <div className={styles.settingsGrid}>
+        <TextField label="Eyebrow" value={eyebrow} onChange={setEyebrow} />
+        <TextField label="Heading" value={heading} onChange={setHeading} />
+        <TextField label="Badge" value={badge} onChange={setBadge} />
+      </div>
+      <SaveRow status={status} />
+    </form>
+  );
+}
+
 /* ----------------------------- Roles ----------------------------- */
 
 function RoleEditor({
@@ -849,6 +880,7 @@ export interface ContentFormProps {
   sectors: Sector[];
   ledger: LedgerRow[];
   about: AboutContent;
+  videoTeaser: VideoTeaserContent;
   roles: Role[];
   toolGroups: ToolGroup[];
   posts: Post[];
@@ -863,6 +895,7 @@ export function ContentForm(props: ContentFormProps) {
       <SectorsSection initial={props.sectors} />
       <LedgerSection initial={props.ledger} />
       <AboutSection initial={props.about} />
+      <VideoTeaserSection initial={props.videoTeaser} />
       <RolesSection initial={props.roles} />
       <ToolGroupsSection initial={props.toolGroups} />
       <PostsSection initial={props.posts} />

@@ -7,6 +7,7 @@ import {
   getSectors,
   getLedger,
   getAbout,
+  getVideoTeaser,
   getRoles,
   getToolGroups,
   getPosts,
@@ -21,17 +22,19 @@ export default async function AdminContentPage() {
   const admin = await requireAdmin();
   if (!admin) redirect("/admin/login");
 
-  const [hero, pipeline, sectors, ledger, about, roles, toolGroups, posts, caseStudies] = await Promise.all([
-    getHero(),
-    getPipeline(),
-    getSectors(),
-    getLedger(),
-    getAbout(),
-    getRoles(),
-    getToolGroups(),
-    getPosts(),
-    getCaseStudyEntries(),
-  ]);
+  const [hero, pipeline, sectors, ledger, about, videoTeaser, roles, toolGroups, posts, caseStudies] =
+    await Promise.all([
+      getHero(),
+      getPipeline(),
+      getSectors(),
+      getLedger(),
+      getAbout(),
+      getVideoTeaser(),
+      getRoles(),
+      getToolGroups(),
+      getPosts(),
+      getCaseStudyEntries(),
+    ]);
 
   return (
     <main className={styles.main} id="main">
@@ -51,6 +54,7 @@ export default async function AdminContentPage() {
         sectors={sectors}
         ledger={ledger}
         about={about}
+        videoTeaser={videoTeaser}
         roles={roles}
         toolGroups={toolGroups}
         posts={posts}

@@ -354,3 +354,83 @@ via the Supabase MCP that day; see the decisions list below. [[stack-and-rules]]
   titled commit. The content is correct and on `main`, but the commit message does not
   mention case studies at all. Flagged to the user; not rewritten unilaterally — amending
   or splitting that commit is a history-rewrite decision that needs their say-so.
+- 2026-09-04 (commits `1abbefc`..`aeb2e32`, 5 commits) | Built the admin panel expansion
+  in full — all 5 phases from the approved plan, in one session, after the user
+  overrode an initial "Phase 1 only" recommendation with "complete every phases" | New
+  `site_content` table (`key text primary key, value jsonb`, RLS on/zero policies) is
+  the single generic store for everything admin-editable; `lib/backend/site-content.ts`
+  (`getSiteContent`/`setSiteContent`) and `lib/backend/site-content-loaders.ts` (one
+  typed function per key, hardcoded value as fallback) are the pattern every phase
+  reused. Applied directly to production — **Supabase branching needs the Pro plan,
+  this project is on Free**, confirmed by a live `create_branch` call returning
+  `PaymentRequiredException`, so the originally-planned "build on a DB branch, merge
+  after approval" safety step was infeasible and dropped in favor of "additive-only
+  migration, low risk" reasoning instead. [[stack-and-rules]] [[subsystem-notes]]
+  - **Phase 1** (`1abbefc`): `identity`, `course_pricing`, `schedule_pricing`,
+    `course_faq`, `footer`, `legal_terms`/`legal_privacy`/`legal_refunds` become
+    site_content rows. `/admin/settings` added. Payment amount, both currency-toggle
+    dialogs, the chatbot's price/phone lines and one buyer email all switched from the
+    hardcoded constants to the live loaders.
+  - **Phase 2** (`ae85dfa`): new `availability_slots` table (`date, time, status,
+    booked_reference`, unique on `date+time`) replaces `ScheduleCalendar.tsx`'s old
+    hash-based fake-booked-slot generator entirely. Booking claims are one conditional
+    `UPDATE ... WHERE status = 'open'` (`lib/backend/availability.ts`'s `bookSlot`),
+    called from both `/api/submissions` (free call — rejects with `slot-taken` before
+    saving anything if the race is lost) and `/api/schedule/verify` (paid call — the
+    payment is already real by the time the claim runs, so a lost race still records
+    the payment and flags the conflict in Sampath's notification email instead of
+    failing the response). `/admin/availability` added.
+  - **Phase 3** (`93122e0`): `hero` (lede+stats only — the rest of `HERO` lives on the
+    orphaned, unmounted `components/hero/Hero.tsx` and wasn't worth exposing), `pipeline`,
+    `sectors`, `ledger`, `about`, `roles`, `tool_groups`, `posts`, `case_studies` all
+    become site_content rows. Extracted `components/admin/form-kit.tsx` (`saveKey`,
+    `TextField`, `NumberField`, `JsonField`, `SaveRow`, `JsonCard`) so Settings and the
+    new `/admin/content` page share primitives instead of duplicating them.
+  - **Phase 4** (`da7558b`): the chatbot's 8 keyword-matched answers + fallback become
+    one `chatbot_answers` row, matched in array order at request time and rendered
+    through a new shared `{{token}}` interpolator (`lib/backend/template.ts`) —
+    `{{phone}}`, `{{linkedin}}`, `{{secondCallPrice}}` etc. The "estimate my pipeline"
+    intent stays code (real `estimateOutcome()` math on parsed numbers, not templatable
+    text) and is checked first. 4 buyer-facing email templates (free-call confirmation,
+    course access code, second-call receipt, demo access link) get their prose lifted
+    into `email_schedule_confirmation`/`email_course_access`/`email_schedule_receipt`/
+    `email_course_grant` rows; the 3 internal notification emails (to Sampath) were
+    deliberately left as code — structured fact dumps, not reworded prose.
+  - **Phase 5** (`aeb2e32`): each of the 9 course chapters becomes its own row
+    (`course_chapter_1`..`course_chapter_9`), assembled by `getGuideDocument()`.
+    `/admin/course` gets one `ChapterEditor` per chapter — plain inputs for
+    chapter/section metadata, a JSON textarea per **section** for its blocks (the
+    hybrid split lands at the section level, not per-block-type, since that's where the
+    13 block-type shapes in `lib/guide/types.ts` actually live). Forced
+    `lib/guide/sections.ts` from module-load-time constants to async functions
+    (`getGuideSections`/`getGuideSectionIdSet`/`isKnownSectionId`) since the section-id
+    allowlist protecting `/api/course/progress`'s jsonb write can no longer be computed
+    synchronously once chapters are DB-backed — both call sites (`progress/route.ts`,
+    the admin grants list's "N/40 sections read" count) were updated accordingly.
+  - Verification, every phase: `tsc --noEmit` + `eslint .` + `next build` clean, then a
+    real DB-write-then-revert test through the actual page/API (not just unit-level) —
+    e.g. wrote a marker phone number, hit `/`, confirmed it rendered, deleted the row,
+    confirmed fallback returned. Slot double-booking tested with two real sequential
+    `/api/submissions` calls against the same slot (second correctly got `409
+    slot-taken`). Course reading-progress validation under a **real paid session** was
+    not end-to-end browser-tested — verified by code/data-layer inspection only, since
+    the underlying `getGuideDocument()` call is identical to the already-proven pattern.
+  - **Known, deliberately scoped gaps, not silently dropped:** [[active-backlog]]
+    marketing prose that only *mentions* a price (schedule ladder cards, course sales
+    hero, SEO meta descriptions) still says the old number as static text — only actual
+    charges and the two payment dialogs are guaranteed live; `LINKEDIN` (the impressions
+    chart stats on the homepage) was left static, not folded into Phase 3's `ledger`
+    treatment; resume file path / `TopNav`'s resume link untouched (file-upload
+    replacement was explicitly named as Phase 3 scope in the plan but not built); no
+    seed migration — every row is created lazily on first admin save, not pre-populated.
+  - All 5 commits were **local-only** ("commit locally, push only after your OK" — the
+    user's explicit answer when asked) at the point this session's active work ended.
+    **A parallel session then pushed everything to `origin/main`** (confirmed live —
+    `git status -sb` now shows local `main` exactly in sync with `origin/main`, meaning
+    it auto-deployed via the Vercel GitHub integration) and added one more commit on top,
+    `50b3679` ("admin panel — sidebar navigation replaces top nav"), replacing this
+    session's plain 2-link top nav with a real sidebar + mobile drawer in
+    `components/admin/AdminSidebar.tsx` — not written by this session. Same recurring
+    pattern already documented above for commit `1592f86`: **this repo has more than one
+    active session/device**, so `git log`/`git status` at any given moment may already
+    reflect work this session didn't do. [[subsystem-notes]]

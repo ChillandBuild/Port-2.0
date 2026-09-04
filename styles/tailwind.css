@@ -1,0 +1,5 @@
+/* Utilities-only Tailwind layer, scoped to shadcn-sourced components.
+   No `tailwindcss/preflight` import — the site's own reset lives in
+   global.css/tokens.css and must stay authoritative outside /components/ui. */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);

@@ -82,6 +82,7 @@
   line-height: 1.1;
   letter-spacing: -0.03em;
   text-wrap: balance;
+  color: var(--accent);
 }
 
 /* The accent stop after a core vertical: same punctuation as the wordmark. */

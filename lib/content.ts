@@ -9,6 +9,8 @@ export const IDENTITY = {
   location: "Coimbatore, Tamil Nadu, India",
   phone: "+91 94877 49370 (WhatsApp)",
   phoneHref: "tel:+919487749370",
+  /** wa.me deep link, derived from the same number as phoneHref. */
+  whatsapp: "https://wa.me/919487749370",
   /** Telegram deep link by phone number — opens a chat directly, no username needed. */
   telegram: "https://t.me/+919487749370",
   /** Empty until the address is decided; the reply card renders the row either way. */
@@ -162,6 +164,12 @@ export const ABOUT = {
       school: "Amrita Vishwa Vidyapeetham · 2026",
     },
   ],
+} as const;
+
+export const VIDEO_TEASER = {
+  eyebrow: "Video · in production",
+  heading: "A presales walkthrough, on camera.",
+  badge: "Soon",
 } as const;
 
 export interface Stage {
@@ -438,7 +446,7 @@ export interface Role {
 export const ROLES: Role[] = [
   {
     company: "Emotii",
-    title: "Senior Lead Generation Specialist",
+    title: "Senior Lead Generation Manager",
     dates: "Mar 2026 – Present",
     place: "Bengaluru, India",
     summary: [

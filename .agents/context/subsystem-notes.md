@@ -292,3 +292,84 @@ inside the page component itself **did** trigger it immediately and reliably. Do
 trust a `page.route` intercept to prove or disprove a Suspense/loading-boundary fix —
 verify with a real `setTimeout` in the server component (temporarily, reverted after),
 the same way this fix was confirmed.
+
+## The `site_content` admin-editable-content pattern (`lib/backend/site-content.ts`, `lib/backend/site-content-loaders.ts`)
+Added `1abbefc`..`aeb2e32` ([[decisions-log]]). One generic table
+(`key text primary key, value jsonb`), one pair of functions
+(`getSiteContent<T>(key, fallback)` / `setSiteContent(key, value)`), and one loader
+function per logical content key — every admin-editable value on the site goes through
+this, not a bespoke table per feature.
+
+**Every loader's fallback IS the hardcoded value from `lib/content.ts` / `lib/content/*.ts`
+/ `lib/guide/*`** — a missing row, a Supabase outage, or a malformed value all degrade to
+that exact same fallback (`getSiteContent` catches and returns it on any error). This
+means the old hardcoded constants are not dead code to clean up — they are the seed data
+and the outage safety net simultaneously. Don't delete them when "migrating" a value to
+the DB; the loader still reads them.
+
+**`deepMutable()` (JSON round-trip) is required for any fallback built from an `as const`
+export**, not optional. `HERO`, `ABOUT`, and `FOOTER` are `as const` objects, so their
+nested arrays/objects are typed `readonly` — passing them straight into a loader typed to
+return a mutable interface (e.g. `HeroContent`, `AboutContent`, `FooterContent`) is a type
+error (`readonly [...]` not assignable to `string[]`), and you must give `deepMutable` an
+explicit type argument (`deepMutable<AboutContent>({...})`) or TS infers the *readonly*
+literal type from the argument instead of the target interface, silently defeating it.
+Exports that are already typed as a plain mutable array (`PIPELINE: Stage[]`, `POSTS:
+Post[]`, etc. — no `as const`) don't have this problem; spread (`[...POSTS]`) is enough.
+
+**Every write via `/api/admin/settings` calls `revalidatePath("/", "layout")`** — not a
+per-key path map. Root-layout revalidation invalidates every route on the site in one
+call; the alternative (a table mapping each content key to the pages that read it) would
+need updating every time a new consumer is added and would silently under-invalidate if
+someone forgot. Traffic is low enough that the blast radius of "revalidate everything on
+every save" doesn't matter.
+
+**A client component cannot call a loader directly** — `getSiteContent` goes through
+Supabase server-side. Every "use client" consumer (`EnrollDialog.tsx`, `ScheduleForm.tsx`,
+`WorldStage.tsx`) takes the resolved value as a prop from its server-component parent
+instead. When adding a new admin-editable value that a client component needs, thread it
+through as a prop — don't try to import the loader into a `"use client"` file.
+
+**Two homepage sections became live from `site_content` while their *marketing prose*
+stays hardcoded** — the schedule-page ladder cards, the course sales hero, and SEO meta
+descriptions still say the old price as literal English text (e.g. "USD 350 · one time")
+even though `schedule_pricing`/`course_pricing` are the source of truth for the actual
+charge. Only the real charge (both `/api/*/order` and `/api/*/verify` routes), the two
+payment-dialog UIs (`EnrollDialog`, `ScheduleForm`'s currency toggle + submit label), and
+the chatbot/emails were wired to read the live price. If Sampath changes a price and asks
+why the ladder card still shows the old number, this is why — not a bug, a deliberately
+scoped gap. [[active-backlog]]
+
+## Course-content dynamism forced `lib/guide/sections.ts` from sync to async (Phase 5, `aeb2e32`)
+`GUIDE_SECTIONS`/`GUIDE_SECTION_IDS`/`isKnownSectionId` used to be `const`s computed once
+at module load from the static `GUIDE_DOCUMENT`. Once chapters live in `site_content`
+(`course_chapter_1`..`course_chapter_9`, via `getGuideDocument()`), that allowlist can only
+be built with an `await`. `isKnownSectionId` and friends are now `async function`s
+(`getGuideSections`/`getGuideSectionIdSet`/`getGuideSectionCount`/`isKnownSectionId`) —
+`/api/course/progress` (the route this allowlist actually protects — an arbitrary write
+into `course_access.sections_seen` without it) now computes the id set once per request
+before its loop instead of calling a sync predicate per entry. **Section ids are a stable
+interface, not internal labels** — they're the DOM anchors in `GuidePage` *and* the keys
+stored in `course_access.sections_seen`; renaming one in `/admin/course` orphans that
+section's stored reading history for anyone who already read it under the old id. The
+`ChapterEditor` UI surfaces this as a visible warning on the id field rather than hiding it.
+
+## Supabase branching is unavailable on this project (Free plan)
+Confirmed 2026-09-04: `mcp__claude_ai_Supabase__create_branch` on project
+`mszponvodyeghwqxytuq` returns `PaymentRequiredException` — "Branching is supported only
+on the Pro plan or above." Any future plan that assumes "build schema changes on a branch,
+merge after approval" needs either an upgrade first or the same reasoning used for
+Phase 1/2 of the admin panel: a brand-new, additive-only table (no ALTER on an existing
+table, no risk to existing rows) is safe to apply directly to production, verified
+immediately after with a real read/write round-trip. [[decisions-log]]
+
+## This repo has more than one active session/device — `git log`/`git status` can move under you
+Documented once already for commit `1592f86` (case-studies content folded into an
+unrelated commit by something outside that session). Reconfirmed 2026-09-04: this
+session did 5 commits (`1abbefc`..`aeb2e32`) and left them local-only per the user's
+explicit instruction; by the time this session closed, `origin/main` already had all 5
+**plus a 6th commit this session didn't write** (`50b3679`, a real admin sidebar
+replacing the plain top nav this session shipped). **Before trusting "what's on disk" or
+"what's committed" as this session's own state, diff it against what you actually wrote**
+— another session may have already extended, refactored, or pushed on top of it.
+[[decisions-log]]

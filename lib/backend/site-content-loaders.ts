@@ -10,6 +10,7 @@ import {
   SECTORS,
   LEDGER,
   ABOUT,
+  VIDEO_TEASER,
   ROLES,
   TOOL_GROUPS,
   POSTS,
@@ -200,6 +201,16 @@ export async function getAbout(): Promise<AboutContent> {
       facts: ABOUT.facts.map((f) => ({ ...f })),
     }),
   );
+}
+
+export interface VideoTeaserContent {
+  eyebrow: string;
+  heading: string;
+  badge: string;
+}
+
+export async function getVideoTeaser(): Promise<VideoTeaserContent> {
+  return getSiteContent<VideoTeaserContent>("video_teaser", deepMutable<VideoTeaserContent>({ ...VIDEO_TEASER }));
 }
 
 export async function getRoles(): Promise<Role[]> {

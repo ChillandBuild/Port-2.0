@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { IDENTITY } from "@/lib/content";
+import { IconTelegram, IconVideo, IconWhatsApp } from "./icons";
 import styles from "./ChatWidget.module.css";
 
 type Role = "user" | "bot";
@@ -136,6 +138,41 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
             />
             <button className={styles.send} disabled={!input.trim() || busy} aria-label="Send">↑</button>
           </form>
+        </div>
+      )}
+
+      {!open && (
+        <div className={styles.quickLinks}>
+          <a
+            className={`${styles.quickLink} ${styles.quickLinkWhatsapp}`}
+            href={IDENTITY.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Message on WhatsApp"
+            title="Message on WhatsApp"
+          >
+            <IconWhatsApp />
+          </a>
+          <a
+            className={`${styles.quickLink} ${styles.quickLinkTelegram}`}
+            href={IDENTITY.telegram}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Message on Telegram"
+            title="Message on Telegram"
+          >
+            <IconTelegram />
+          </a>
+          <button
+            type="button"
+            className={`${styles.quickLink} ${styles.quickLinkVideo}`}
+            aria-label="Video — coming soon"
+            title="Video — coming soon"
+            aria-disabled="true"
+          >
+            <IconVideo />
+            <span className={styles.soonBadge} aria-hidden="true">Soon</span>
+          </button>
         </div>
       )}
 

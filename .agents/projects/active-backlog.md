@@ -1,6 +1,32 @@
 # Active Roadmap & Technical Debt
 
 ## Backlog
+- Admin panel expansion (`1abbefc`..`aeb2e32`, 2026-09-04) shipped all 5 planned phases,
+  but the plan's own scope had a few pieces intentionally deferred rather than built —
+  see [[decisions-log]] and [[subsystem-notes]] for the full list. The two most likely
+  to actually get asked about:
+  - Marketing prose that only *mentions* a price (schedule ladder cards, course sales
+    hero, SEO meta descriptions) can drift from a price changed in `/admin/settings` —
+    only the real charge and the two payment-dialog UIs are guaranteed live.
+  - `TopNav`'s resume link and the resume file path are still hardcoded — a Storage-
+    backed file-upload replacement was named in the original plan (Phase 3) but not
+    built. | unprioritized | not started
+- `LINKEDIN` (the impressions-chart stats in `components/proof/Proof.tsx`) was left out
+  of the Phase 3 marketing-content migration — every other homepage data block
+  (`hero`, `pipeline`, `sectors`, `ledger`, etc.) is `site_content`-backed, this one
+  isn't. Low value (2 numbers + an illustrative chart, explicitly labelled as such) but
+  inconsistent with everything around it now. | low priority | not started [[decisions-log]]
+- Course reading-progress validation (`/api/course/progress`'s section-id allowlist,
+  reworked async in `aeb2e32`) was verified by code/data-layer inspection, not an actual
+  browser session holding a real paid access cookie end to end. Worth a real pass before
+  relying on it, especially after any future `/admin/course` edit that renames a section
+  id. | unprioritized | not started [[decisions-log]] [[subsystem-notes]]
+- The 5 admin-panel commits were pushed to `origin/main` (and a 6th, sidebar-nav commit
+  added on top) by a session other than the one that built them — confirm with the user
+  that this was intentional/expected, not an accidental push before they were ready to
+  go live. Vercel auto-deploys on push to `main`, so this is already live on
+  www.sampathkumar.in if that integration is still active. | needs user confirmation
+  [[decisions-log]]
 - Remaining unbuilt pages: **Story** and a custom **404** (`app/not-found.tsx`).
   Case Studies, Schedule, Terms, Privacy, Refunds and Lead Generation all shipped in
   commit `198f462` (2026-08-28). | unprioritized | not started [[decisions-log]]
