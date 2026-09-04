@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { TOOL_GROUPS } from "@/lib/content";
+import { getToolGroups } from "@/lib/backend/site-content-loaders";
 import styles from "./PlatformArchitecture.module.css";
 
 /**
@@ -18,7 +18,8 @@ import styles from "./PlatformArchitecture.module.css";
  * position, so it can't get stuck at opacity 0 the way a scan that only runs
  * once on ScrollFX's own mount can when this section's DOM shows up later.
  */
-export function PlatformArchitecture() {
+export async function PlatformArchitecture() {
+  const TOOL_GROUPS = await getToolGroups();
   return (
     <section className={`grained ${styles.stack}`} id="stack" aria-labelledby="stack-heading">
       <div className={styles.head}>

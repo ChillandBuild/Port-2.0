@@ -1,4 +1,4 @@
-import { POSTS } from "@/lib/content";
+import { getPosts } from "@/lib/backend/site-content-loaders";
 import styles from "./FeaturedPosts.module.css";
 
 /** The LinkedIn glyph, inline so the page stays self-contained. */
@@ -30,7 +30,8 @@ function LinkedInMark() {
  * LinkedIn serves those only to a signed-in session — so they render a
  * typographic cover in the same box instead of a broken or missing image.
  */
-export function FeaturedPosts() {
+export async function FeaturedPosts() {
+  const POSTS = await getPosts();
   const loop = [...POSTS, ...POSTS];
 
   return (

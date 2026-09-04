@@ -17,6 +17,15 @@ const ALLOWED_KEYS = new Set([
   "legal_terms",
   "legal_privacy",
   "legal_refunds",
+  "hero",
+  "pipeline",
+  "sectors",
+  "ledger",
+  "about",
+  "roles",
+  "tool_groups",
+  "posts",
+  "case_studies",
 ]);
 
 export async function POST(request: Request): Promise<Response> {

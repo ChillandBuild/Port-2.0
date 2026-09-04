@@ -1,5 +1,6 @@
 import { ImpressionsChart } from "@/components/linkedin/ImpressionsChart";
-import { LEDGER, LINKEDIN } from "@/lib/content";
+import { LINKEDIN } from "@/lib/content";
+import { getLedger } from "@/lib/backend/site-content-loaders";
 import styles from "./Proof.module.css";
 
 /**
@@ -10,7 +11,8 @@ import styles from "./Proof.module.css";
  * Closes with the LinkedIn reach and the curve behind it; the writing that
  * made both now stands as its own section down by the footer.
  */
-export function Proof() {
+export async function Proof() {
+  const LEDGER = await getLedger();
   return (
     <section className={styles.proof} id="proof" aria-labelledby="proof-heading">
       <div className={styles.intro} data-reveal data-reveal-tier="lift" data-reveal-children>

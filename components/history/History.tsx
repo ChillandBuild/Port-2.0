@@ -1,4 +1,4 @@
-import { ROLES } from "@/lib/content";
+import { getRoles } from "@/lib/backend/site-content-loaders";
 import { RoleSummary } from "./RoleSummary";
 import styles from "./History.module.css";
 
@@ -7,7 +7,8 @@ import styles from "./History.module.css";
  * reader passes it. A career is a sequence, so it reads vertically. Each role
  * carries the named employer, the responsibilities and the headline result.
  */
-export function History() {
+export async function History() {
+  const ROLES = await getRoles();
   return (
     <section className={styles.history} id="history" aria-labelledby="history-heading">
       <div className={styles.head} data-reveal data-reveal-tier="lift" data-reveal-children>

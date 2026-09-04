@@ -10,6 +10,7 @@ import { Reply } from "@/components/reply/Reply";
 import { ScrollFX } from "@/components/motion/ScrollFX";
 import { PlatformArchitecture } from "@/components/stack/PlatformArchitecture";
 import { WorldStage } from "@/components/world/WorldStage";
+import { getHero, getPipeline } from "@/lib/backend/site-content-loaders";
 
 /**
  * "Worldfall": a photograph settles into one continuous drawn world, the world
@@ -24,14 +25,15 @@ import { WorldStage } from "@/components/world/WorldStage";
  * thing on the page. The featured-posts rail precedes the closing CTA before
  * the footer.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const [hero, pipeline] = await Promise.all([getHero(), getPipeline()]);
   return (
     <>
       <span id="top" />
       <TopNav />
 
       <main id="main">
-        <WorldStage />
+        <WorldStage hero={hero} pipeline={pipeline} />
         <Proof />
         <Positioning />
         <History />

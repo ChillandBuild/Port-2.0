@@ -13,7 +13,8 @@
  */
 
 import { useEffect, useRef } from "react";
-import { HERO, PIPELINE } from "@/lib/content";
+import type { Stage } from "@/lib/content";
+import type { HeroContent } from "@/lib/backend/site-content-loaders";
 import { GATES, GATE_STEP_AT, RUN_ENDS_AT } from "@/lib/frontend/world";
 import { CLUSTERS, COHORT, FIELD } from "@/lib/frontend/world-instance";
 import { Greeting } from "./Greeting";
@@ -93,7 +94,12 @@ function cueAt(t: number, cue: Cue): number {
   return Math.max(0, Math.min(1, intoIn, intoOut));
 }
 
-export function WorldStage() {
+interface WorldStageProps {
+  hero: HeroContent;
+  pipeline: Stage[];
+}
+
+export function WorldStage({ hero, pipeline }: WorldStageProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
@@ -307,10 +313,10 @@ export function WorldStage() {
                 <Greeting />
               </span>
             </h1>
-            <p className={styles.lede}>{HERO.lede}</p>
+            <p className={styles.lede}>{hero.lede}</p>
 
             <dl className={styles.stats}>
-              {HERO.stats.map((stat) => (
+              {hero.stats.map((stat) => (
                 <div key={stat.label} className={styles.statItem}>
                   <dt className={`${styles.statValue} tabular`}>
                     {"count" in stat && stat.count ? (
@@ -403,7 +409,7 @@ export function WorldStage() {
           </section>
 
           <ol className={styles.gates}>
-            {PIPELINE.map((stage, i) => (
+            {pipeline.map((stage, i) => (
               <li
                 className={styles.gate}
                 key={stage.no}

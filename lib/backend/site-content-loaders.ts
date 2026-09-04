@@ -1,7 +1,35 @@
 import { getSiteContent } from "@/lib/backend/site-content";
-import { IDENTITY, FOOTER, TERMS, PRIVACY, REFUNDS, type LegalDoc } from "@/lib/content";
+import {
+  IDENTITY,
+  FOOTER,
+  TERMS,
+  PRIVACY,
+  REFUNDS,
+  HERO,
+  PIPELINE,
+  SECTORS,
+  LEDGER,
+  ABOUT,
+  ROLES,
+  TOOL_GROUPS,
+  POSTS,
+  CASE_STUDY_ENTRIES,
+  type LegalDoc,
+  type Stage,
+  type Sector,
+  type LedgerRow,
+  type Role,
+  type ToolGroup,
+  type Post,
+  type CaseStudy,
+} from "@/lib/content";
 import { COURSE, COURSE_PRICE_USD, COURSE_PRICE_INR } from "@/lib/content/course";
 import { SCHEDULE_SECOND_CALL_PRICE_USD, SCHEDULE_SECOND_CALL_PRICE_INR } from "@/lib/content/schedule-payment";
+
+/** Deep JSON clone — strips `as const` readonly-ness so a hardcoded literal can serve as a mutable fallback. Safe here: every fallback below is plain JSON-shaped data (strings, numbers, arrays, objects), nothing with functions or dates. */
+function deepMutable<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
 
 /**
  * Server-only admin-editable content, one function per site_content key.
@@ -107,3 +135,83 @@ export async function getLegalDoc(key: LegalKey): Promise<LegalDoc> {
 }
 
 export const ALL_LEGAL_KEYS: LegalKey[] = ["legal_terms", "legal_privacy", "legal_refunds"];
+
+/* ---------------------------------------------------------------------- */
+/* Phase 3 — marketing content (WorldStage, homepage sections, /lead-generation) */
+/* ---------------------------------------------------------------------- */
+
+export interface HeroStat {
+  value: string;
+  label: string;
+  count?: { to: number; suffix?: string; prefix?: string; decimals?: number };
+}
+
+export interface HeroContent {
+  lede: string;
+  stats: HeroStat[];
+}
+
+/** Only the two fields WorldStage actually renders — headline/eyebrow/CTAs live on the orphaned, unmounted Hero.tsx and aren't worth exposing here. */
+export async function getHero(): Promise<HeroContent> {
+  return getSiteContent<HeroContent>(
+    "hero",
+    deepMutable<HeroContent>({ lede: HERO.lede, stats: HERO.stats as unknown as HeroStat[] }),
+  );
+}
+
+export async function getPipeline(): Promise<Stage[]> {
+  return getSiteContent<Stage[]>("pipeline", [...PIPELINE]);
+}
+
+export async function getSectors(): Promise<Sector[]> {
+  return getSiteContent<Sector[]>("sectors", [...SECTORS]);
+}
+
+export async function getLedger(): Promise<LedgerRow[]> {
+  return getSiteContent<LedgerRow[]>("ledger", [...LEDGER]);
+}
+
+export interface AboutFact {
+  label: string;
+  degree: string;
+  school: string;
+}
+
+export interface AboutContent {
+  eyebrow: string;
+  heading: string;
+  body: string[];
+  stamp: string;
+  exchange: { asked: string; answered: string };
+  facts: AboutFact[];
+}
+
+export async function getAbout(): Promise<AboutContent> {
+  return getSiteContent<AboutContent>(
+    "about",
+    deepMutable<AboutContent>({
+      eyebrow: ABOUT.eyebrow,
+      heading: ABOUT.heading,
+      body: [...ABOUT.body],
+      stamp: ABOUT.stamp,
+      exchange: { ...ABOUT.exchange },
+      facts: ABOUT.facts.map((f) => ({ ...f })),
+    }),
+  );
+}
+
+export async function getRoles(): Promise<Role[]> {
+  return getSiteContent<Role[]>("roles", [...ROLES]);
+}
+
+export async function getToolGroups(): Promise<ToolGroup[]> {
+  return getSiteContent<ToolGroup[]>("tool_groups", [...TOOL_GROUPS]);
+}
+
+export async function getPosts(): Promise<Post[]> {
+  return getSiteContent<Post[]>("posts", [...POSTS]);
+}
+
+export async function getCaseStudyEntries(): Promise<CaseStudy[]> {
+  return getSiteContent<CaseStudy[]>("case_studies", [...CASE_STUDY_ENTRIES]);
+}

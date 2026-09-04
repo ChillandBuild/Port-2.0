@@ -1,4 +1,4 @@
-import { SECTORS } from "@/lib/content";
+import { getSectors } from "@/lib/backend/site-content-loaders";
 import styles from "./Range.module.css";
 
 /**
@@ -7,7 +7,8 @@ import styles from "./Range.module.css";
  * with the accent stop, the same punctuation as the wordmark. Flat white so
  * the section reads as its own ledger against the themed page around it.
  */
-export function Range() {
+export async function Range() {
+  const SECTORS = await getSectors();
   return (
     <section className={`spot grained ${styles.range}`} id="range" data-spot aria-labelledby="range-heading">
       <div className={styles.head} data-reveal data-reveal-tier="lift" data-reveal-children>

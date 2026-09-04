@@ -1,7 +1,8 @@
-import { ABOUT } from "@/lib/content";
+import { getAbout } from "@/lib/backend/site-content-loaders";
 import styles from "./Positioning.module.css";
 
-export function Positioning() {
+export async function Positioning() {
+  const ABOUT = await getAbout();
   return (
     <section className={`grained ${styles.section}`} id="about" aria-labelledby="about-heading">
       <div className={styles.grid}>

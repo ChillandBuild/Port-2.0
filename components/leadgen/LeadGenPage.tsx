@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LEADGEN, PIPELINE } from "@/lib/content";
+import { LEADGEN } from "@/lib/content";
 import { COURSE } from "@/lib/content/course";
+import { getPipeline } from "@/lib/backend/site-content-loaders";
 import { CourseUnlockInline } from "@/components/course/CourseUnlockInline";
 import styles from "./LeadGenPage.module.css";
 
@@ -11,7 +12,8 @@ import styles from "./LeadGenPage.module.css";
  * this trailer read as two disconnected pages, see decisions log). Both
  * buttons point to /course: buying and redeeming a code both happen there.
  */
-export function LeadGenPage() {
+export async function LeadGenPage() {
+  const PIPELINE = await getPipeline();
   return (
     <>
       <section className={styles.hero} aria-labelledby="leadgen-title">

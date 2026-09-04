@@ -8,7 +8,7 @@
  * content is naturally a list of records rather than a handful of fields.
  *
  * Every section saves independently: one POST to /api/admin/settings per
- * card, not one big form:the blast radius of a mistake stays inside the
+ * card, not one big form — the blast radius of a mistake stays inside the
  * section being edited.
  */
 
@@ -24,101 +24,8 @@ import type {
   FooterContent,
   LegalKey,
 } from "@/lib/backend/site-content-loaders";
+import { saveKey, TextField, NumberField, JsonField, JsonCard, SaveRow, type SaveStatus } from "./form-kit";
 import styles from "./Admin.module.css";
-
-type SaveStatus = "idle" | "saving" | "saved" | "error";
-
-async function saveKey(key: string, value: unknown): Promise<boolean> {
-  try {
-    const response = await fetch("/api/admin/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, value }),
-    });
-    const payload = (await response.json()) as { success: boolean };
-    return payload.success;
-  } catch {
-    return false;
-  }
-}
-
-function TextField({
-  label,
-  value,
-  onChange,
-  type = "text",
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-}) {
-  return (
-    <label className={styles.settingsField}>
-      <span className={styles.label}>{label}</span>
-      <input
-        className={styles.input}
-        type={type}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </label>
-  );
-}
-
-function NumberField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <label className={styles.settingsField}>
-      <span className={styles.label}>{label}</span>
-      <input
-        className={styles.input}
-        type="number"
-        min={0}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-      />
-    </label>
-  );
-}
-
-function SaveRow({ status, error }: { status: SaveStatus; error?: string }) {
-  return (
-    <div className={styles.settingsSaveRow}>
-      <button className={styles.submit} type="submit" disabled={status === "saving"}>
-        {status === "saving" && <span className={styles.spinner} aria-hidden="true" />}
-        {status === "saving" ? ADMIN.settings.saving : ADMIN.settings.save}
-      </button>
-      {status === "saved" && <span className={styles.savedNote}>{ADMIN.settings.saved}</span>}
-      {status === "error" && (
-        <span className={styles.error}>{error ?? ADMIN.settings.saveError}</span>
-      )}
-    </div>
-  );
-}
-
-/** A JSON textarea that only overwrites its own field once the parse succeeds — an invalid edit stays visible with an error instead of silently reverting. */
-function JsonField({ label, text, onChange }: { label: string; text: string; onChange: (text: string) => void }) {
-  return (
-    <label className={styles.settingsField}>
-      <span className={styles.label}>{label}</span>
-      <textarea
-        className={styles.textarea}
-        rows={10}
-        value={text}
-        onChange={(event) => onChange(event.target.value)}
-        spellCheck={false}
-      />
-    </label>
-  );
-}
 
 function IdentitySection({ initial }: { initial: IdentityContent }) {
   const router = useRouter();
@@ -209,39 +116,6 @@ function PricingSection({
         />
       </div>
       <SaveRow status={status} />
-    </form>
-  );
-}
-
-function FaqSection({ initial }: { initial: FaqItem[] }) {
-  const router = useRouter();
-  const [text, setText] = useState(() => JSON.stringify(initial, null, 2));
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
-
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      setStatus("error");
-      setError(ADMIN.settings.jsonInvalid);
-      return;
-    }
-    setStatus("saving");
-    const ok = await saveKey("course_faq", parsed);
-    setStatus(ok ? "saved" : "error");
-    setError(undefined);
-    if (ok) router.refresh();
-  }
-
-  return (
-    <form className={styles.settingsCard} onSubmit={submit}>
-      <h2 className={styles.settingsCardHeading}>{ADMIN.settings.faqHeading}</h2>
-      <p className={styles.hint}>{ADMIN.settings.faqBody}</p>
-      <JsonField label="FAQ (JSON array of { q, a })" text={text} onChange={setText} />
-      <SaveRow status={status} error={error} />
     </form>
   );
 }
@@ -342,7 +216,13 @@ export function SettingsForm(props: SettingsFormProps) {
     <div className={styles.settingsSections}>
       <IdentitySection initial={props.identity} />
       <PricingSection initialCourse={props.coursePricing} initialSchedule={props.schedulePricing} />
-      <FaqSection initial={props.courseFaq} />
+      <JsonCard
+        heading={ADMIN.settings.faqHeading}
+        body={ADMIN.settings.faqBody}
+        jsonLabel="FAQ (JSON array of { q, a })"
+        initial={props.courseFaq}
+        contentKey="course_faq"
+      />
       <FooterSection initial={props.footer} />
       <LegalSection heading={ADMIN.settings.legalTermsHeading} legalKey="legal_terms" initial={props.legalTerms} />
       <LegalSection heading={ADMIN.settings.legalPrivacyHeading} legalKey="legal_privacy" initial={props.legalPrivacy} />

@@ -1,4 +1,5 @@
-import { CASE_STUDIES, CASE_STUDY_ENTRIES } from "@/lib/content";
+import { CASE_STUDIES } from "@/lib/content";
+import { getCaseStudyEntries } from "@/lib/backend/site-content-loaders";
 import styles from "./CaseStudies.module.css";
 
 /**
@@ -6,10 +7,11 @@ import styles from "./CaseStudies.module.css";
  * as children. Each entry is a company with four labeled blocks: what
  * happened, what was done, the problem faced, and how it was resolved.
  */
-export function CaseStudies() {
+export async function CaseStudies() {
+  const entries = await getCaseStudyEntries();
   return (
     <div className={styles.list}>
-      {CASE_STUDY_ENTRIES.map((entry) => (
+      {entries.map((entry) => (
         <article className={styles.case} key={entry.company}>
           <header className={styles.meta}>
             <p className={`mono ${styles.role}`}>{entry.company}</p>
