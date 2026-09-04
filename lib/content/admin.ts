@@ -115,6 +115,8 @@ export const ADMIN = {
     restore: "Restore",
     restoreNote: "The original expiry still applies — use Add time to make up for it.",
     revokeConfirm: "End this access now?",
+    deleteLink: "Delete",
+    deleteConfirm: "Delete this access link for good? This can't be undone.",
     actionError: "That didn't go through. Try again.",
   },
 } as const;

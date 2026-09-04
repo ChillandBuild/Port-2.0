@@ -185,3 +185,26 @@ export async function setGrantRevoked(id: string, revoked: boolean): Promise<Gra
   if (error) throw error;
   return toGrant(data as RawGrant);
 }
+
+/**
+ * Hard delete — demo grants only. The "never delete" rule above is about paid
+ * rows specifically: their payment_id is what makes the Razorpay webhook
+ * idempotent, and their sections_seen is real reading history. Demo grants
+ * carry neither — they're just admin-issued preview links — so removing one
+ * outright is safe. Refuses (throws "not-demo") if the row's source isn't
+ * "demo", so this can never be pointed at a paid row even by a bad request.
+ */
+export async function deleteGrant(id: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { data: current, error: readError } = await supabase
+    .from("course_access")
+    .select(GRANT_COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+  if (readError) throw readError;
+  if (!current) throw new Error("not-found");
+  if ((current as RawGrant).source !== "demo") throw new Error("not-demo");
+
+  const { error } = await supabase.from("course_access").delete().eq("id", id);
+  if (error) throw error;
+}

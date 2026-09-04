@@ -158,6 +158,16 @@ export function GrantRow({ grant, url, sectionCount }: { grant: Grant; url: stri
             {ADMIN.grants.revoke}
           </button>
         )}
+        <button
+          className={`${styles.ghost} ${styles.danger}`}
+          type="button"
+          onClick={() => {
+            if (window.confirm(ADMIN.grants.deleteConfirm)) act({ action: "delete" });
+          }}
+          disabled={busy}
+        >
+          {ADMIN.grants.deleteLink}
+        </button>
       </div>
 
       {state === "revoked" && <p className={styles.hint}>{ADMIN.grants.restoreNote}</p>}
