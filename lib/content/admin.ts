@@ -12,6 +12,8 @@ export const ADMIN = {
     chatbot: "Chatbot",
     emails: "Emails",
     settings: "Settings",
+    signOut: "Sign out",
+    menu: "Menu",
   },
 
   settings: {

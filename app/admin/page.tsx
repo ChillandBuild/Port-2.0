@@ -45,11 +45,6 @@ export default async function AdminPage() {
     <main className={styles.main} id="main">
       <header className={styles.header}>
         <p className={`mono ${styles.eyebrow}`}>{ADMIN.grants.eyebrow}</p>
-        <form action="/api/admin/logout" method="post">
-          <button className={styles.signOut} type="submit">
-            Sign out
-          </button>
-        </form>
       </header>
 
       <QuickGrant />

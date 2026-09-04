@@ -17,11 +17,6 @@ export default async function AdminChatbotPage() {
     <main className={styles.main} id="main">
       <header className={styles.header}>
         <p className={`mono ${styles.eyebrow}`}>Chatbot</p>
-        <form action="/api/admin/logout" method="post">
-          <button className={styles.signOut} type="submit">
-            Sign out
-          </button>
-        </form>
       </header>
 
       <h1 className={styles.quickHeading}>What the site chatbot says.</h1>

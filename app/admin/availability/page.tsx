@@ -14,11 +14,6 @@ export default async function AdminAvailabilityPage() {
     <main className={styles.main} id="main">
       <header className={styles.header}>
         <p className={`mono ${styles.eyebrow}`}>Availability</p>
-        <form action="/api/admin/logout" method="post">
-          <button className={styles.signOut} type="submit">
-            Sign out
-          </button>
-        </form>
       </header>
 
       <h1 className={styles.quickHeading}>Open slots for the schedule page.</h1>

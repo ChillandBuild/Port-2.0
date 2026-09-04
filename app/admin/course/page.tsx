@@ -17,11 +17,6 @@ export default async function AdminCoursePage() {
     <main className={styles.main} id="main">
       <header className={styles.header}>
         <p className={`mono ${styles.eyebrow}`}>Course</p>
-        <form action="/api/admin/logout" method="post">
-          <button className={styles.signOut} type="submit">
-            Sign out
-          </button>
-        </form>
       </header>
 
       <h1 className={styles.quickHeading}>The 9-chapter course, editable.</h1>

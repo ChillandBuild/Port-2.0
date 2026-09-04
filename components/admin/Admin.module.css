@@ -148,26 +148,145 @@
   color: var(--danger);
 }
 
-/* --- Section nav ------------------------------------------------------------ */
+/* --- Sidebar shell ---------------------------------------------------------- */
 
-.sectionNav {
+.frame {
   display: flex;
-  gap: 1.5rem;
-  width: min(52rem, 100%);
-  margin-inline: auto;
-  padding: 1.25rem var(--space-shell) 0;
+  flex-direction: column;
+  min-height: 100dvh;
 }
 
-.sectionNavLink {
+@media (min-width: 1024px) {
+  .frame {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.document {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: block;
+    width: 14rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    border-right: 1px solid var(--rule);
+  }
+}
+
+.sidebarSticky {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem 1.5rem;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.navLink {
+  display: block;
+  padding: 0.55rem 0.75rem;
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: var(--on-page-soft);
   text-decoration: none;
+  border-left: 2px solid transparent;
+  border-radius: 0 10px 10px 0;
+  transition: color var(--duration-fast) var(--ease-out-expo);
 }
 
-.sectionNavLink:hover {
+.navLink:hover {
   color: var(--on-page);
+}
+
+.navLinkActive,
+.navLinkActive:hover {
+  color: var(--accent-meta);
+  background: var(--accent-tint);
+  border-left-color: var(--accent);
+}
+
+.navFooter {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* --- Mobile bar + drawer ----------------------------------------------------- */
+
+.mobileBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  padding: 1rem var(--space-shell);
+  background: var(--surface-page);
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (min-width: 1024px) {
+  .mobileBar {
+    display: none;
+  }
+}
+
+.mobileButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: inherit;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--on-page);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.drawerScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(0 0 0 / 45%);
+}
+
+@media (min-width: 1024px) {
+  .drawerScrim {
+    display: none;
+  }
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 31;
+  display: flex;
+  flex-direction: column;
+  width: min(18rem, 85vw);
+  height: 100dvh;
+  padding: 1.75rem 1.5rem;
+  background: var(--surface-page);
+  border-right: 1px solid var(--rule);
+  overflow-y: auto;
 }
 
 /* --- Settings --------------------------------------------------------------- */

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ADMIN } from "@/lib/content/admin";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import styles from "@/components/admin/Admin.module.css";
 
 export const metadata: Metadata = {
@@ -18,36 +17,17 @@ export const metadata: Metadata = {
  * visitor. Every admin page performs its own requireAdmin() for that reason.
  * This mirrors the same constraint documented on app/course/page.tsx.
  *
- * The nav below is chrome only too — it renders for a signed-out visitor,
- * but it carries no data, just two links.
+ * AdminSidebar is chrome only too — it renders for a signed-out visitor, but
+ * carries no data, just static nav labels and the current path — and it
+ * suppresses itself entirely on /admin/login.
  */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.shell}>
-      <nav className={styles.sectionNav} aria-label="Admin sections">
-        <Link className={styles.sectionNavLink} href="/admin">
-          {ADMIN.nav.grants}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/availability">
-          {ADMIN.nav.availability}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/content">
-          {ADMIN.nav.content}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/course">
-          {ADMIN.nav.course}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/chatbot">
-          {ADMIN.nav.chatbot}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/emails">
-          {ADMIN.nav.emails}
-        </Link>
-        <Link className={styles.sectionNavLink} href="/admin/settings">
-          {ADMIN.nav.settings}
-        </Link>
-      </nav>
-      {children}
+      <div className={styles.frame}>
+        <AdminSidebar />
+        <div className={styles.document}>{children}</div>
+      </div>
     </div>
   );
 }
