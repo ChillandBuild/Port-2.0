@@ -37,6 +37,16 @@ dl {
   margin: 0;
 }
 
+/* Matte black by default — any heading that already sets its own color
+   (an accent title, a light-on-dark heading with an explicit class, etc.)
+   overrides this via normal cascade specificity; this only catches the ones
+   that were inheriting the body ink and rendering as plain black/dark-navy. */
+h1,
+h2,
+h3 {
+  color: var(--heading-ink);
+}
+
 ul,
 ol {
   padding: 0;

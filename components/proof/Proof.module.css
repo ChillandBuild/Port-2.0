@@ -1,6 +1,6 @@
 .proof {
   position: relative;
-  background: var(--surface-page);
+  background: var(--surface-card);
   color: var(--on-page);
   /* Directly under the world's landing wipe: no top padding, or the page opens
      on an empty screen the reader has to scroll past. */

@@ -34,8 +34,17 @@
   --on-page: #0b1b2a;
   --on-page-soft: #59656f;
 
+  /* Headings only — matte black, distinct from --on-page's dark-navy body
+     ink. Dark mode keeps the existing light heading color (see below): a
+     literal black would be unreadable against a dark ground. */
+  --heading-ink: #0d0d0d;
+
   /* Secondary ground, so two document sections never abut in the same tone. */
   --surface-page-alt: #ede9fe;
+
+  /* Near-white card ground — the sector tiles specifically, lifted clear of
+     the page's lavender tint rather than the panel bands' mid-tone. */
+  --surface-card: #fdfbff;
 
   /* The inverted bands: the sector rail and the stack. */
   --surface-panel: #e1d8f4;
@@ -162,7 +171,17 @@
   --on-page: #eef0ea;
   --on-page-soft: #9dabb5;
 
+  /* Unchanged from the light heading color's role — matte black is a
+     light-mode-only choice; dark mode keeps its existing light-on-dark
+     heading ink. */
+  --heading-ink: #eef0ea;
+
   --surface-page-alt: #0f1720;
+
+  /* Dark mode gets the existing lifted-panel tone, not a literal white card —
+     matching the page's own elevation convention instead of a jarring bright
+     patch on a dark ground. */
+  --surface-card: #16202a;
 
   --surface-panel: #16202a;
   --surface-panel-alt: #1b2632;
