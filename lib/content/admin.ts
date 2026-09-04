@@ -4,6 +4,60 @@
  * here rather than inline in JSX, same as every other surface in this repo.
  */
 export const ADMIN = {
+  nav: {
+    grants: "Access links",
+    settings: "Settings",
+  },
+
+  settings: {
+    eyebrow: "Site settings",
+    heading: "What Sampath can change himself.",
+    body: "Edits go live on the next page load — there's no draft or preview step, and no undo. Save one section at a time.",
+    save: "Save",
+    saving: "Saving…",
+    saved: "Saved",
+    saveError: "Couldn't save. Try again.",
+
+    identityHeading: "Contact & identity",
+    identityBody: "Shown in the header, the footer, the reply card, legal pages, the chatbot, and every email this site sends.",
+    nameLabel: "Name",
+    roleLabel: "Role",
+    locationLabel: "Location",
+    phoneLabel: "Phone (with any label, e.g. \"(WhatsApp)\")",
+    phoneHrefLabel: "Phone link (tel:+countrycode number, no spaces)",
+    telegramLabel: "Telegram link",
+    emailLabel: "Email (leave blank to hide)",
+    emailHrefLabel: "Email link (mailto:address)",
+    linkedinLabel: "LinkedIn URL",
+    resumeLabel: "Resume file path",
+    taglineLabel: "Tagline",
+
+    pricingHeading: "Prices",
+    pricingBody: "Changing a number here updates the checkout, the confirmation emails, and the chatbot's answer — everywhere that price is quoted.",
+    coursePriceUsdLabel: "Course price (USD)",
+    coursePriceInrLabel: "Course price (INR)",
+    scheduleUsdLabel: "Second call price (USD)",
+    scheduleInrLabel: "Second call price (INR)",
+
+    faqHeading: "Course FAQ",
+    faqBody: "One question and answer per line pair, as JSON — add, remove or edit entries directly.",
+
+    footerHeading: "Footer links",
+    footerBody: "The footer's site and legal link columns, as JSON. The Contact column is generated automatically from Contact & identity above.",
+    footerWordmarkLabel: "Wordmark",
+    footerFineprintLabel: "Fine print",
+
+    legalTermsHeading: "Terms of service",
+    legalPrivacyHeading: "Privacy policy",
+    legalRefundsHeading: "Refunds & cancellations",
+    legalBody: "Title, eyebrow, last-updated line, and the section list as JSON.",
+    docTitleLabel: "Title",
+    docEyebrowLabel: "Eyebrow",
+    docUpdatedLabel: "Last updated line",
+
+    jsonInvalid: "That's not valid JSON — fix the syntax and try again.",
+  },
+
   login: {
     eyebrow: "Admin",
     heading: "Sign in",

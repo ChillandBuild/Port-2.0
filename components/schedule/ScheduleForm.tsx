@@ -34,9 +34,11 @@ const PAY_ERROR_COPY: Record<Exclude<PayErrorKind, null>, string> = {
 
 interface ScheduleFormProps {
   keyConfigured: boolean;
+  secondCallPriceUsd: number;
+  secondCallPriceInr: number;
 }
 
-export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
+export function ScheduleForm({ keyConfigured, secondCallPriceUsd, secondCallPriceInr }: ScheduleFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -324,7 +326,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                   onClick={() => setCallType("second")}
                   disabled={paying}
                 >
-                  {SCHEDULE.form.callTypeSecondLabel}
+                  {`Second call — $${secondCallPriceUsd}`}
                 </button>
               </div>
             </div>
@@ -341,7 +343,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                     onClick={() => setCurrency("USD")}
                     disabled={paying}
                   >
-                    {SCHEDULE.form.currencyUsdLabel}
+                    {`USD — $${secondCallPriceUsd}`}
                   </button>
                   <button
                     type="button"
@@ -352,7 +354,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                     onClick={() => setCurrency("INR")}
                     disabled={paying}
                   >
-                    {SCHEDULE.form.currencyInrLabel}
+                    {`INR — ₹${secondCallPriceInr.toLocaleString("en-IN")}`}
                   </button>
                 </div>
               </div>
@@ -383,7 +385,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
             ) : null
           ) : callType === "second" && !keyConfigured ? (
             <a className={styles.submit} href={SCHEDULE.fallback.primaryCta.href} target="_blank" rel="noreferrer noopener">
-              {SCHEDULE.form.payingSubmit}
+              {`Pay $${secondCallPriceUsd} & book the second call`}
             </a>
           ) : (
             <button className={styles.submit} type="submit" disabled={status === "submitting" || paying}>
@@ -394,8 +396,8 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                   : callType === "first"
                     ? SCHEDULE.form.submit
                     : currency === "INR"
-                      ? SCHEDULE.form.payingSubmitInr
-                      : SCHEDULE.form.payingSubmit}
+                      ? `Pay ₹${secondCallPriceInr.toLocaleString("en-IN")} & book the second call`
+                      : `Pay $${secondCallPriceUsd} & book the second call`}
             </button>
           )}
           <p className={styles.note}>{SCHEDULE.form.note}</p>

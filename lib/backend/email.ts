@@ -3,7 +3,7 @@ import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
 import type { SchedulePayment } from "@/lib/backend/schedule-payment";
 import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
-import { IDENTITY } from "@/lib/content";
+import { getIdentity } from "@/lib/backend/site-content-loaders";
 
 // Matches metadataBase in app/layout.tsx; overridable per environment. The
 // fallback is the real domain, not a placeholder: this builds the links a
@@ -66,6 +66,7 @@ export async function sendScheduleCallConfirmationEmail(payload: SubmissionPaylo
   }
 
   try {
+    const identity = await getIdentity();
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
@@ -85,9 +86,9 @@ export async function sendScheduleCallConfirmationEmail(payload: SubmissionPaylo
         "A few things worth having ready before we talk, so the 30-45 minutes goes further: a one-line description of what you sell, the regions you're targeting, and a rough picture of where you want your pipeline to be in the next 90 days. No need to prepare slides or a formal brief — a plain-spoken answer to each is plenty.",
         "",
         "If anything changes on your end, or you'd rather sort scheduling directly instead of waiting on email, you can reach me any of these ways:",
-        `Phone: ${IDENTITY.phone}`,
-        `Telegram: ${IDENTITY.telegram}`,
-        `LinkedIn: ${IDENTITY.linkedin}`,
+        `Phone: ${identity.phone}`,
+        `Telegram: ${identity.telegram}`,
+        `LinkedIn: ${identity.linkedin}`,
         "",
         "Talk soon,",
         "— Sampath Kumar",

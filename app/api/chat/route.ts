@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ESTIMATOR, estimateOutcome } from "@/lib/content";
+import { getIdentity, getSchedulePricing, type IdentityContent, type SchedulePricing } from "@/lib/backend/site-content-loaders";
 
 // Mock brain — answers ONLY from published content, no LLM key needed.
 // Swap this fetch handler for Vercel AI SDK + OpenAI later; the widget stays identical.
 
 type Cta = { label: string; href: string; solid?: boolean };
 
-function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[] } {
+function replyFor(
+  input: string,
+  identity: IdentityContent,
+  pricing: SchedulePricing
+): { text: string; chips?: string[]; ctas?: Cta[] } {
   const q = input.toLowerCase();
+  const secondCallPrice = `USD ${pricing.secondCallPriceUsd}`;
 
   // Hiring intent
   if (q.includes("hire") || q.includes("full-time") || q.includes("full time") || q.includes("open to") || q.includes("recruit")) {
@@ -22,12 +28,12 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
     };
   }
 
-  // Pricing / USD 350 / schedule
+  // Pricing / second-call price / schedule
   if (q.includes("350") || q.includes("cost") || q.includes("price") || q.includes("pricing") || q.includes("session") || q.includes("call")) {
     return {
       text:
-        "First call is free — 30–45 minutes, strategy & pipeline deep-dive (IST hours, remote video). Second call is USD 350 for 1 hour — infrastructure, tool alignment, methodology.\n\nBoth are bookable directly on /schedule — the free call by form, the second by on-site payment. Or reach out on LinkedIn, phone, or Telegram (+91 94877 49370).",
-      chips: ["How to book?", "What's in the 350?", "Is first call really free?"],
+        `First call is free — 30–45 minutes, strategy & pipeline deep-dive (IST hours, remote video). Second call is ${secondCallPrice} for 1 hour — infrastructure, tool alignment, methodology.\n\nBoth are bookable directly on /schedule — the free call by form, the second by on-site payment. Or reach out on LinkedIn, phone, or Telegram (${identity.phone}).`,
+      chips: ["How to book?", `What's in the ${pricing.secondCallPriceUsd}?`, "Is first call really free?"],
       ctas: [
         { label: "Schedule → /schedule", href: "/schedule", solid: true },
         { label: "How to book", href: "/schedule" },
@@ -111,11 +117,11 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
   if (q.includes("where") || q.includes("based") || q.includes("coimbatore") || q.includes("phone") || q.includes("linkedin") || q.includes("ist") || q.includes("location") || q.includes("contact")) {
     return {
       text:
-        "Based Coimbatore, Tamil Nadu, India (GMT+5:30) — +91 94877 49370 (WhatsApp). Works across IST, GMT and PT hours. Best contact: LinkedIn, phone or Telegram. First call is free via /schedule.",
+        `Based Coimbatore, Tamil Nadu, India (GMT+5:30) — ${identity.phone}. Works across IST, GMT and PT hours. Best contact: LinkedIn, phone or Telegram. First call is free via /schedule.`,
       chips: ["Book a call", "Is he available now?", "Hiring?"],
       ctas: [
-        { label: "LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699", solid: true },
-        { label: "Call +91 94877 49370 (WhatsApp)", href: "tel:+919487749370" },
+        { label: "LinkedIn", href: identity.linkedin, solid: true },
+        { label: `Call ${identity.phone}`, href: identity.phoneHref },
       ],
     };
   }
@@ -133,10 +139,10 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
   // Fallback — grounded refusal
   return {
     text:
-      "I don't have that handy — try asking about hiring availability, the USD 350 session, the performance model, process (8 stages), results, or tools. Or reach him direct — he says hello first.",
-    chips: ["Is Sampath open to full-time roles?", "What does the USD 350 cover?", "Show results"],
+      `I don't have that handy — try asking about hiring availability, the ${secondCallPrice} session, the performance model, process (8 stages), results, or tools. Or reach him direct — he says hello first.`,
+    chips: ["Is Sampath open to full-time roles?", `What does the ${secondCallPrice} cover?`, "Show results"],
     ctas: [
-      { label: "Ask on LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699", solid: true },
+      { label: "Ask on LinkedIn", href: identity.linkedin, solid: true },
       { label: "Schedule a call", href: "/schedule" },
     ],
   };
@@ -146,7 +152,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const message = typeof body.message === "string" ? body.message : "";
   if (!message.trim()) return NextResponse.json({ text: "Say something and I'll help." });
-  const data = replyFor(message);
+  const [identity, pricing] = await Promise.all([getIdentity(), getSchedulePricing()]);
+  const data = replyFor(message, identity, pricing);
   // Tiny artificial delay so the typing indicator reads
   await new Promise((r) => setTimeout(r, 280));
   return NextResponse.json(data);

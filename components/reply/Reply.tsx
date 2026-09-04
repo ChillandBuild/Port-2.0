@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IDENTITY } from "@/lib/content";
+import { getIdentity } from "@/lib/backend/site-content-loaders";
 import styles from "./Reply.module.css";
 
 const SAY_WORDS = "Say hello and it runs for you.".split(" ");
@@ -8,7 +8,8 @@ const SAY_WORDS = "Say hello and it runs for you.".split(" ");
  * The close. The run that started in the world is totalled here and stops, and
  * the page arrives somewhere rather than trailing into a footer.
  */
-export function Reply() {
+export async function Reply() {
+  const identity = await getIdentity();
   return (
     <section className={`spot grained ${styles.reply}`} id="contact" data-spot aria-labelledby="reply-heading">
       <div className={styles.inner}>
@@ -33,7 +34,7 @@ export function Reply() {
           <div className={styles.actions} data-reveal data-reveal-children>
             <a
               className={styles.primary}
-              href={IDENTITY.linkedin}
+              href={identity.linkedin}
               rel="noreferrer noopener"
               target="_blank"
               data-magnet="0.22"
@@ -58,25 +59,25 @@ export function Reply() {
           aria-label="Direct contact"
         >
           <p className={`mono ${styles.cardLabel}`}>Reply to</p>
-          <p className={styles.cardName}>{IDENTITY.name}</p>
-          <p className={`mono ${styles.cardRole}`}>{IDENTITY.role}</p>
+          <p className={styles.cardName}>{identity.name}</p>
+          <p className={`mono ${styles.cardRole}`}>{identity.role}</p>
           <dl className={styles.meta}>
             <div className={styles.metaRow}>
               <dt className="mono">Based</dt>
-              <dd>{IDENTITY.location}</dd>
+              <dd>{identity.location}</dd>
             </div>
             <div className={styles.metaRow}>
               <dt className="mono">Direct</dt>
               <dd>
-                <a className={styles.metaLink} href={IDENTITY.phoneHref}>
-                  {IDENTITY.phone}
+                <a className={styles.metaLink} href={identity.phoneHref}>
+                  {identity.phone}
                 </a>
               </dd>
             </div>
             <div className={styles.metaRow}>
               <dt className="mono">Telegram</dt>
               <dd>
-                <a className={styles.metaLink} href={IDENTITY.telegram} rel="noreferrer noopener" target="_blank">
+                <a className={styles.metaLink} href={identity.telegram} rel="noreferrer noopener" target="_blank">
                   Message on Telegram
                 </a>
               </dd>
@@ -84,9 +85,9 @@ export function Reply() {
             <div className={styles.metaRow}>
               <dt className="mono">Email</dt>
               <dd>
-                {IDENTITY.email ? (
-                  <a className={styles.metaLink} href={IDENTITY.emailHref}>
-                    {IDENTITY.email}
+                {identity.email ? (
+                  <a className={styles.metaLink} href={identity.emailHref}>
+                    {identity.email}
                   </a>
                 ) : (
                   // Placeholder keeps the row's height until the address lands.

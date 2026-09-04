@@ -6,7 +6,8 @@ import {
   grantCourseAccess,
 } from "@/lib/backend/course-access";
 import { sendCourseAccessEmail, sendCourseAccessNotification } from "@/lib/backend/email";
-import { COURSE_CURRENCY, COURSE_PRICE_INR, COURSE_PRICE_USD } from "@/lib/content/course";
+import { COURSE_CURRENCY } from "@/lib/content/course";
+import { getCoursePricing } from "@/lib/backend/site-content-loaders";
 
 export const runtime = "nodejs";
 
@@ -47,7 +48,8 @@ export async function POST(request: Request): Promise<Response> {
   const name = str(body.name);
   const phone = str(body.phone);
   const currency = body.currency === "INR" ? "INR" : COURSE_CURRENCY;
-  const amount = currency === "INR" ? COURSE_PRICE_INR : COURSE_PRICE_USD;
+  const pricing = await getCoursePricing();
+  const amount = currency === "INR" ? pricing.priceInr : pricing.priceUsd;
 
   if (!orderId || !paymentId || !signature || !email) {
     return NextResponse.json({ success: false, error: "invalid" }, { status: 400 });

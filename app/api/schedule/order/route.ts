@@ -1,9 +1,6 @@
 import { createOrder } from "@/lib/backend/razorpay";
-import {
-  SCHEDULE_CURRENCY,
-  SCHEDULE_SECOND_CALL_PRICE_USD,
-  SCHEDULE_SECOND_CALL_PRICE_INR,
-} from "@/lib/content/schedule-payment";
+import { SCHEDULE_CURRENCY } from "@/lib/content/schedule-payment";
+import { getSchedulePricing } from "@/lib/backend/site-content-loaders";
 
 export const runtime = "nodejs";
 
@@ -27,7 +24,8 @@ export async function POST(request: Request): Promise<Response> {
     // No body, or not JSON — default to the USD price.
   }
 
-  const amountMajorUnits = currency === "INR" ? SCHEDULE_SECOND_CALL_PRICE_INR : SCHEDULE_SECOND_CALL_PRICE_USD;
+  const pricing = await getSchedulePricing();
+  const amountMajorUnits = currency === "INR" ? pricing.secondCallPriceInr : pricing.secondCallPriceUsd;
 
   try {
     const order = await createOrder(amountMajorUnits * 100, currency, "schedule-second-call");

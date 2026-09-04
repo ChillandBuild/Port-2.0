@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import { verifyCheckoutSignature } from "@/lib/backend/razorpay";
 import { grantSchedulePayment } from "@/lib/backend/schedule-payment";
 import { sendSchedulePaymentNotification, sendSchedulePaymentReceiptEmail } from "@/lib/backend/email";
-import {
-  SCHEDULE_CURRENCY,
-  SCHEDULE_SECOND_CALL_PRICE_INR,
-  SCHEDULE_SECOND_CALL_PRICE_USD,
-} from "@/lib/content/schedule-payment";
+import { SCHEDULE_CURRENCY } from "@/lib/content/schedule-payment";
+import { getSchedulePricing } from "@/lib/backend/site-content-loaders";
 
 export const runtime = "nodejs";
 
@@ -54,7 +51,8 @@ export async function POST(request: Request): Promise<Response> {
   const purpose = str(body.purpose);
   const slot = str(body.slot);
   const currency = body.currency === "INR" ? "INR" : SCHEDULE_CURRENCY;
-  const amount = currency === "INR" ? SCHEDULE_SECOND_CALL_PRICE_INR : SCHEDULE_SECOND_CALL_PRICE_USD;
+  const pricing = await getSchedulePricing();
+  const amount = currency === "INR" ? pricing.secondCallPriceInr : pricing.secondCallPriceUsd;
 
   if (!orderId || !paymentId || !signature || !email || !name || !phone) {
     return NextResponse.json({ success: false, error: "invalid" }, { status: 400 });

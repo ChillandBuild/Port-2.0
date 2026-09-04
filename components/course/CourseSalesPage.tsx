@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { COURSE, COURSE_ENROLL_HREF, COURSE_PRICE_USD } from "@/lib/content/course";
+import { COURSE, COURSE_ENROLL_HREF } from "@/lib/content/course";
 import { GUIDE_DOCUMENT } from "@/lib/guide";
 import { chapterIcon } from "@/components/guide/icons";
+import { getCoursePricing, getCourseFaq } from "@/lib/backend/site-content-loaders";
 import { EnrollDialog } from "./EnrollDialog";
 import { CourseUnlockForm } from "./CourseUnlockForm";
 import styles from "./CourseSales.module.css";
@@ -36,9 +37,10 @@ const HERO_COPY: Record<
  * buyers are always one scroll from re-enrolling. Server component — only
  * EnrollDialog and CourseUnlockForm are client islands.
  */
-export function CourseSalesPage({ state }: { state: CourseGateState }) {
+export async function CourseSalesPage({ state }: { state: CourseGateState }) {
   const hero = HERO_COPY[state];
-  const priceLabel = `$${COURSE_PRICE_USD}`;
+  const [pricing, faq] = await Promise.all([getCoursePricing(), getCourseFaq()]);
+  const priceLabel = `$${pricing.priceUsd}`;
   const keyConfigured = Boolean(process.env.RAZORPAY_KEY_ID);
 
   return (
@@ -188,7 +190,13 @@ export function CourseSalesPage({ state }: { state: CourseGateState }) {
 
           <div className={styles.priceCardRule} aria-hidden="true" />
 
-          <EnrollDialog priceLabel={priceLabel} fallbackHref={COURSE_ENROLL_HREF} keyConfigured={keyConfigured} />
+          <EnrollDialog
+            priceLabel={priceLabel}
+            priceUsd={pricing.priceUsd}
+            priceInr={pricing.priceInr}
+            fallbackHref={COURSE_ENROLL_HREF}
+            keyConfigured={keyConfigured}
+          />
           <p className={styles.secureNote}>{COURSE.sales.secureNote}</p>
           <p className={styles.guaranteeNote}>{COURSE.sales.guaranteeNote}</p>
 
@@ -209,7 +217,7 @@ export function CourseSalesPage({ state }: { state: CourseGateState }) {
           {COURSE.sales.faqHeading}
         </h2>
         <div className={styles.faqList}>
-          {COURSE.sales.faq.map((item) => (
+          {faq.map((item) => (
             <details key={item.q} className={styles.faqItem}>
               <summary className={styles.faqQuestion}>{item.q}</summary>
               <p className={styles.faqAnswer}>{item.a}</p>

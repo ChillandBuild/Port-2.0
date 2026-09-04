@@ -11,6 +11,7 @@ import { ScheduleEngagement } from "@/components/schedule/ScheduleEngagement";
 import { ScheduleForm } from "@/components/schedule/ScheduleForm";
 import { ScheduleHero } from "@/components/schedule/ScheduleHero";
 import { ScheduleTracks } from "@/components/schedule/ScheduleTracks";
+import { getSchedulePricing } from "@/lib/backend/site-content-loaders";
 
 export const metadata: Metadata = {
   title: "Schedule a Call — Sampath Kumar",
@@ -26,8 +27,9 @@ export const metadata: Metadata = {
  * question becomes what it returns. No world here — this is a plain document
  * from the first pixel, so the nav takes its ground immediately.
  */
-export default function SchedulePage() {
+export default async function SchedulePage() {
   const keyConfigured = Boolean(process.env.RAZORPAY_KEY_ID);
+  const pricing = await getSchedulePricing();
   return (
     <>
       <span id="top" />
@@ -44,7 +46,11 @@ export default function SchedulePage() {
         />
         <ScheduleTracks />
         <ScheduleCta />
-        <ScheduleForm keyConfigured={keyConfigured} />
+        <ScheduleForm
+          keyConfigured={keyConfigured}
+          secondCallPriceUsd={pricing.secondCallPriceUsd}
+          secondCallPriceInr={pricing.secondCallPriceInr}
+        />
         <ScheduleContact />
       </main>
 

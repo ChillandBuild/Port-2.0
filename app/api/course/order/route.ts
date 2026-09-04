@@ -1,5 +1,6 @@
 import { createOrder } from "@/lib/backend/razorpay";
-import { COURSE_PRICE_USD, COURSE_PRICE_INR, COURSE_CURRENCY } from "@/lib/content/course";
+import { COURSE_CURRENCY } from "@/lib/content/course";
+import { getCoursePricing } from "@/lib/backend/site-content-loaders";
 
 export const runtime = "nodejs";
 
@@ -25,7 +26,8 @@ export async function POST(request: Request): Promise<Response> {
     // No body, or not JSON — default to the USD price.
   }
 
-  const amountMajorUnits = currency === "INR" ? COURSE_PRICE_INR : COURSE_PRICE_USD;
+  const pricing = await getCoursePricing();
+  const amountMajorUnits = currency === "INR" ? pricing.priceInr : pricing.priceUsd;
 
   try {
     const order = await createOrder(amountMajorUnits * 100, currency, "lead-gen-course");

@@ -1,11 +1,13 @@
-import { IDENTITY, NAV } from "@/lib/content";
+import { NAV } from "@/lib/content";
+import { getIdentity } from "@/lib/backend/site-content-loaders";
 import styles from "./SiteHeader.module.css";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const identity = await getIdentity();
   return (
     <header className={styles.header}>
       <a className={styles.wordmark} href="#top">
-        {IDENTITY.name}
+        {identity.name}
       </a>
 
       <nav aria-label="Main navigation">

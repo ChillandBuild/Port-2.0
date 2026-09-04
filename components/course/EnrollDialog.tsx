@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { COURSE, COURSE_PRICE_INR, COURSE_PRICE_USD } from "@/lib/content/course";
+import { COURSE } from "@/lib/content/course";
 import { loadCheckoutScript, type RazorpayCheckoutResponse } from "@/lib/frontend/razorpay-checkout";
 import styles from "./CourseSales.module.css";
 
@@ -19,6 +19,8 @@ const ERROR_COPY: Record<Exclude<ErrorKind, null>, string> = {
 
 interface EnrollDialogProps {
   priceLabel: string;
+  priceUsd: number;
+  priceInr: number;
   fallbackHref: string;
   keyConfigured: boolean;
 }
@@ -29,7 +31,7 @@ interface EnrollDialogProps {
  * CourseUnlockForm's Phase-union pattern. Rendered always-expanded inside
  * the pricing card of the sales page; no collapsed "Pay Now" state.
  */
-export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: EnrollDialogProps) {
+export function EnrollDialog({ priceLabel, priceUsd, priceInr, fallbackHref, keyConfigured }: EnrollDialogProps) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("details");
   const [errorKind, setErrorKind] = useState<ErrorKind>(null);
@@ -213,7 +215,7 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
               aria-checked={currency === "USD"}
               onClick={() => setCurrency("USD")}
             >
-              {`USD — $${COURSE_PRICE_USD}`}
+              {`USD — $${priceUsd}`}
             </button>
             <button
               type="button"
@@ -223,11 +225,11 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
               aria-checked={currency === "INR"}
               onClick={() => setCurrency("INR")}
             >
-              {`INR — ₹${COURSE_PRICE_INR.toLocaleString("en-IN")}`}
+              {`INR — ₹${priceInr.toLocaleString("en-IN")}`}
             </button>
           </div>
           <button className={styles.submit} type="submit">
-            {COURSE.gate.dialogSubmit} — {currency === "INR" ? `₹${COURSE_PRICE_INR.toLocaleString("en-IN")}` : `$${COURSE_PRICE_USD}`}
+            {COURSE.gate.dialogSubmit} — {currency === "INR" ? `₹${priceInr.toLocaleString("en-IN")}` : `$${priceUsd}`}
           </button>
         </form>
       )}

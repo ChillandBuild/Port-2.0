@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { IDENTITY, LEGAL_CONTACT, type LegalDoc } from "@/lib/content";
+import { LEGAL_CONTACT, type LegalDoc } from "@/lib/content";
+import { getIdentity } from "@/lib/backend/site-content-loaders";
 import styles from "./LegalPage.module.css";
 
 /**
@@ -10,7 +11,8 @@ import styles from "./LegalPage.module.css";
  * eyebrow keeps the site's message-field framing, and the close reuses the same
  * two contact channels every page on the site points at.
  */
-export function LegalPage({ doc }: { doc: LegalDoc }) {
+export async function LegalPage({ doc }: { doc: LegalDoc }) {
+  const identity = await getIdentity();
   return (
     <article className={styles.page} aria-labelledby="legal-title">
       <Link className={styles.back} href="/">
@@ -44,14 +46,14 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
         <div className={styles.actions}>
           <a
             className={styles.link}
-            href={IDENTITY.linkedin}
+            href={identity.linkedin}
             target="_blank"
             rel="noreferrer noopener"
           >
             {LEGAL_CONTACT.linkedinLabel} <span aria-hidden="true">→</span>
           </a>
-          <a className={styles.link} href={IDENTITY.phoneHref}>
-            {LEGAL_CONTACT.phoneLabel}
+          <a className={styles.link} href={identity.phoneHref}>
+            {identity.phone}
           </a>
         </div>
       </footer>

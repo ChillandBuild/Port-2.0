@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FOOTER } from "@/lib/content";
+import { getFooterContent, getIdentity, type FooterGroup } from "@/lib/backend/site-content-loaders";
 import styles from "./Footer.module.css";
 
 /**
@@ -36,24 +36,34 @@ function footerLink(link: { label: string; href: string }): React.ReactNode {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const [footer, identity] = await Promise.all([getFooterContent(), getIdentity()]);
+  const contactGroup: FooterGroup = {
+    title: "Contact",
+    links: [
+      { label: "LinkedIn", href: identity.linkedin },
+      { label: identity.phone, href: identity.phoneHref },
+    ],
+  };
+  const groups = [...footer.groups, contactGroup];
+
   return (
     <footer className={styles.footer}>
       <div className={styles.body} data-reveal data-reveal-children>
         <div className={styles.identity}>
-          <p className={styles.tagline}>{FOOTER.tagline}</p>
+          <p className={styles.tagline}>{identity.tagline}</p>
           <Link
             className={styles.wordmark}
             href="/#top"
             aria-label="Sampath Kumar — back to top"
           >
-            {FOOTER.wordmark}
+            {footer.wordmark}
             <span className={styles.stop}>.</span>
           </Link>
         </div>
 
         <nav className={styles.groups} aria-label="Footer">
-          {FOOTER.groups.map((group) => (
+          {groups.map((group) => (
             <div className={styles.group} key={group.title}>
               <p className={`mono ${styles.groupTitle}`}>{group.title}</p>
               <ul>
@@ -67,7 +77,7 @@ export function Footer() {
       </div>
 
       <div className={styles.bottom} data-reveal>
-        <p className={`mono ${styles.fine}`}>{FOOTER.fineprint}</p>
+        <p className={`mono ${styles.fine}`}>{footer.fineprint}</p>
         {/* Back to top moved out of here: it is the floating arrow now
             (BackToTop), mounted once in the layout so every page carries it,
             and the giant name above is also a way home. */}
