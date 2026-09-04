@@ -1,3 +1,4 @@
+import type { ToolItem } from "@/lib/content";
 import { getToolGroups } from "@/lib/backend/site-content-loaders";
 import styles from "./PlatformArchitecture.module.css";
 
@@ -34,6 +35,22 @@ function faviconUrl(toolUrl: string): string {
     // resolves to *something* from the favicon service.
   }
   return `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(hostname)}`;
+}
+
+function ToolIcon({ tool }: { tool: ToolItem }) {
+  return (
+    <a
+      className={styles.icon}
+      href={tool.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`Visit ${tool.name} (opens in new tab)`}
+      aria-label={`${tool.name} website`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={faviconUrl(tool.url)} alt="" width={20} height={20} loading="lazy" decoding="async" />
+    </a>
+  );
 }
 
 export async function PlatformArchitecture() {
@@ -78,20 +95,21 @@ export async function PlatformArchitecture() {
               </div>
               <div className={styles.iconRow}>
                 {shown.map((tool) => (
-                  <a
-                    key={tool.name}
-                    className={styles.icon}
-                    href={tool.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`Visit ${tool.name} (opens in new tab)`}
-                    aria-label={`${tool.name} website`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={faviconUrl(tool.url)} alt="" width={20} height={20} loading="lazy" decoding="async" />
-                  </a>
+                  <ToolIcon key={tool.name} tool={tool} />
                 ))}
-                {rest > 0 && <span className={`mono ${styles.more}`}>+{rest} more</span>}
+                {rest > 0 && (
+                  <details className={styles.more}>
+                    <summary className={`mono ${styles.moreLabel}`}>
+                      <span className={styles.moreClosedText}>+{rest} more</span>
+                      <span className={styles.moreOpenText}>Show less</span>
+                    </summary>
+                    <div className={styles.moreIcons}>
+                      {group.tools.slice(iconCap).map((tool) => (
+                        <ToolIcon key={tool.name} tool={tool} />
+                      ))}
+                    </div>
+                  </details>
+                )}
               </div>
             </article>
           );

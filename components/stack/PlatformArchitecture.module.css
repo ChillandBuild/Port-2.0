@@ -200,11 +200,56 @@
   outline: none;
 }
 
+/* The "+N more" disclosure — plain <details>/<summary>, no JS. Closed, it
+   sits inline as just another item in the icon row; open, it takes the full
+   row width so the revealed icons get their own line instead of being
+   squeezed into whatever space was left. */
 .more {
+  flex: 0 0 auto;
+}
+
+.more[open] {
+  flex-basis: 100%;
+}
+
+.moreLabel {
+  display: inline-flex;
+  align-items: center;
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-meta);
   opacity: 0.68;
   margin-left: 0.2rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.moreLabel::-webkit-details-marker {
+  display: none;
+}
+
+.moreLabel:hover,
+.moreLabel:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.moreOpenText {
+  display: none;
+}
+
+.more[open] .moreClosedText {
+  display: none;
+}
+
+.more[open] .moreOpenText {
+  display: inline;
+}
+
+.moreIcons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
