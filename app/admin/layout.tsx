@@ -34,6 +34,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link className={styles.sectionNavLink} href="/admin/content">
           {ADMIN.nav.content}
         </Link>
+        <Link className={styles.sectionNavLink} href="/admin/chatbot">
+          {ADMIN.nav.chatbot}
+        </Link>
+        <Link className={styles.sectionNavLink} href="/admin/emails">
+          {ADMIN.nav.emails}
+        </Link>
         <Link className={styles.sectionNavLink} href="/admin/settings">
           {ADMIN.nav.settings}
         </Link>

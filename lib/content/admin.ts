@@ -8,6 +8,8 @@ export const ADMIN = {
     grants: "Access links",
     availability: "Availability",
     content: "Content",
+    chatbot: "Chatbot",
+    emails: "Emails",
     settings: "Settings",
   },
 

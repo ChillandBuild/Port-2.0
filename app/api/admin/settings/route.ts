@@ -26,6 +26,11 @@ const ALLOWED_KEYS = new Set([
   "tool_groups",
   "posts",
   "case_studies",
+  "chatbot_answers",
+  "email_schedule_confirmation",
+  "email_course_access",
+  "email_schedule_receipt",
+  "email_course_grant",
 ]);
 
 export async function POST(request: Request): Promise<Response> {

@@ -3,7 +3,14 @@ import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
 import type { SchedulePayment } from "@/lib/backend/schedule-payment";
 import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
-import { getIdentity } from "@/lib/backend/site-content-loaders";
+import {
+  getIdentity,
+  getScheduleConfirmationTemplate,
+  getCourseAccessEmailTemplate,
+  getSchedulePaymentReceiptTemplate,
+  getCourseGrantEmailTemplate,
+} from "@/lib/backend/site-content-loaders";
+import { interpolate } from "@/lib/backend/template";
 
 // Matches metadataBase in app/layout.tsx; overridable per environment. The
 // fallback is the real domain, not a placeholder: this builds the links a
@@ -66,32 +73,31 @@ export async function sendScheduleCallConfirmationEmail(payload: SubmissionPaylo
   }
 
   try {
-    const identity = await getIdentity();
+    const [identity, template] = await Promise.all([getIdentity(), getScheduleConfirmationTemplate()]);
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
       to: payload.email,
-      subject: "Your free call request — received",
+      subject: template.subject,
       text: [
         payload.name ? `Thanks, ${payload.name}.` : "Thanks.",
         "",
-        "Your request for the free 30-45 minute discovery call has been received, and it's now in my queue for a personal review — this note confirms it landed, nothing more is needed from you right now.",
+        template.receivedLine,
         "",
         payload.slot ? `Requested slot: ${payload.slot}` : "",
         payload.purpose ? `Purpose you shared: ${payload.purpose}` : "",
         payload.companyName ? `Company: ${payload.companyName}` : "",
         "",
-        "Here's what happens next: I'll go through what you've shared, and reply by email within a day or two to confirm the exact time for your slot (adjusting it if needed to fit both our calendars). The call itself runs 30-45 minutes over video, and by the end of it you'll know whether outbound is the right spend for you right now — including if the honest answer is no.",
+        template.nextStepsLine,
         "",
-        "A few things worth having ready before we talk, so the 30-45 minutes goes further: a one-line description of what you sell, the regions you're targeting, and a rough picture of where you want your pipeline to be in the next 90 days. No need to prepare slides or a formal brief — a plain-spoken answer to each is plenty.",
+        template.prepLine,
         "",
-        "If anything changes on your end, or you'd rather sort scheduling directly instead of waiting on email, you can reach me any of these ways:",
+        template.reachOutLine,
         `Phone: ${identity.phone}`,
         `Telegram: ${identity.telegram}`,
         `LinkedIn: ${identity.linkedin}`,
         "",
-        "Talk soon,",
-        "— Sampath Kumar",
+        template.signoff,
       ]
         .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
         .join("\n"),
@@ -135,13 +141,14 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
   });
 
   try {
+    const template = await getCourseAccessEmailTemplate();
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
       to: recipient,
-      subject: "Your Lead Generation course access code",
+      subject: template.subject,
       text: [
-        "Thank you for enrolling in the Lead Generation course.",
+        template.introLine,
         "",
         `Your access code: ${access.accessCode}`,
         "",
@@ -152,9 +159,9 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
         "2. Enter your access code",
         "3. Work through the lessons at your own pace before your access expires",
         "",
-        "Keep this email safe — you will need the code again if you switch devices or clear your browser.",
+        template.keepSafeLine,
         "",
-        "— Sampath Kumar",
+        template.signoff,
       ].join("\n"),
     });
   } catch (error) {
@@ -224,23 +231,24 @@ export async function sendSchedulePaymentReceiptEmail(payment: SchedulePayment):
   }
 
   try {
+    const template = await getSchedulePaymentReceiptTemplate();
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
       to: payment.email,
-      subject: "Receipt — your setup call payment",
+      subject: template.subject,
       text: [
         payment.name ? `Thank you, ${payment.name}.` : "Thank you.",
         "",
-        `We've received your payment of ${payment.currency} ${payment.amount} for the one-time setup call — infrastructure, tool estimation, methodology and process flow.`,
+        interpolate(template.paidLine, { amount: `${payment.currency} ${payment.amount}` }),
         payment.slot ? `Requested slot: ${payment.slot}` : "",
         payment.purpose ? `Purpose: ${payment.purpose}` : "",
         "",
-        "Sampath will confirm the exact time by email shortly.",
+        template.confirmLine,
         "",
         `Payment reference: ${payment.paymentId}`,
         "",
-        "— Sampath Kumar",
+        template.signoff,
       ]
         .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
         .join("\n"),
@@ -331,22 +339,23 @@ export async function sendCourseGrantEmail(grant: CourseGrantEmail): Promise<boo
     : null;
 
   try {
+    const template = await getCourseGrantEmailTemplate();
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from,
       to: grant.to,
-      subject: "Your access to the Lead Generation system",
+      subject: template.subject,
       text: [
         grant.label ? `For ${grant.label}.` : "",
         "",
-        "Here is the full lead generation system I run — ICP, research, infrastructure, campaigns, tracking and the numbers, written out in 40 sections.",
+        template.introLine,
         "",
         grant.url,
         "",
-        `Your ${window} of access starts when you open it, not now — so there is no rush to click.`,
+        interpolate(template.windowLine, { window }),
         claimBy ? `The link itself stays available until ${claimBy}.` : "",
         "",
-        "— Sampath Kumar",
+        template.signoff,
       ]
         .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
         .join("\n"),
