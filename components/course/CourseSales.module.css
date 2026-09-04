@@ -438,6 +438,44 @@
   outline-offset: 1px;
 }
 
+.currencyToggle {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.currencyOption {
+  flex: 1;
+  min-width: max-content;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--on-page-soft);
+  background: var(--surface-page);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition:
+    background 140ms var(--ease-out-quint),
+    border-color 140ms var(--ease-out-quint),
+    color 140ms var(--ease-out-quint);
+}
+
+.currencyOption:hover {
+  border-color: var(--accent);
+}
+
+.currencyOption:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.currencyOption[data-active="true"] {
+  color: var(--accent-ink);
+  background: var(--accent-gradient);
+  border-color: transparent;
+}
+
 .submit {
   display: inline-flex;
   align-items: center;

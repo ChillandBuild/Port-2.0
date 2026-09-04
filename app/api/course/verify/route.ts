@@ -6,6 +6,7 @@ import {
   grantCourseAccess,
 } from "@/lib/backend/course-access";
 import { sendCourseAccessEmail, sendCourseAccessNotification } from "@/lib/backend/email";
+import { COURSE_CURRENCY, COURSE_PRICE_INR, COURSE_PRICE_USD } from "@/lib/content/course";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,8 @@ interface VerifyBody {
   email?: unknown;
   name?: unknown;
   phone?: unknown;
+  /** Echoed back from the order response — records what was actually charged, not what the client claims it wants now. */
+  currency?: unknown;
 }
 
 function str(value: unknown): string {
@@ -43,6 +46,8 @@ export async function POST(request: Request): Promise<Response> {
   const email = str(body.email).toLowerCase();
   const name = str(body.name);
   const phone = str(body.phone);
+  const currency = body.currency === "INR" ? "INR" : COURSE_CURRENCY;
+  const amount = currency === "INR" ? COURSE_PRICE_INR : COURSE_PRICE_USD;
 
   if (!orderId || !paymentId || !signature || !email) {
     return NextResponse.json({ success: false, error: "invalid" }, { status: 400 });
@@ -69,7 +74,14 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   void sendCourseAccessEmail(access);
-  void sendCourseAccessNotification({ access, paymentId, name: name || undefined, phone: phone || undefined });
+  void sendCourseAccessNotification({
+    access,
+    paymentId,
+    amount,
+    currency,
+    name: name || undefined,
+    phone: phone || undefined,
+  });
 
   const response = NextResponse.json({
     success: true,

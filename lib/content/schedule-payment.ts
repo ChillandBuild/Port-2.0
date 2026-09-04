@@ -6,3 +6,5 @@
  */
 export const SCHEDULE_SECOND_CALL_PRICE_USD = 350;
 export const SCHEDULE_CURRENCY = "USD";
+/** INR alternative for buyers paying from India — a round price point, not a live conversion. */
+export const SCHEDULE_SECOND_CALL_PRICE_INR = 29999;

@@ -26,7 +26,7 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
   if (q.includes("350") || q.includes("cost") || q.includes("price") || q.includes("pricing") || q.includes("session") || q.includes("call")) {
     return {
       text:
-        "First call is free — 30–45 minutes, strategy & pipeline deep-dive (IST hours, remote video). Second call is USD 350 for 1 hour — infrastructure, tool alignment, methodology.\n\nPayment link + IST slot selector appear on /schedule once payment setup is approved. Until then: LinkedIn or phone (+91 99949 69699).",
+        "First call is free — 30–45 minutes, strategy & pipeline deep-dive (IST hours, remote video). Second call is USD 350 for 1 hour — infrastructure, tool alignment, methodology.\n\nBoth are bookable directly on /schedule — the free call by form, the second by on-site payment. Or reach out on LinkedIn, phone, or Telegram (+91 94877 49370).",
       chips: ["How to book?", "What's in the 350?", "Is first call really free?"],
       ctas: [
         { label: "Schedule → /schedule", href: "/schedule", solid: true },
@@ -111,11 +111,11 @@ function replyFor(input: string): { text: string; chips?: string[]; ctas?: Cta[]
   if (q.includes("where") || q.includes("based") || q.includes("coimbatore") || q.includes("phone") || q.includes("linkedin") || q.includes("ist") || q.includes("location") || q.includes("contact")) {
     return {
       text:
-        "Based Coimbatore, Tamil Nadu, India (GMT+5:30) — +91 99949 69699. Works across IST, GMT and PT hours. Best contact: LinkedIn or phone. First call free (30–45 min) via /schedule once payment setup approved.",
+        "Based Coimbatore, Tamil Nadu, India (GMT+5:30) — +91 94877 49370 (WhatsApp). Works across IST, GMT and PT hours. Best contact: LinkedIn, phone or Telegram. First call is free via /schedule.",
       chips: ["Book a call", "Is he available now?", "Hiring?"],
       ctas: [
         { label: "LinkedIn", href: "https://www.linkedin.com/in/sampath-kumar-tn66sk9699", solid: true },
-        { label: "Call +91 99949 69699", href: "tel:+919994969699" },
+        { label: "Call +91 94877 49370 (WhatsApp)", href: "tel:+919487749370" },
       ],
     };
   }

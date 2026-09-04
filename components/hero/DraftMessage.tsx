@@ -24,7 +24,7 @@ export function DraftMessage() {
 
         <div className={styles.signature}>
           <span className="mono">Sampath Kumar</span>
-          <span className="mono">+91 99949 69699</span>
+          <span className="mono">+91 94877 49370 (WhatsApp)</span>
         </div>
       </article>
 

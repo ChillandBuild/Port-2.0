@@ -35,6 +35,9 @@ export interface RazorpayPayment {
   email: string | null;
   /** The product tag stamped into the order's notes at createOrder() time — null if absent (e.g. an old order predating this field). */
   product: RazorpayProduct | null;
+  /** Major units (e.g. 59, 4999) — the entity's own minor-unit amount divided by 100. Authoritative: this is what Razorpay actually captured, not what a client claims it selected. */
+  amount: number;
+  currency: string;
 }
 
 export interface RazorpayOrder {
@@ -128,5 +131,7 @@ export function extractPayment(payload: unknown): RazorpayPayment | null {
   );
   const product =
     notes.product === "lead-gen-course" || notes.product === "schedule-second-call" ? notes.product : null;
-  return { id: e.id, email: email ? email.trim().toLowerCase() : null, product };
+  const amount = typeof e.amount === "number" ? e.amount / 100 : 0;
+  const currency = typeof e.currency === "string" ? e.currency : "USD";
+  return { id: e.id, email: email ? email.trim().toLowerCase() : null, product, amount, currency };
 }

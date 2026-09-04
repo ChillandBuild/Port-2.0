@@ -74,6 +74,14 @@ export function Reply() {
               </dd>
             </div>
             <div className={styles.metaRow}>
+              <dt className="mono">Telegram</dt>
+              <dd>
+                <a className={styles.metaLink} href={IDENTITY.telegram} rel="noreferrer noopener" target="_blank">
+                  Message on Telegram
+                </a>
+              </dd>
+            </div>
+            <div className={styles.metaRow}>
               <dt className="mono">Email</dt>
               <dd>
                 {IDENTITY.email ? (

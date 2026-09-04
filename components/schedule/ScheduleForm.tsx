@@ -21,6 +21,7 @@ import styles from "./ScheduleForm.module.css";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type CallType = "first" | "second";
+type Currency = "USD" | "INR";
 type Status = "idle" | "submitting" | "success" | "error";
 type PayPhase = "idle" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
 type PayErrorKind = "order" | "unverified" | "verify-network" | null;
@@ -42,6 +43,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
   const [phone, setPhone] = useState("");
   const [purpose, setPurpose] = useState("");
   const [callType, setCallType] = useState<CallType>("first");
+  const [currency, setCurrency] = useState<Currency>("USD");
   const [slot, setSlot] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -110,6 +112,7 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
           companyName: company.trim(),
           purpose: purpose.trim(),
           slot: slot ?? "",
+          currency,
         }),
       });
       const payload = (await verifyResponse.json()) as { success: boolean; error?: string };
@@ -134,7 +137,11 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
     setPayErrorKind(null);
     try {
       const [orderResponse] = await Promise.all([
-        fetch("/api/schedule/order", { method: "POST" }),
+        fetch("/api/schedule/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currency }),
+        }),
         loadCheckoutScript(),
       ]);
       const order = (await orderResponse.json()) as {
@@ -321,6 +328,35 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                 </button>
               </div>
             </div>
+            {callType === "second" && (
+              <div className={`${styles.field} ${styles.fieldFullWidth}`}>
+                <span className={`mono ${styles.label}`}>{SCHEDULE.form.currencyLabel}</span>
+                <div className={styles.toggle} role="radiogroup" aria-label={SCHEDULE.form.currencyLabel}>
+                  <button
+                    type="button"
+                    className={styles.toggleOption}
+                    data-active={currency === "USD"}
+                    role="radio"
+                    aria-checked={currency === "USD"}
+                    onClick={() => setCurrency("USD")}
+                    disabled={paying}
+                  >
+                    {SCHEDULE.form.currencyUsdLabel}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.toggleOption}
+                    data-active={currency === "INR"}
+                    role="radio"
+                    aria-checked={currency === "INR"}
+                    onClick={() => setCurrency("INR")}
+                    disabled={paying}
+                  >
+                    {SCHEDULE.form.currencyInrLabel}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {fieldError ? (
@@ -357,7 +393,9 @@ export function ScheduleForm({ keyConfigured }: ScheduleFormProps) {
                   ? SCHEDULE.form.payDialogVerifying
                   : callType === "first"
                     ? SCHEDULE.form.submit
-                    : SCHEDULE.form.payingSubmit}
+                    : currency === "INR"
+                      ? SCHEDULE.form.payingSubmitInr
+                      : SCHEDULE.form.payingSubmit}
             </button>
           )}
           <p className={styles.note}>{SCHEDULE.form.note}</p>

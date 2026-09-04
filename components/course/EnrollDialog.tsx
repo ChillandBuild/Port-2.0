@@ -2,11 +2,12 @@
 
 import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { COURSE } from "@/lib/content/course";
+import { COURSE, COURSE_PRICE_INR, COURSE_PRICE_USD } from "@/lib/content/course";
 import { loadCheckoutScript, type RazorpayCheckoutResponse } from "@/lib/frontend/razorpay-checkout";
 import styles from "./CourseSales.module.css";
 
 type Phase = "details" | "creating-order" | "checkout" | "verifying" | "success" | "pending" | "error";
+type Currency = "USD" | "INR";
 
 type ErrorKind = "order" | "unverified" | "verify-network" | null;
 
@@ -32,6 +33,7 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("details");
   const [errorKind, setErrorKind] = useState<ErrorKind>(null);
+  const [currency, setCurrency] = useState<Currency>("USD");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,7 +58,11 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
     setErrorKind(null);
     try {
       const [orderResponse] = await Promise.all([
-        fetch("/api/course/order", { method: "POST" }),
+        fetch("/api/course/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currency }),
+        }),
         loadCheckoutScript(),
       ]);
       const order = (await orderResponse.json()) as {
@@ -99,7 +105,7 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
       const verifyResponse = await fetch("/api/course/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...response, name, email, phone }),
+        body: JSON.stringify({ ...response, name, email, phone, currency }),
       });
       const payload = (await verifyResponse.json()) as {
         success: boolean;
@@ -195,8 +201,33 @@ export function EnrollDialog({ priceLabel, fallbackHref, keyConfigured }: Enroll
             onChange={(event) => setPhone(event.target.value)}
             required
           />
+          <label className={styles.label} htmlFor="enroll-currency">
+            {COURSE.gate.dialogCurrencyLabel}
+          </label>
+          <div className={styles.currencyToggle} role="radiogroup" aria-label={COURSE.gate.dialogCurrencyLabel} id="enroll-currency">
+            <button
+              type="button"
+              className={styles.currencyOption}
+              data-active={currency === "USD"}
+              role="radio"
+              aria-checked={currency === "USD"}
+              onClick={() => setCurrency("USD")}
+            >
+              {`USD — $${COURSE_PRICE_USD}`}
+            </button>
+            <button
+              type="button"
+              className={styles.currencyOption}
+              data-active={currency === "INR"}
+              role="radio"
+              aria-checked={currency === "INR"}
+              onClick={() => setCurrency("INR")}
+            >
+              {`INR — ₹${COURSE_PRICE_INR.toLocaleString("en-IN")}`}
+            </button>
+          </div>
           <button className={styles.submit} type="submit">
-            {COURSE.gate.dialogSubmit} — {priceLabel}
+            {COURSE.gate.dialogSubmit} — {currency === "INR" ? `₹${COURSE_PRICE_INR.toLocaleString("en-IN")}` : `$${COURSE_PRICE_USD}`}
           </button>
         </form>
       )}

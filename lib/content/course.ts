@@ -6,6 +6,8 @@
  */
 export const COURSE_PRICE_USD = 59;
 export const COURSE_CURRENCY = "USD";
+/** INR alternative for buyers paying from India — a round price point, not a live conversion. */
+export const COURSE_PRICE_INR = 4999;
 
 export const COURSE = {
   eyebrow: "The course",
@@ -61,6 +63,7 @@ export const COURSE = {
     dialogNameLabel: "Name",
     dialogEmailLabel: "Email",
     dialogPhoneLabel: "Phone",
+    dialogCurrencyLabel: "Currency",
     dialogSubmit: "Continue to payment",
     dialogCreatingOrder: "Preparing payment…",
     dialogVerifying: "Confirming your payment…",

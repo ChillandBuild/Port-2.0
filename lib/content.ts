@@ -7,8 +7,10 @@ export const IDENTITY = {
   name: "Sampath Kumar",
   role: "Pre Sales Head · Lead Generation",
   location: "Coimbatore, Tamil Nadu, India",
-  phone: "+91 99949 69699",
-  phoneHref: "tel:+919994969699",
+  phone: "+91 94877 49370 (WhatsApp)",
+  phoneHref: "tel:+919487749370",
+  /** Telegram deep link by phone number — opens a chat directly, no username needed. */
+  telegram: "https://t.me/+919487749370",
   /** Empty until the address is decided; the reply card renders the row either way. */
   email: "",
   emailHref: "",
@@ -1112,7 +1114,7 @@ export const CONTACT = {
   note:
     "Payment setup is still in progress — pick a slot and book the free call on the schedule page, or reach me on LinkedIn or by phone.",
   primaryCta: { label: "Connect on LinkedIn", href: IDENTITY.linkedin },
-  secondaryCta: { label: "Call +91 99949 69699", href: IDENTITY.phoneHref },
+  secondaryCta: { label: "Call +91 94877 49370 (WhatsApp)", href: IDENTITY.phoneHref },
 } as const;
 
 /**
@@ -1272,8 +1274,12 @@ export const SCHEDULE = {
     callTypeLabel: "Which call is this?",
     callTypeFirstLabel: "Free first call",
     callTypeSecondLabel: "Second call — $350",
+    currencyLabel: "Currency",
+    currencyUsdLabel: "USD — $350",
+    currencyInrLabel: "INR — ₹29,999",
     submit: "Request the free call",
     payingSubmit: "Pay $350 & book the second call",
+    payingSubmitInr: "Pay ₹29,999 & book the second call",
     sending: "Sending…",
     payDialogHeading: "Book the second call",
     payDialogCreatingOrder: "Preparing payment…",

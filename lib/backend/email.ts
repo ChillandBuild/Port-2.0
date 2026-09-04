@@ -3,7 +3,7 @@ import type { SubmissionPayload } from "@/lib/submissions";
 import type { CourseAccess } from "@/lib/backend/course-access";
 import type { SchedulePayment } from "@/lib/backend/schedule-payment";
 import { DISPLAY_TIME_ZONE, formatDuration } from "@/lib/course-duration";
-import { COURSE_CURRENCY, COURSE_PRICE_USD } from "@/lib/content/course";
+import { IDENTITY } from "@/lib/content";
 
 // Matches metadataBase in app/layout.tsx; overridable per environment. The
 // fallback is the real domain, not a placeholder: this builds the links a
@@ -48,6 +48,55 @@ export async function sendSubmissionNotification(payload: SubmissionPayload): Pr
     });
   } catch (error) {
     console.error("sendSubmissionNotification failed", error);
+  }
+}
+
+/**
+ * Confirms receipt of a free-first-call request to whoever submitted the
+ * /schedule form. Buyer-facing, so a failure logs loudly rather than
+ * no-ops silently — same policy as sendCourseAccessEmail. The Supabase row
+ * (and Sampath's own notification) are unaffected either way.
+ */
+export async function sendScheduleCallConfirmationEmail(payload: SubmissionPayload): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !from) {
+    console.error(`schedule call confirmation skipped for ${payload.email} — Resend not configured`);
+    return;
+  }
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from,
+      to: payload.email,
+      subject: "Your free call request — received",
+      text: [
+        payload.name ? `Thanks, ${payload.name}.` : "Thanks.",
+        "",
+        "Your request for the free 30-45 minute discovery call has been received, and it's now in my queue for a personal review — this note confirms it landed, nothing more is needed from you right now.",
+        "",
+        payload.slot ? `Requested slot: ${payload.slot}` : "",
+        payload.purpose ? `Purpose you shared: ${payload.purpose}` : "",
+        payload.companyName ? `Company: ${payload.companyName}` : "",
+        "",
+        "Here's what happens next: I'll go through what you've shared, and reply by email within a day or two to confirm the exact time for your slot (adjusting it if needed to fit both our calendars). The call itself runs 30-45 minutes over video, and by the end of it you'll know whether outbound is the right spend for you right now — including if the honest answer is no.",
+        "",
+        "A few things worth having ready before we talk, so the 30-45 minutes goes further: a one-line description of what you sell, the regions you're targeting, and a rough picture of where you want your pipeline to be in the next 90 days. No need to prepare slides or a formal brief — a plain-spoken answer to each is plenty.",
+        "",
+        "If anything changes on your end, or you'd rather sort scheduling directly instead of waiting on email, you can reach me any of these ways:",
+        `Phone: ${IDENTITY.phone}`,
+        `Telegram: ${IDENTITY.telegram}`,
+        `LinkedIn: ${IDENTITY.linkedin}`,
+        "",
+        "Talk soon,",
+        "— Sampath Kumar",
+      ]
+        .filter((line, index, lines) => !(line === "" && lines[index - 1] === ""))
+        .join("\n"),
+    });
+  } catch (error) {
+    console.error(`sendScheduleCallConfirmationEmail failed for ${payload.email}`, error);
   }
 }
 
@@ -115,6 +164,9 @@ export async function sendCourseAccessEmail(access: CourseAccess): Promise<void>
 export interface CourseAccessNotificationDetails {
   access: CourseAccess;
   paymentId: string;
+  /** Major units and the currency actually charged — e.g. 59/"USD" or 4999/"INR". */
+  amount: number;
+  currency: string;
   /** Collected for the Checkout.js prefill, not persisted — only available from the primary verify path, not the webhook backup. */
   name?: string;
   phone?: string;
@@ -132,13 +184,13 @@ export async function sendCourseAccessNotification(details: CourseAccessNotifica
   const from = process.env.RESEND_FROM;
   if (!apiKey || !to || !from) return;
 
-  const { access, paymentId, name, phone } = details;
+  const { access, paymentId, amount, currency, name, phone } = details;
   const lines = [
     "Source: Course — paid enrollment",
     name ? `Name: ${name}` : null,
     `Email: ${access.email ?? "unknown"}`,
     phone ? `Phone: ${phone}` : null,
-    `Amount paid: ${COURSE_CURRENCY} ${COURSE_PRICE_USD}`,
+    `Amount paid: ${currency} ${amount}`,
     `Access code: ${access.accessCode}`,
     access.expiresAt ? `Access valid until: ${access.expiresAt}` : null,
     `Payment reference: ${paymentId}`,
@@ -149,7 +201,7 @@ export async function sendCourseAccessNotification(details: CourseAccessNotifica
     await resend.emails.send({
       from,
       to,
-      subject: "Course paid — USD 59",
+      subject: `Course paid — ${currency} ${amount}`,
       text: lines.join("\n"),
     });
   } catch (error) {
@@ -179,7 +231,7 @@ export async function sendSchedulePaymentReceiptEmail(payment: SchedulePayment):
       text: [
         payment.name ? `Thank you, ${payment.name}.` : "Thank you.",
         "",
-        `We've received your payment of USD ${payment.amountUsd} for the one-time setup call — infrastructure, tool estimation, methodology and process flow.`,
+        `We've received your payment of ${payment.currency} ${payment.amount} for the one-time setup call — infrastructure, tool estimation, methodology and process flow.`,
         payment.slot ? `Requested slot: ${payment.slot}` : "",
         payment.purpose ? `Purpose: ${payment.purpose}` : "",
         "",
@@ -217,7 +269,7 @@ export async function sendSchedulePaymentNotification(payment: SchedulePayment):
     payment.companyName ? `Company: ${payment.companyName}` : null,
     payment.purpose ? `Purpose of call: ${payment.purpose}` : null,
     payment.slot ? `Requested slot: ${payment.slot}` : null,
-    `Amount paid: USD ${payment.amountUsd}`,
+    `Amount paid: ${payment.currency} ${payment.amount}`,
     `Payment reference: ${payment.paymentId}`,
   ].filter((line): line is string => Boolean(line));
 
@@ -226,7 +278,7 @@ export async function sendSchedulePaymentNotification(payment: SchedulePayment):
     await resend.emails.send({
       from,
       to,
-      subject: "Second call paid — USD 350",
+      subject: `Second call paid — ${payment.currency} ${payment.amount}`,
       text: lines.join("\n"),
     });
   } catch (error) {

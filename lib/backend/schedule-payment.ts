@@ -16,14 +16,16 @@ export interface SchedulePaymentDetails {
   purpose: string | null;
   slot: string | null;
   paymentId: string;
-  amountUsd: number;
+  /** Major units, in whatever currency was actually charged — e.g. 350 (USD) or 29999 (INR). */
+  amount: number;
+  currency: string;
 }
 
 export interface SchedulePayment extends SchedulePaymentDetails {
   paidAt: string;
 }
 
-const COLUMNS = "name, email, phone, company_name, purpose, slot, payment_id, amount_usd, paid_at";
+const COLUMNS = "name, email, phone, company_name, purpose, slot, payment_id, amount, currency, paid_at";
 
 interface SchedulePaymentRow {
   name: string | null;
@@ -33,7 +35,8 @@ interface SchedulePaymentRow {
   purpose: string | null;
   slot: string | null;
   payment_id: string;
-  amount_usd: number;
+  amount: number;
+  currency: string;
   paid_at: string;
 }
 
@@ -46,7 +49,8 @@ function rowToPayment(row: SchedulePaymentRow): SchedulePayment {
     purpose: row.purpose,
     slot: row.slot,
     paymentId: row.payment_id,
-    amountUsd: row.amount_usd,
+    amount: row.amount,
+    currency: row.currency,
     paidAt: row.paid_at,
   };
 }
@@ -77,7 +81,8 @@ export async function grantSchedulePayment(details: SchedulePaymentDetails): Pro
       purpose: details.purpose,
       slot: details.slot,
       payment_id: details.paymentId,
-      amount_usd: details.amountUsd,
+      amount: details.amount,
+      currency: details.currency,
     })
     .select(COLUMNS)
     .single();

@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/backend/supabase/admin";
-import { sendSubmissionNotification } from "@/lib/backend/email";
+import { sendScheduleCallConfirmationEmail, sendSubmissionNotification } from "@/lib/backend/email";
 import type { SubmissionPayload, SubmissionSource } from "@/lib/submissions";
 
 export const runtime = "nodejs";
@@ -65,6 +65,7 @@ export async function POST(request: Request): Promise<Response> {
   // access, not a lead — no email for those, only schedule-call.
   if (payload.source === "schedule-call") {
     void sendSubmissionNotification(payload);
+    void sendScheduleCallConfirmationEmail(payload);
   }
 
   return Response.json({ success: true });

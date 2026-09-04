@@ -1,9 +1,12 @@
 -- schedule_payments: one row per paid second call (infrastructure setup)
 -- booked from /schedule. Written by the on-site checkout's verify route
 -- (primary path, full details) and, as a backup, by the Razorpay webhook
--- (payment.captured only carries the email, so name/phone are null there).
+-- (payment.captured only carries the email/amount/currency, so name/phone
+-- are null there).
 --
--- Run once in the Supabase dashboard (SQL editor) for the production project.
+-- Run once in the Supabase SQL editor for the production project. (Applied
+-- 2026-09-03 with amount/currency from the start — this file documents that
+-- schema, it does not need to be re-run.)
 
 create table if not exists public.schedule_payments (
   id uuid primary key default gen_random_uuid(),
@@ -14,7 +17,8 @@ create table if not exists public.schedule_payments (
   purpose text,
   slot text,
   payment_id text not null,
-  amount_usd numeric not null default 350,
+  amount numeric not null,
+  currency text not null default 'USD',
   paid_at timestamptz not null default now(),
   created_at timestamptz not null default now()
 );

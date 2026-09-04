@@ -7,7 +7,6 @@ import {
   sendSchedulePaymentNotification,
   sendSchedulePaymentReceiptEmail,
 } from "@/lib/backend/email";
-import { SCHEDULE_SECOND_CALL_PRICE_USD } from "@/lib/content/schedule-payment";
 
 export const runtime = "nodejs";
 
@@ -58,7 +57,8 @@ export async function POST(request: Request): Promise<Response> {
         purpose: null,
         slot: null,
         paymentId: payment.id,
-        amountUsd: SCHEDULE_SECOND_CALL_PRICE_USD,
+        amount: payment.amount,
+        currency: payment.currency,
       });
       void sendSchedulePaymentReceiptEmail(record);
       void sendSchedulePaymentNotification(record);
@@ -80,7 +80,12 @@ export async function POST(request: Request): Promise<Response> {
   // Best-effort, same policy as submission notifications: the row is the
   // source of truth, a failed email can be resent manually.
   void sendCourseAccessEmail(access);
-  void sendCourseAccessNotification({ access, paymentId: payment.id });
+  void sendCourseAccessNotification({
+    access,
+    paymentId: payment.id,
+    amount: payment.amount,
+    currency: payment.currency,
+  });
 
   return Response.json({ success: true, handled: true });
 }
