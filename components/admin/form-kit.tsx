@@ -52,6 +52,31 @@ export function TextField({
   );
 }
 
+/** Multi-line plain-text field — email/chatbot copy, not JSON. Body font, not mono. */
+export function TextAreaField({
+  label,
+  value,
+  onChange,
+  rows = 3,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  rows?: number;
+}) {
+  return (
+    <label className={styles.settingsField}>
+      <span className={styles.label}>{label}</span>
+      <textarea
+        className={styles.textareaProse}
+        rows={rows}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </label>
+  );
+}
+
 export function NumberField({
   label,
   value,

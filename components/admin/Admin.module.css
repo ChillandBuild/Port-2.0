@@ -347,6 +347,25 @@
   border-color: var(--accent);
 }
 
+.textareaProse {
+  width: 100%;
+  margin-top: 0;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  color: var(--on-panel);
+  background: var(--surface-panel-alt);
+  border: 1px solid var(--rule-panel);
+  border-radius: 10px;
+  resize: vertical;
+}
+
+.textareaProse:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .settingsSaveRow {
   display: flex;
   align-items: center;
