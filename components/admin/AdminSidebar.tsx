@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { href: "/admin", label: ADMIN.nav.grants },
   { href: "/admin/availability", label: ADMIN.nav.availability },
   { href: "/admin/content", label: ADMIN.nav.content },
-  { href: "/admin/course", label: ADMIN.nav.course },
   { href: "/admin/chatbot", label: ADMIN.nav.chatbot },
   { href: "/admin/emails", label: ADMIN.nav.emails },
   { href: "/admin/settings", label: ADMIN.nav.settings },
