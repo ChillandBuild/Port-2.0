@@ -8,11 +8,77 @@
  */
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ADMIN } from "@/lib/content/admin";
 import styles from "./Admin.module.css";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+let listKeySeq = 0;
+
+export interface EditableItem<T> {
+  key: string;
+  value: T;
+}
+
+/**
+ * A reorderable array as React state — every "list of records" content card
+ * (pipeline stages, sectors, roles, FAQ entries, ...) needs the same
+ * add/remove/move-up/move-down mechanics, so this is written once. Keys are
+ * client-side only, generated once per item and stable across reorders —
+ * never sent to the server.
+ */
+export function useEditableList<T>(initial: T[]) {
+  const [items, setItems] = useState<EditableItem<T>[]>(() => initial.map((value) => ({ key: `k${listKeySeq++}`, value })));
+
+  function update(key: string, value: T) {
+    setItems((current) => current.map((item) => (item.key === key ? { key, value } : item)));
+  }
+  function add(value: T) {
+    setItems((current) => [...current, { key: `k${listKeySeq++}`, value }]);
+  }
+  function remove(key: string) {
+    setItems((current) => current.filter((item) => item.key !== key));
+  }
+  function move(key: string, direction: -1 | 1) {
+    setItems((current) => {
+      const index = current.findIndex((item) => item.key === key);
+      const target = index + direction;
+      if (index === -1 || target < 0 || target >= current.length) return current;
+      const next = [...current];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
+  return { items, update, add, remove, move };
+}
+
+/** The move-up/move-down/remove row every list item ends with. */
+export function ListItemActions({
+  onMoveUp,
+  onMoveDown,
+  onRemove,
+  removeLabel = "Remove",
+}: {
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  onRemove: () => void;
+  removeLabel?: string;
+}) {
+  return (
+    <div className={styles.settingsSaveRow}>
+      <button type="button" className={styles.ghost} onClick={onMoveUp} disabled={!onMoveUp}>
+        Move up
+      </button>
+      <button type="button" className={styles.ghost} onClick={onMoveDown} disabled={!onMoveDown}>
+        Move down
+      </button>
+      <button type="button" className={`${styles.ghost} ${styles.danger}`} onClick={onRemove}>
+        {removeLabel}
+      </button>
+    </div>
+  );
+}
 
 export async function saveKey(key: string, value: unknown): Promise<boolean> {
   try {
@@ -139,55 +205,3 @@ export function JsonField({
   );
 }
 
-/**
- * One self-contained card: heading, hint, a single JSON textarea, its own
- * save button. Used for every content_key whose shape is "a list of records"
- * rather than a handful of scalar fields — marketing content on /admin/content
- * is entirely built from this one component, one instance per key.
- */
-export function JsonCard({
-  heading,
-  body,
-  jsonLabel,
-  initial,
-  contentKey,
-  rows = 16,
-}: {
-  heading: string;
-  body: string;
-  jsonLabel: string;
-  initial: unknown;
-  contentKey: string;
-  rows?: number;
-}) {
-  const router = useRouter();
-  const [text, setText] = useState(() => JSON.stringify(initial, null, 2));
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
-
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      setStatus("error");
-      setError(ADMIN.settings.jsonInvalid);
-      return;
-    }
-    setStatus("saving");
-    const ok = await saveKey(contentKey, parsed);
-    setStatus(ok ? "saved" : "error");
-    setError(undefined);
-    if (ok) router.refresh();
-  }
-
-  return (
-    <form className={styles.settingsCard} onSubmit={submit}>
-      <h2 className={styles.settingsCardHeading}>{heading}</h2>
-      <p className={styles.hint}>{body}</p>
-      <JsonField label={jsonLabel} text={text} onChange={setText} rows={rows} />
-      <SaveRow status={status} error={error} />
-    </form>
-  );
-}

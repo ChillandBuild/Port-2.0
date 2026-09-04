@@ -1,11 +1,10 @@
 "use client";
 
 /**
- * /admin/settings — one card per site_content key. Scalar fields (identity,
- * prices) get plain inputs; repeating/nested shapes (FAQ, footer links,
- * legal sections) get a JSON textarea — the same "friendly UI + JSON escape
- * hatch" split the course lesson editor will use, applied here to whatever
- * content is naturally a list of records rather than a handful of fields.
+ * /admin/settings — one card per site_content key, real fields throughout.
+ * Scalar fields (identity, prices) get plain inputs; repeating shapes (FAQ,
+ * footer link groups, legal sections) get add/remove/reorder list editors —
+ * the same pattern used on /admin/content and /admin/chatbot.
  *
  * Every section saves independently: one POST to /api/admin/settings per
  * card, not one big form — the blast radius of a mistake stays inside the
@@ -15,16 +14,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ADMIN } from "@/lib/content/admin";
-import type { LegalDoc } from "@/lib/content";
+import type { LegalDoc, LegalSection as LegalSectionEntry } from "@/lib/content";
 import type {
   IdentityContent,
   CoursePricing,
   SchedulePricing,
   FaqItem,
   FooterContent,
+  FooterGroup,
+  FooterLink,
   LegalKey,
 } from "@/lib/backend/site-content-loaders";
-import { saveKey, TextField, NumberField, JsonField, JsonCard, SaveRow, type SaveStatus } from "./form-kit";
+import { saveKey, TextField, TextAreaField, NumberField, SaveRow, useEditableList, ListItemActions, type SaveStatus } from "./form-kit";
 import styles from "./Admin.module.css";
 
 function IdentitySection({ initial }: { initial: IdentityContent }) {
@@ -120,28 +121,96 @@ function PricingSection({
   );
 }
 
+function FaqSection({ initial }: { initial: FaqItem[] }) {
+  const router = useRouter();
+  const list = useEditableList<FaqItem>(initial);
+  const [status, setStatus] = useState<SaveStatus>("idle");
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    setStatus("saving");
+    const ok = await saveKey("course_faq", list.items.map((i) => i.value));
+    setStatus(ok ? "saved" : "error");
+    if (ok) router.refresh();
+  }
+
+  return (
+    <form className={styles.settingsCard} onSubmit={submit}>
+      <h2 className={styles.settingsCardHeading}>{ADMIN.settings.faqHeading}</h2>
+      <p className={styles.hint}>{ADMIN.settings.faqBody}</p>
+      <div className={styles.chapterSections}>
+        {list.items.map((item, i) => (
+          <div className={styles.chapterSection} key={item.key}>
+            <TextField label="Question" value={item.value.q} onChange={(v) => list.update(item.key, { ...item.value, q: v })} />
+            <TextAreaField label="Answer" value={item.value.a} onChange={(v) => list.update(item.key, { ...item.value, a: v })} rows={3} />
+            <ListItemActions
+              onMoveUp={i > 0 ? () => list.move(item.key, -1) : undefined}
+              onMoveDown={i < list.items.length - 1 ? () => list.move(item.key, 1) : undefined}
+              onRemove={() => list.remove(item.key)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className={styles.settingsSaveRow}>
+        <button type="button" className={styles.ghost} onClick={() => list.add({ q: "", a: "" })}>
+          Add question
+        </button>
+      </div>
+      <SaveRow status={status} />
+    </form>
+  );
+}
+
+function FooterGroupEditor({ group, onChange }: { group: FooterGroup; onChange: (next: FooterGroup) => void }) {
+  function updateLink(i: number, patch: Partial<FooterLink>) {
+    onChange({ ...group, links: group.links.map((l, li) => (li === i ? { ...l, ...patch } : l)) });
+  }
+  function removeLink(i: number) {
+    onChange({ ...group, links: group.links.filter((_, li) => li !== i) });
+  }
+  function addLink() {
+    onChange({ ...group, links: [...group.links, { label: "", href: "" }] });
+  }
+
+  return (
+    <>
+      <TextField label="Group title" value={group.title} onChange={(v) => onChange({ ...group, title: v })} />
+      <p className={styles.label}>Links</p>
+      {group.links.map((link, i) => (
+        <div className={styles.settingsGrid} key={i}>
+          <TextField label="Label" value={link.label} onChange={(v) => updateLink(i, { label: v })} />
+          <TextField label="Href" value={link.href} onChange={(v) => updateLink(i, { href: v })} />
+          <button type="button" className={`${styles.ghost} ${styles.danger}`} onClick={() => removeLink(i)}>
+            Remove link
+          </button>
+        </div>
+      ))}
+      <div className={styles.settingsSaveRow}>
+        <button type="button" className={styles.ghost} onClick={addLink}>
+          Add link
+        </button>
+      </div>
+    </>
+  );
+}
+
 function FooterSection({ initial }: { initial: FooterContent }) {
   const router = useRouter();
   const [wordmark, setWordmark] = useState(initial.wordmark);
   const [fineprint, setFineprint] = useState(initial.fineprint);
-  const [groupsText, setGroupsText] = useState(() => JSON.stringify(initial.groups, null, 2));
+  const groups = useEditableList<FooterGroup>(initial.groups);
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    let groups: unknown;
-    try {
-      groups = JSON.parse(groupsText);
-    } catch {
-      setStatus("error");
-      setError(ADMIN.settings.jsonInvalid);
-      return;
-    }
     setStatus("saving");
-    const ok = await saveKey("footer", { wordmark, fineprint, backToTop: initial.backToTop, groups });
+    const ok = await saveKey("footer", {
+      wordmark,
+      fineprint,
+      backToTop: initial.backToTop,
+      groups: groups.items.map((i) => i.value),
+    });
     setStatus(ok ? "saved" : "error");
-    setError(undefined);
     if (ok) router.refresh();
   }
 
@@ -153,9 +222,64 @@ function FooterSection({ initial }: { initial: FooterContent }) {
         <TextField label={ADMIN.settings.footerWordmarkLabel} value={wordmark} onChange={setWordmark} />
         <TextField label={ADMIN.settings.footerFineprintLabel} value={fineprint} onChange={setFineprint} />
       </div>
-      <JsonField label="Groups (JSON array of { title, links: [{ label, href }] })" text={groupsText} onChange={setGroupsText} />
-      <SaveRow status={status} error={error} />
+      <p className={styles.label}>Link groups (the Contact column is generated automatically)</p>
+      <div className={styles.chapterSections}>
+        {groups.items.map((item, i) => (
+          <div className={styles.chapterSection} key={item.key}>
+            <FooterGroupEditor group={item.value} onChange={(next) => groups.update(item.key, next)} />
+            <ListItemActions
+              onMoveUp={i > 0 ? () => groups.move(item.key, -1) : undefined}
+              onMoveDown={i < groups.items.length - 1 ? () => groups.move(item.key, 1) : undefined}
+              onRemove={() => groups.remove(item.key)}
+              removeLabel="Remove group"
+            />
+          </div>
+        ))}
+      </div>
+      <div className={styles.settingsSaveRow}>
+        <button type="button" className={styles.ghost} onClick={() => groups.add({ title: "", links: [] })}>
+          Add group
+        </button>
+      </div>
+      <SaveRow status={status} />
     </form>
+  );
+}
+
+function LegalSectionEditor({
+  section,
+  onChange,
+}: {
+  section: LegalSectionEntry;
+  onChange: (next: LegalSectionEntry) => void;
+}) {
+  return (
+    <>
+      <TextField label="Heading" value={section.heading} onChange={(v) => onChange({ ...section, heading: v })} />
+      <p className={styles.label}>Body paragraphs</p>
+      {section.body.map((line, i) => (
+        <div className={styles.settingsGrid} key={i}>
+          <TextAreaField
+            label={`Paragraph ${i + 1}`}
+            value={line}
+            onChange={(v) => onChange({ ...section, body: section.body.map((p, pi) => (pi === i ? v : p)) })}
+            rows={2}
+          />
+          <button
+            type="button"
+            className={`${styles.ghost} ${styles.danger}`}
+            onClick={() => onChange({ ...section, body: section.body.filter((_, pi) => pi !== i) })}
+          >
+            Remove paragraph
+          </button>
+        </div>
+      ))}
+      <div className={styles.settingsSaveRow}>
+        <button type="button" className={styles.ghost} onClick={() => onChange({ ...section, body: [...section.body, ""] })}>
+          Add paragraph
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -164,24 +288,14 @@ function LegalSection({ heading, legalKey, initial }: { heading: string; legalKe
   const [title, setTitle] = useState(initial.title);
   const [eyebrow, setEyebrow] = useState(initial.eyebrow);
   const [updated, setUpdated] = useState(initial.updated);
-  const [sectionsText, setSectionsText] = useState(() => JSON.stringify(initial.sections, null, 2));
+  const sections = useEditableList<LegalSectionEntry>(initial.sections);
   const [status, setStatus] = useState<SaveStatus>("idle");
-  const [error, setError] = useState<string | undefined>(undefined);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    let sections: unknown;
-    try {
-      sections = JSON.parse(sectionsText);
-    } catch {
-      setStatus("error");
-      setError(ADMIN.settings.jsonInvalid);
-      return;
-    }
     setStatus("saving");
-    const ok = await saveKey(legalKey, { title, eyebrow, updated, sections });
+    const ok = await saveKey(legalKey, { title, eyebrow, updated, sections: sections.items.map((i) => i.value) });
     setStatus(ok ? "saved" : "error");
-    setError(undefined);
     if (ok) router.refresh();
   }
 
@@ -194,8 +308,25 @@ function LegalSection({ heading, legalKey, initial }: { heading: string; legalKe
         <TextField label={ADMIN.settings.docEyebrowLabel} value={eyebrow} onChange={setEyebrow} />
         <TextField label={ADMIN.settings.docUpdatedLabel} value={updated} onChange={setUpdated} />
       </div>
-      <JsonField label="Sections (JSON array of { heading, body: string[] })" text={sectionsText} onChange={setSectionsText} />
-      <SaveRow status={status} error={error} />
+      <div className={styles.chapterSections}>
+        {sections.items.map((item, i) => (
+          <div className={styles.chapterSection} key={item.key}>
+            <LegalSectionEditor section={item.value} onChange={(next) => sections.update(item.key, next)} />
+            <ListItemActions
+              onMoveUp={i > 0 ? () => sections.move(item.key, -1) : undefined}
+              onMoveDown={i < sections.items.length - 1 ? () => sections.move(item.key, 1) : undefined}
+              onRemove={() => sections.remove(item.key)}
+              removeLabel="Remove section"
+            />
+          </div>
+        ))}
+      </div>
+      <div className={styles.settingsSaveRow}>
+        <button type="button" className={styles.ghost} onClick={() => sections.add({ heading: "", body: [] })}>
+          Add section
+        </button>
+      </div>
+      <SaveRow status={status} />
     </form>
   );
 }
@@ -216,13 +347,7 @@ export function SettingsForm(props: SettingsFormProps) {
     <div className={styles.settingsSections}>
       <IdentitySection initial={props.identity} />
       <PricingSection initialCourse={props.coursePricing} initialSchedule={props.schedulePricing} />
-      <JsonCard
-        heading={ADMIN.settings.faqHeading}
-        body={ADMIN.settings.faqBody}
-        jsonLabel="FAQ (JSON array of { q, a })"
-        initial={props.courseFaq}
-        contentKey="course_faq"
-      />
+      <FaqSection initial={props.courseFaq} />
       <FooterSection initial={props.footer} />
       <LegalSection heading={ADMIN.settings.legalTermsHeading} legalKey="legal_terms" initial={props.legalTerms} />
       <LegalSection heading={ADMIN.settings.legalPrivacyHeading} legalKey="legal_privacy" initial={props.legalPrivacy} />

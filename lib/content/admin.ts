@@ -46,22 +46,20 @@ export const ADMIN = {
     scheduleInrLabel: "Second call price (INR)",
 
     faqHeading: "Course FAQ",
-    faqBody: "One question and answer per line pair, as JSON — add, remove or edit entries directly.",
+    faqBody: "One question and answer per entry — add, remove or reorder freely.",
 
     footerHeading: "Footer links",
-    footerBody: "The footer's site and legal link columns, as JSON. The Contact column is generated automatically from Contact & identity above.",
+    footerBody: "The footer's site and legal link columns. The Contact column is generated automatically from Contact & identity above.",
     footerWordmarkLabel: "Wordmark",
     footerFineprintLabel: "Fine print",
 
     legalTermsHeading: "Terms of service",
     legalPrivacyHeading: "Privacy policy",
     legalRefundsHeading: "Refunds & cancellations",
-    legalBody: "Title, eyebrow, last-updated line, and the section list as JSON.",
+    legalBody: "Title, eyebrow, last-updated line, and the section list.",
     docTitleLabel: "Title",
     docEyebrowLabel: "Eyebrow",
     docUpdatedLabel: "Last updated line",
-
-    jsonInvalid: "That's not valid JSON — fix the syntax and try again.",
   },
 
   login: {
