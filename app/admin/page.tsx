@@ -4,6 +4,7 @@ import { GrantRow } from "@/components/admin/GrantRow";
 import { QuickGrant } from "@/components/admin/QuickGrant";
 import { requireAdmin } from "@/lib/backend/admin-auth";
 import { listGrants, type GrantRow as GrantRecord } from "@/lib/backend/course-grants";
+import { getGuideSectionCount } from "@/lib/guide/sections";
 import { ADMIN } from "@/lib/content/admin";
 import styles from "@/components/admin/Admin.module.css";
 
@@ -38,6 +39,7 @@ export default async function AdminPage() {
   // Paid enrollments live in the same table but are not what this screen is
   // for; showing them would bury the handful of links Sampath is tracking.
   const demoGrants = grants.filter((grant) => grant.source === "demo");
+  const sectionCount = await getGuideSectionCount();
 
   return (
     <main className={styles.main} id="main">
@@ -64,6 +66,7 @@ export default async function AdminPage() {
               key={grant.id}
               grant={grant}
               url={`${origin}/c/${grant.accessCode}`}
+              sectionCount={sectionCount}
             />
           ))}
         </ul>

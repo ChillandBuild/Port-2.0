@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isSameOrigin, requireAdmin } from "@/lib/backend/admin-auth";
 import { setSiteContent } from "@/lib/backend/site-content";
+import { COURSE_CHAPTER_KEYS } from "@/lib/backend/site-content-loaders";
 
 /**
  * Every admin-editable content key, whitelisted here so a request can never
@@ -31,6 +32,7 @@ const ALLOWED_KEYS = new Set([
   "email_course_access",
   "email_schedule_receipt",
   "email_course_grant",
+  ...COURSE_CHAPTER_KEYS,
 ]);
 
 export async function POST(request: Request): Promise<Response> {

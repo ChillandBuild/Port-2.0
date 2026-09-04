@@ -25,6 +25,8 @@ import {
 } from "@/lib/content";
 import { COURSE, COURSE_PRICE_USD, COURSE_PRICE_INR } from "@/lib/content/course";
 import { SCHEDULE_SECOND_CALL_PRICE_USD, SCHEDULE_SECOND_CALL_PRICE_INR } from "@/lib/content/schedule-payment";
+import { GUIDE_DOCUMENT } from "@/lib/guide";
+import type { GuideChapter, GuideDocument } from "@/lib/guide/types";
 
 /** Deep JSON clone — strips `as const` readonly-ness so a hardcoded literal can serve as a mutable fallback. Safe here: every fallback below is plain JSON-shaped data (strings, numbers, arrays, objects), nothing with functions or dates. */
 function deepMutable<T>(value: T): T {
@@ -410,6 +412,40 @@ export async function getSchedulePaymentReceiptTemplate(): Promise<SchedulePayme
     confirmLine: "Sampath will confirm the exact time by email shortly.",
     signoff: "— Sampath Kumar",
   });
+}
+
+/* ---------------------------------------------------------------------- */
+/* Phase 5 — the course itself, one site_content row per chapter          */
+/* ---------------------------------------------------------------------- */
+
+export const COURSE_CHAPTER_KEYS = [
+  "course_chapter_1",
+  "course_chapter_2",
+  "course_chapter_3",
+  "course_chapter_4",
+  "course_chapter_5",
+  "course_chapter_6",
+  "course_chapter_7",
+  "course_chapter_8",
+  "course_chapter_9",
+] as const;
+
+export type CourseChapterKey = (typeof COURSE_CHAPTER_KEYS)[number];
+
+export async function getGuideChapter(index: number): Promise<GuideChapter> {
+  const key = COURSE_CHAPTER_KEYS[index];
+  const fallback = GUIDE_DOCUMENT.chapters[index];
+  return getSiteContent<GuideChapter>(key, deepMutable(fallback));
+}
+
+/**
+ * The live course document — title/subtitle stay static (not worth an admin
+ * field), but every chapter is its own site_content row so an edit to one
+ * chapter's content never risks another's.
+ */
+export async function getGuideDocument(): Promise<GuideDocument> {
+  const chapters = await Promise.all(COURSE_CHAPTER_KEYS.map((_, i) => getGuideChapter(i)));
+  return { title: GUIDE_DOCUMENT.title, subtitle: GUIDE_DOCUMENT.subtitle, chapters };
 }
 
 export interface CourseGrantEmailTemplate {

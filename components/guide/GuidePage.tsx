@@ -1,5 +1,6 @@
 import { COURSE } from "@/lib/content/course";
-import { GUIDE_DOCUMENT, buildGuideNav, sectionText, type GuideNavChapter } from "@/lib/guide";
+import { buildGuideNav, sectionText, type GuideNavChapter } from "@/lib/guide";
+import { getGuideDocument } from "@/lib/backend/site-content-loaders";
 import { chapterIcon } from "./icons";
 import { GuideShell } from "./GuideShell";
 import { renderBlock } from "./blocks";
@@ -18,7 +19,8 @@ export interface SearchEntry {
  * comes from the typed transcription in lib/guide; this component only
  * decides layout.
  */
-export function GuidePage() {
+export async function GuidePage() {
+  const GUIDE_DOCUMENT = await getGuideDocument();
   const nav: GuideNavChapter[] = buildGuideNav(GUIDE_DOCUMENT.chapters);
   const searchIndex: SearchEntry[] = GUIDE_DOCUMENT.chapters.flatMap((chapter) =>
     chapter.sections.map((section) => ({

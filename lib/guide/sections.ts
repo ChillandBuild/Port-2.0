@@ -1,7 +1,9 @@
-import { GUIDE_DOCUMENT } from "./index";
+import { getGuideDocument } from "@/lib/backend/site-content-loaders";
 
 /**
- * Flat view of the document's sections, derived once at module load.
+ * Flat view of the document's sections, computed live from the (now
+ * admin-editable) chapters instead of once at module load — the ids this
+ * validates against can change the moment Sampath edits a chapter.
  *
  * Two callers need this and neither should walk the chapter tree itself:
  *   - /api/course/progress, to reject section ids it does not recognise. That
@@ -23,22 +25,31 @@ export interface SectionRef {
   chapterTitle: string;
 }
 
-export const GUIDE_SECTIONS: readonly SectionRef[] = GUIDE_DOCUMENT.chapters.flatMap((chapter) =>
-  chapter.sections.map((section) => ({
-    id: section.id,
-    title: section.title,
-    chapterId: chapter.id,
-    chapterNumber: chapter.number,
-    chapterTitle: chapter.title,
-  })),
-);
+export async function getGuideSections(): Promise<SectionRef[]> {
+  const document = await getGuideDocument();
+  return document.chapters.flatMap((chapter) =>
+    chapter.sections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      chapterId: chapter.id,
+      chapterNumber: chapter.number,
+      chapterTitle: chapter.title,
+    })),
+  );
+}
 
-export const GUIDE_SECTION_IDS: ReadonlySet<string> = new Set(
-  GUIDE_SECTIONS.map((section) => section.id),
-);
+export async function getGuideSectionIdSet(): Promise<ReadonlySet<string>> {
+  const sections = await getGuideSections();
+  return new Set(sections.map((section) => section.id));
+}
 
-export const GUIDE_SECTION_COUNT = GUIDE_SECTIONS.length;
+export async function getGuideSectionCount(): Promise<number> {
+  const sections = await getGuideSections();
+  return sections.length;
+}
 
-export function isKnownSectionId(id: unknown): id is string {
-  return typeof id === "string" && GUIDE_SECTION_IDS.has(id);
+export async function isKnownSectionId(id: unknown): Promise<boolean> {
+  if (typeof id !== "string") return false;
+  const ids = await getGuideSectionIdSet();
+  return ids.has(id);
 }

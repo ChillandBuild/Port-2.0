@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { COURSE_ACCESS_COOKIE, resolveCourseAccess } from "@/lib/backend/course-access";
 import { getSupabaseAdmin } from "@/lib/backend/supabase/admin";
-import { isKnownSectionId } from "@/lib/guide/sections";
+import { getGuideSectionIdSet } from "@/lib/guide/sections";
 
 export const runtime = "nodejs";
 
@@ -43,9 +43,10 @@ export async function POST(request: Request): Promise<Response> {
   const raw = (body as { sections?: unknown })?.sections;
   if (typeof raw !== "object" || raw === null) return NextResponse.json({ success: true });
 
+  const knownSectionIds = await getGuideSectionIdSet();
   const reported = new Map<string, number>();
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!isKnownSectionId(id)) continue;
+    if (!knownSectionIds.has(id)) continue;
     const seconds = Number(value);
     if (!Number.isFinite(seconds) || seconds <= 0) continue;
     reported.set(id, Math.min(MAX_SECONDS_PER_REPORT, Math.round(seconds)));

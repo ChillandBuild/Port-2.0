@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ADMIN } from "@/lib/content/admin";
 import { formatDuration, formatMoment } from "@/lib/course-duration";
 import type { GrantRow as Grant } from "@/lib/backend/course-grants";
-import { GUIDE_SECTION_COUNT } from "@/lib/guide/sections";
 import styles from "./Admin.module.css";
 
 type State = "not-opened" | "live" | "expired" | "lapsed" | "revoked";
@@ -34,7 +33,7 @@ const STATE_COPY: Record<State, string> = {
   revoked: ADMIN.grants.statusRevoked,
 };
 
-export function GrantRow({ grant, url }: { grant: Grant; url: string }) {
+export function GrantRow({ grant, url, sectionCount }: { grant: Grant; url: string; sectionCount: number }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -110,7 +109,7 @@ export function GrantRow({ grant, url }: { grant: Grant; url: string }) {
         <div className={styles.grantMetaRow}>
           <dt className={`mono ${styles.grantMetaLabel}`}>Read</dt>
           <dd className={`tabular ${styles.grantMetaValue}`}>
-            {readCount} / {GUIDE_SECTION_COUNT} {ADMIN.grants.sectionsRead}
+            {readCount} / {sectionCount} {ADMIN.grants.sectionsRead}
           </dd>
         </div>
 

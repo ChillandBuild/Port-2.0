@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { COURSE, COURSE_ENROLL_HREF } from "@/lib/content/course";
-import { GUIDE_DOCUMENT } from "@/lib/guide";
 import { chapterIcon } from "@/components/guide/icons";
-import { getCoursePricing, getCourseFaq } from "@/lib/backend/site-content-loaders";
+import { getCoursePricing, getCourseFaq, getGuideDocument } from "@/lib/backend/site-content-loaders";
 import { EnrollDialog } from "./EnrollDialog";
 import { CourseUnlockForm } from "./CourseUnlockForm";
 import styles from "./CourseSales.module.css";
@@ -39,7 +38,7 @@ const HERO_COPY: Record<
  */
 export async function CourseSalesPage({ state }: { state: CourseGateState }) {
   const hero = HERO_COPY[state];
-  const [pricing, faq] = await Promise.all([getCoursePricing(), getCourseFaq()]);
+  const [pricing, faq, GUIDE_DOCUMENT] = await Promise.all([getCoursePricing(), getCourseFaq(), getGuideDocument()]);
   const priceLabel = `$${pricing.priceUsd}`;
   const keyConfigured = Boolean(process.env.RAZORPAY_KEY_ID);
 

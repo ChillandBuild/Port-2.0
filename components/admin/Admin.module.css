@@ -567,6 +567,19 @@
   cursor: default;
 }
 
+.chapterSections {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.chapterSection {
+  padding: 1.1rem;
+  background: var(--surface-page);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+
 .slotRemove {
   margin-left: 0.5rem;
 }
