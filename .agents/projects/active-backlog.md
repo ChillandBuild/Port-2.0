@@ -112,6 +112,6 @@
 - Vercel production had **zero** environment variables set until 2026-09-02 (discovered
   while debugging why course unlock failed in production). `SUPABASE_URL` and
   `SUPABASE_SERVICE_ROLE_KEY` are now set; still missing: `RESEND_API_KEY`,
-  `RESEND_FROM`, `HIRE_NOTIFY_TO`, `RAZORPAY_WEBHOOK_SECRET`,
+  `RESEND_FROM`, `LEAD_NOTIFY_TO`, `RAZORPAY_WEBHOOK_SECRET`,
   `RAZORPAY_PAYMENT_PAGE_URL`. Worth auditing whether Preview/Development environments
   need any of these too — only Production was set. [[decisions-log]] [[stack-and-rules]]

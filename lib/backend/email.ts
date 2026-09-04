@@ -41,7 +41,7 @@ function formatLines(payload: SubmissionPayload): string {
  */
 export async function sendSubmissionNotification(payload: SubmissionPayload): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.HIRE_NOTIFY_TO;
+  const to = process.env.LEAD_NOTIFY_TO;
   const from = process.env.RESEND_FROM;
   if (!apiKey || !to || !from) return;
 
@@ -188,7 +188,7 @@ export interface CourseAccessNotificationDetails {
  */
 export async function sendCourseAccessNotification(details: CourseAccessNotificationDetails): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.HIRE_NOTIFY_TO;
+  const to = process.env.LEAD_NOTIFY_TO;
   const from = process.env.RESEND_FROM;
   if (!apiKey || !to || !from) return;
 
@@ -269,7 +269,7 @@ export async function sendSchedulePaymentNotification(
   slotConflict = false,
 ): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.HIRE_NOTIFY_TO;
+  const to = process.env.LEAD_NOTIFY_TO;
   const from = process.env.RESEND_FROM;
   if (!apiKey || !to || !from) return;
 

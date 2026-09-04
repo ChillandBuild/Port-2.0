@@ -45,7 +45,7 @@
     Shared by `submissions` and `course_access`.
   - `RESEND_API_KEY` — Resend dashboard. `RESEND_FROM` — a verified Resend sending
     domain (sandbox mode only delivers to the Resend account owner's own address).
-  - `HIRE_NOTIFY_TO` — the inbox that receives hire-form and case-studies-gate
+  - `LEAD_NOTIFY_TO` — the inbox that receives hire-form and case-studies-gate
     submissions; set to Sampath's real inbox before deploying.
   - `RAZORPAY_WEBHOOK_SECRET` — Razorpay dashboard → webhook config. Without it,
     `verifyRazorpaySignature` always returns false and every webhook is rejected — no
