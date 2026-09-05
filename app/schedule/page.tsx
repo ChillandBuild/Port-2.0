@@ -41,8 +41,8 @@ export default async function SchedulePage() {
         <ScheduleEngagement />
         <Estimator
           eyebrow="Interactive estimator"
-          heading="Model the pipeline before you book."
-          body="Set a market focus and a target monthly lead volume to see the meetings, the research cycle, and the tool spend those numbers imply — the same model the call starts from."
+          heading="See what the infrastructure produces before you book."
+          body="Compare a cold setup against warmed infrastructure: the sending volume each carries, the meetings that fall out of email and LinkedIn, and the tool spend behind both — the same model the call starts from."
         />
         <ScheduleTracks />
         <ScheduleCta />

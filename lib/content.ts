@@ -549,219 +549,394 @@ export const ROLES: Role[] = [
    rows in ABOUT.facts instead — a full section was doing a fact list's job,
    and it repeated the "engineer into sales" point Positioning already makes. */
 
-export type EstimatorSetupKey = "new" | "existing";
+/* ─────────────────────────────────────────────────────────────────────────
+   OUTBOUND CAPACITY ESTIMATOR
 
-export interface EstimatorSetupOption {
-  key: EstimatorSetupKey;
+   Replaces the old lead-volume/sector/ramp-curve model (see git history).
+   That model asked "how many leads do you want?" and multiplied by a sector
+   rate. This one runs the other way: the infrastructure fixes the capacity,
+   the capacity fixes the meeting count, and the client's only real choice is
+   whether the domains, inboxes and LinkedIn account already exist.
+
+   Two axes:
+     • Infrastructure  — new (cold, needs 30–45d warm-up) vs mature (warmed).
+     • Market          — B2B product (2–3 leads/mo) vs SaaS (1–2 leads/mo).
+       Market moves the commercial target only; volumes and rates are the same.
+
+   A model, not a quote. Every rate below describes the method on this page.
+   ───────────────────────────────────────────────────────────────────────── */
+
+export type InfraKey = "new" | "mature";
+export type MarketKey = "product" | "saas";
+
+/** Every cost line the client can already own; ticking one zeroes it. */
+export type OwnedAssetKey =
+  | "inboxes"
+  | "domains"
+  | "leadData"
+  | "verification"
+  | "salesNav"
+  | "linkedinAutomation"
+  | "crm";
+
+/** Inclusive low/high band. Almost every figure in this model is a range. */
+export interface Band {
+  min: number;
+  max: number;
+}
+
+export interface EmailProfile {
+  domains: string;
+  inboxes: number;
+  /** Sending throttle per inbox per working day. */
+  perInboxPerDay: Band;
+  /**
+   * Planning volume for the month, as stated on the sheet. The honest daily
+   * range (inboxes x perInboxPerDay x WORKING_DAYS) lands either side of it —
+   * 1,980–2,310 rounds to 2,000; 9,900–11,550 rounds to 10,000 — and the
+   * conversion runs off this single rounded figure so the published meeting
+   * counts stay reproducible rather than drifting with the rounding.
+   */
+  planningVolume: number;
+  /** Share of sent emails that becomes a marketing-qualified meeting. */
+  mqlRate: Band;
+}
+
+export interface LinkedinProfile {
+  accounts: string;
+  connectionsPerMonth: number;
+  acceptanceRate: number;
+  replyRate: number;
+  /** Applied to repliers, not to raw connections. */
+  mqlRate: Band;
+}
+
+export interface InfraProfile {
+  key: InfraKey;
   label: string;
   tag: string;
   description: string;
+  email: EmailProfile;
+  linkedin: LinkedinProfile;
+  /** Null when the infrastructure is already warmed. */
+  warmup: { label: string; email: string; linkedin: string } | null;
+  /** Whether the owned-asset checklist applies (mature setups only). */
+  ownedAssetsApply: boolean;
 }
 
-export interface EstimatorSector {
-  key: string;
+export interface MarketProfile {
+  key: MarketKey;
   label: string;
-  /** Share of monthly lead volume that becomes a booked meeting / MQL. */
-  meetingRate: number;
-  /** Flat monthly tool spend (domains, inboxes, Sales Nav, sending tools). */
-  baseToolCost: number;
+  tag: string;
+  /** Contracted leads per month this market is sold against. */
+  target: Band;
 }
 
-export interface EstimatorTier {
-  /** Applies when monthly volume is at or below this number. */
-  upTo: number;
-  label: string;
-  /** Concrete ramp length in months for projection table. */
-  rampMonths: number;
+export interface CostLine {
+  key: OwnedAssetKey;
+  category: string;
+  item: string;
+  /** Monthly spend in the line's own currency. */
+  monthly: Band;
+  currency: "usd" | "inr";
+  note: string;
 }
 
-/**
- * A model, not a claim. The rates below describe the outbound method on this page,
- * not a guaranteed outcome, and the component labels itself as an estimate wherever it renders.
- */
+/** Sending days in a month — weekends never carry outbound. */
+export const WORKING_DAYS = 22;
+
 export const ESTIMATOR = {
   eyebrow: "Interactive estimator",
-  heading: "Estimate pipeline outcomes for your target market.",
+  heading: "What the infrastructure can actually produce.",
   body:
-    "Set an infrastructure setup, a market focus, and a target monthly lead volume to model projected meeting conversions, the research cycle, and the flat tool spend behind them.",
-  volume: { min: 30, max: 400, step: 10, default: 120, unit: "leads / mo" },
+    "Outbound output is a capacity question, not a wish. Pick the infrastructure you are starting from and the market you sell into; the sending volume, the funnel, the meeting count and the monthly tool spend all fall out of it.",
   researchCycle: "30–45 days (required for all campaigns)",
+  campaign: { duration: "45 days", cadence: "Weekly drip", followUps: 7 },
   note:
-    "A model, not a quote. Month 1 is dedicated to market research, ICP mapping, list validation, and copy calibration for all setups. Existing setups scale immediately in Month 2; new domains ramp gradually to protect deliverability health. The conversion rates track the method on this page; a real number comes out of a scoping call.",
+    "A model, not a quote. Email and LinkedIn run as two independent channels and their meetings add up. Conversion rates track the method on this page and assume the copy, list and follow-up cadence described above. A real number comes out of a scoping call.",
   toolsLink: { label: "See the stack behind the cost", href: "/#range" },
-  /** Surfaced right under the modelled numbers, where interest in a real
-   *  answer peaks — the same free first call CONTACT and SCHEDULE describe,
-   *  said again at the moment it's most likely to be acted on. */
   freeCallNote: {
     text: "First call is free — 30 to 45 minutes to go through your numbers.",
     cta: { label: "Book the call", href: "#book" },
   },
-  setups: [
+
+  markets: [
     {
-      key: "new" as EstimatorSetupKey,
-      label: "New setup",
-      tag: "Needs domain & mail warmup",
-      description: "Fresh domain & inboxes require a gradual deliverability warmup curve after the 30–45d research phase.",
+      key: "product" as MarketKey,
+      label: "B2B product",
+      tag: "2–3 leads / mo",
+      target: { min: 2, max: 3 },
     },
     {
-      key: "existing" as EstimatorSetupKey,
-      label: "Existing setup",
-      tag: "Domain & inboxes ready",
-      description: "Mature inboxes are already warmed; launches at 100% steady-state capacity right after the 30–45d research phase.",
+      key: "saas" as MarketKey,
+      label: "SaaS",
+      tag: "1–2 leads / mo",
+      target: { min: 1, max: 2 },
     },
-  ] as EstimatorSetupOption[],
-  sectors: [
-    { key: "saas", label: "B2B product based", meetingRate: 0.15, baseToolCost: 450 },
-    { key: "services", label: "Service-based sector", meetingRate: 0.12, baseToolCost: 350 },
-  ] as EstimatorSector[],
-  mqlTiers: [
-    { upTo: 30, label: "45–90 days", rampMonths: 3 },
-    { upTo: 70, label: "75–100 days", rampMonths: 3 },
-    { upTo: 120, label: "90–120 days", rampMonths: 4 },
-    { upTo: 180, label: "110–140 days", rampMonths: 5 },
-    { upTo: 250, label: "130–160 days", rampMonths: 5 },
-    { upTo: Number.POSITIVE_INFINITY, label: "150–180 days", rampMonths: 6 },
-  ] as EstimatorTier[],
+  ] as MarketProfile[],
+
+  infra: [
+    {
+      key: "new" as InfraKey,
+      label: "Type 1 — New company",
+      tag: "Cold domain & inboxes",
+      description:
+        "Fresh domain, three new inboxes and a new LinkedIn account. Sending is throttled low while the mailboxes earn reputation, so month-one capacity is a fraction of what the same setup carries once warmed.",
+      email: {
+        domains: "1 new domain",
+        inboxes: 3,
+        perInboxPerDay: { min: 30, max: 35 },
+        planningVolume: 2000,
+        mqlRate: { min: 0.001, max: 0.0015 },
+      },
+      linkedin: {
+        accounts: "1 new account",
+        connectionsPerMonth: 650,
+        acceptanceRate: 0.54,
+        replyRate: 0.43,
+        mqlRate: { min: 0.013, max: 0.027 },
+      },
+      warmup: {
+        label: "30–45 days",
+        email: "New inboxes warm up before volume sending begins.",
+        linkedin: "New account ramps connection requests gradually to avoid limits.",
+      },
+      ownedAssetsApply: false,
+    },
+    {
+      key: "mature" as InfraKey,
+      label: "Type 2 — Mature infrastructure",
+      tag: "Domain & inboxes already warmed",
+      description:
+        "Aged domain, three warmed inboxes and an established LinkedIn account. No warm-up window, and each inbox carries roughly five times the daily volume — which is where the whole difference in output comes from.",
+      email: {
+        domains: "1 mature domain",
+        inboxes: 3,
+        perInboxPerDay: { min: 150, max: 175 },
+        planningVolume: 10000,
+        mqlRate: { min: 0.0008, max: 0.001 },
+      },
+      linkedin: {
+        accounts: "1 mature account",
+        connectionsPerMonth: 650,
+        acceptanceRate: 0.54,
+        replyRate: 0.43,
+        mqlRate: { min: 0.013, max: 0.027 },
+      },
+      warmup: null,
+      ownedAssetsApply: true,
+    },
+  ] as InfraProfile[],
+
+  /**
+   * Mid-tier plan pricing, not entry-tier. The floor prices these vendors
+   * advertise ($100 Maildoso, $37 Clay, $29 MillionVerifier, $25 Waalaxy)
+   * do not carry three inboxes at working volume, so the bands below are what
+   * the stack actually costs in service — totalling USD 500–650 / month.
+   * Sales Navigator stays in rupees because that is how it is billed here.
+   */
+  costs: [
+    {
+      key: "inboxes" as OwnedAssetKey,
+      category: "Email tool",
+      item: "Maildoso",
+      monthly: { min: 150, max: 180 },
+      currency: "usd" as const,
+      note: "Inbox provisioning and sending infrastructure for 3 inboxes.",
+    },
+    {
+      key: "domains" as OwnedAssetKey,
+      category: "Email infrastructure",
+      item: "Domains & inbox seats",
+      monthly: { min: 40, max: 50 },
+      currency: "usd" as const,
+      note: "Registration plus mailbox seats, amortised monthly.",
+    },
+    {
+      key: "leadData" as OwnedAssetKey,
+      category: "Lead data",
+      item: "Instantly / Smartlead / Clay",
+      monthly: { min: 100, max: 150 },
+      currency: "usd" as const,
+      note: "Lead sourcing and enrichment.",
+    },
+    {
+      key: "verification" as OwnedAssetKey,
+      category: "Verification",
+      item: "MillionVerifier",
+      monthly: { min: 100, max: 120 },
+      currency: "usd" as const,
+      note: "Email verification before send — protects the domain.",
+    },
+    {
+      key: "linkedinAutomation" as OwnedAssetKey,
+      category: "LinkedIn tool",
+      item: "Waalaxy / SalesRobot",
+      monthly: { min: 60, max: 90 },
+      currency: "usd" as const,
+      note: "Sequenced LinkedIn outreach within safe limits.",
+    },
+    {
+      key: "crm" as OwnedAssetKey,
+      category: "CRM",
+      item: "HubSpot / Pipedrive / Zoho",
+      monthly: { min: 50, max: 60 },
+      currency: "usd" as const,
+      note: "Lead tracking and pipeline stages.",
+    },
+    {
+      key: "salesNav" as OwnedAssetKey,
+      category: "LinkedIn tool",
+      item: "Sales Navigator",
+      monthly: { min: 10500, max: 10500 },
+      currency: "inr" as const,
+      note: "Lead sourcing on LinkedIn. Billed in rupees.",
+    },
+  ] as CostLine[],
 };
 
-/**
- * Back-loaded ramp curves keyed by ramp length in months.
- * Each array sums to the fraction of target volume reached that month after the research phase.
- */
-const RAMP_CURVES: Record<number, number[]> = {
-  3: [0.30, 0.65, 1.00],
-  4: [0.20, 0.45, 0.75, 1.00],
-  5: [0.15, 0.30, 0.55, 0.80, 1.00],
-  6: [0.10, 0.25, 0.45, 0.65, 0.85, 1.00],
-};
+/* ── Derived shapes ──────────────────────────────────────────────────────── */
 
-export type MonthPhase = "research" | "ramp" | "steady";
+export interface EmailResult {
+  inboxes: number;
+  perInboxPerDay: Band;
+  perDay: Band;
+  workingDays: number;
+  /** Honest month total from the daily band, before rounding. */
+  perMonthRaw: Band;
+  /** Rounded planning figure the conversion actually runs on. */
+  perMonth: number;
+  mqlRate: Band;
+  meetings: Band;
+}
 
-/** One row in the month-by-month projection table. */
-export interface ProjectionMonth {
-  month: number;
-  /** Phase of the month: 'research' (Month 1 for all), 'ramp' (warmup for new), or 'steady'. */
-  phase: MonthPhase;
-  /** Whether this month is in ramp/warmup (for backward compatibility). */
-  isRamp: boolean;
-  leads: number;
-  meetings: number;
-  toolCost: number;
-  cumulativeCost: number;
+export interface LinkedinResult {
+  connections: number;
+  acceptanceRate: number;
+  accepted: number;
+  replyRate: number;
+  replies: number;
+  mqlRate: Band;
+  meetings: Band;
+}
+
+export interface CostResult {
+  lines: (CostLine & { included: boolean })[];
+  usdMonthly: Band;
+  usdYearly: Band;
+  inrMonthly: Band;
+  inrYearly: Band;
 }
 
 export interface EstimateResult {
-  sector: EstimatorSector;
-  setup: EstimatorSetupOption;
-  /** Booked meetings / MQL leads per month, at steady state (min 1). */
-  meetings: number;
-  /** Modelled flat monthly tool spend. */
-  toolsCost: number;
-  /** How long before output reaches the steady-state rate above. */
-  rampLabel: string;
-  /** Month-by-month projection: Month 1 research + ramp (if new) or steady-state months. */
-  projection: ProjectionMonth[];
+  infra: InfraProfile;
+  market: MarketProfile;
+  email: EmailResult;
+  linkedin: LinkedinResult;
+  /** Email meetings plus LinkedIn meetings. */
+  combined: Band;
+  /** Combined output measured against the contracted target. */
+  meetsTarget: boolean;
+  cost: CostResult;
 }
 
+const addBands = (a: Band, b: Band): Band => ({ min: a.min + b.min, max: a.max + b.max });
+const scaleBand = (b: Band, n: number): Band => ({ min: b.min * n, max: b.max * n });
+
 /**
- * The one estimator model. Both the interactive panel and the chat route call
+ * The one estimator model. The interactive panel and the chat route both call
  * this — do not re-implement the arithmetic anywhere else. Output is a pure
- * function of monthly lead volume, sector key, and setup key.
+ * function of infrastructure key, market key, and the set of already-owned
+ * assets (which only ever removes cost, never changes volume).
  */
 export function estimateOutcome(
-  leads: number,
-  sectorKey: string,
-  setupKey: EstimatorSetupKey = "new"
+  infraKey: InfraKey = "new",
+  marketKey: MarketKey = "product",
+  ownedAssets: readonly OwnedAssetKey[] = []
 ): EstimateResult {
-  const sector = ESTIMATOR.sectors.find((s) => s.key === sectorKey) ?? ESTIMATOR.sectors[0];
-  const setup = ESTIMATOR.setups.find((s) => s.key === setupKey) ?? ESTIMATOR.setups[0];
-  const tiers = ESTIMATOR.mqlTiers;
-  const tier = tiers.find((t) => leads <= t.upTo) ?? tiers[tiers.length - 1];
+  const infra = ESTIMATOR.infra.find((i) => i.key === infraKey) ?? ESTIMATOR.infra[0];
+  const market = ESTIMATOR.markets.find((m) => m.key === marketKey) ?? ESTIMATOR.markets[0];
 
-  const steadyMeetings = Math.max(1, Math.round(leads * sector.meetingRate));
-  const steadyToolsCost = sector.baseToolCost;
+  /* Email: inboxes x throttle x working days, converted at the MQL rate. */
+  const e = infra.email;
+  const perDay = scaleBand(e.perInboxPerDay, e.inboxes);
+  const email: EmailResult = {
+    inboxes: e.inboxes,
+    perInboxPerDay: e.perInboxPerDay,
+    perDay,
+    workingDays: WORKING_DAYS,
+    perMonthRaw: scaleBand(perDay, WORKING_DAYS),
+    perMonth: e.planningVolume,
+    mqlRate: e.mqlRate,
+    meetings: {
+      min: Math.round(e.planningVolume * e.mqlRate.min),
+      max: Math.round(e.planningVolume * e.mqlRate.max),
+    },
+  };
 
-  const projection: ProjectionMonth[] = [];
-  let cumulativeCost = 0;
+  /* LinkedIn: connections narrow to accepters, accepters to repliers, and the
+     MQL rate applies to repliers — the only stage where a meeting is on offer. */
+  const l = infra.linkedin;
+  const accepted = Math.round(l.connectionsPerMonth * l.acceptanceRate);
+  const replies = Math.round(accepted * l.replyRate);
+  const linkedin: LinkedinResult = {
+    connections: l.connectionsPerMonth,
+    acceptanceRate: l.acceptanceRate,
+    accepted,
+    replyRate: l.replyRate,
+    replies,
+    mqlRate: l.mqlRate,
+    meetings: {
+      min: Math.round(replies * l.mqlRate.min),
+      max: Math.round(replies * l.mqlRate.max),
+    },
+  };
 
-  if (setupKey === "existing") {
-    // Existing setup: Month 1 is 30-45d Research, Month 2..6 are immediate steady state (100%)
-    const totalMonths = 6;
-    for (let i = 0; i < totalMonths; i++) {
-      const monthNumber = i + 1;
-      const isResearch = monthNumber === 1;
-      const phase: MonthPhase = isResearch ? "research" : "steady";
-      const monthLeads = isResearch ? 0 : leads;
-      const monthMeetings = isResearch ? 0 : steadyMeetings;
-      const monthToolCost = steadyToolsCost;
-      cumulativeCost += monthToolCost;
+  const combined = addBands(email.meetings, linkedin.meetings);
 
-      projection.push({
-        month: monthNumber,
-        phase,
-        isRamp: false,
-        leads: monthLeads,
-        meetings: monthMeetings,
-        toolCost: monthToolCost,
-        cumulativeCost,
-      });
-    }
+  /* Cost: an owned asset zeroes its line, but only for mature setups — a new
+     company has nothing to own yet, so its checklist never applies. */
+  const owned = infra.ownedAssetsApply ? new Set(ownedAssets) : new Set<OwnedAssetKey>();
+  const lines = ESTIMATOR.costs.map((line) => ({ ...line, included: !owned.has(line.key) }));
 
-    return {
-      sector,
-      setup,
-      meetings: steadyMeetings,
-      toolsCost: steadyToolsCost,
-      rampLabel: "30–45 days (Research only)",
-      projection,
-    };
-  }
+  const sumBy = (currency: "usd" | "inr"): Band =>
+    lines
+      .filter((line) => line.currency === currency && line.included)
+      .reduce<Band>((acc, line) => addBands(acc, line.monthly), { min: 0, max: 0 });
 
-  // New setup: Month 1 is 30-45d Research, Month 2..N is deliverability ramp curve, followed by steady-state months
-  const rampMonths = tier.rampMonths;
-  const curve = RAMP_CURVES[rampMonths] ?? RAMP_CURVES[4];
-
-  // Month 1: Research (0 outreach leads, 0 meetings)
-  cumulativeCost += steadyToolsCost;
-  projection.push({
-    month: 1,
-    phase: "research",
-    isRamp: false,
-    leads: 0,
-    meetings: 0,
-    toolCost: steadyToolsCost,
-    cumulativeCost,
-  });
-
-  // Months 2 to totalMonths: Ramp and steady state
-  for (let i = 0; i < rampMonths + 1; i++) {
-    const monthNumber = i + 2;
-    const fraction = i < rampMonths ? curve[i] : 1.0;
-    const phase: MonthPhase = fraction < 1.0 ? "ramp" : "steady";
-    const monthLeads = Math.round(leads * fraction);
-    const monthMeetings = Math.max(1, Math.round(monthLeads * sector.meetingRate));
-    const monthToolCost = steadyToolsCost;
-    cumulativeCost += monthToolCost;
-
-    projection.push({
-      month: monthNumber,
-      phase,
-      isRamp: phase === "ramp",
-      leads: monthLeads,
-      meetings: monthMeetings,
-      toolCost: monthToolCost,
-      cumulativeCost,
-    });
-  }
+  const usdMonthly = sumBy("usd");
+  const inrMonthly = sumBy("inr");
 
   return {
-    sector,
-    setup,
-    meetings: steadyMeetings,
-    toolsCost: steadyToolsCost,
-    rampLabel: `${tier.label} (30–45d research + mailbox warmup)`,
-    projection,
+    infra,
+    market,
+    email,
+    linkedin,
+    combined,
+    meetsTarget: combined.min >= market.target.max,
+    cost: {
+      lines,
+      usdMonthly,
+      usdYearly: scaleBand(usdMonthly, 12),
+      inrMonthly,
+      inrYearly: scaleBand(inrMonthly, 12),
+    },
   };
+}
+
+/** "2–3", or "3" when the band has collapsed. Used everywhere a Band renders. */
+export function formatBand(band: Band, suffix = ""): string {
+  const fmt = (n: number) => n.toLocaleString();
+  const body = band.min === band.max ? fmt(band.min) : `${fmt(band.min)}–${fmt(band.max)}`;
+  return suffix ? `${body} ${suffix}` : body;
+}
+
+/** Percentage band as written on the sheet: "0.10–0.15%". */
+export function formatRateBand(band: Band, decimals = 2): string {
+  const fmt = (n: number) => Number((n * 100).toFixed(decimals)).toFixed(decimals);
+  return band.min === band.max
+    ? `${fmt(band.min)}%`
+    : `${fmt(band.min)}–${fmt(band.max)}%`;
 }
 
 export const LINKEDIN = {

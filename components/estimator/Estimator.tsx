@@ -1,18 +1,43 @@
 "use client";
 
 /**
- * Interactive estimator. Pick an infrastructure setup, a market focus, and a
- * monthly lead volume; the panel models steady-state booked meetings, the
- * 30–45 day research phase, the deliverability ramp (for new setups), and the
- * flat tool spend behind them. A month-by-month projection table shows how leads,
- * meetings, and costs evolve from research to steady state.
+ * Outbound capacity estimator. Two infrastructure types sit side by side —
+ * Type 1 starts cold, Type 2 starts warmed — because the whole point of the
+ * model is the contrast between them. Each column runs the same two channels
+ * (email and LinkedIn) down to a meeting count, and the two counts add up.
+ *
+ * The market toggle moves the commercial target only; volumes and conversion
+ * rates are identical across markets. The owned-asset checklist applies to the
+ * mature column alone — a new company has nothing to already own.
  */
 
 import { useId, useMemo, useState } from "react";
-import { ESTIMATOR, type EstimatorSetupKey, estimateOutcome } from "@/lib/content";
+import {
+  ESTIMATOR,
+  type Band,
+  type MarketKey,
+  type OwnedAssetKey,
+  estimateOutcome,
+  formatBand,
+  formatRateBand,
+} from "@/lib/content";
 import styles from "./Estimator.module.css";
 
-const { volume, sectors, setups } = ESTIMATOR;
+const { markets, infra, costs, campaign } = ESTIMATOR;
+
+/** Checklist labels for the mature column. Order follows the cost table. */
+const OWNABLE: { key: OwnedAssetKey; label: string }[] = costs.map((line) => ({
+  key: line.key,
+  label: line.item.split(" / ")[0],
+}));
+
+const usd = (n: number) => `$${n.toLocaleString()}`;
+const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+const money = (band: Band, currency: "usd" | "inr") => {
+  const fmt = currency === "usd" ? usd : inr;
+  return band.min === band.max ? fmt(band.min) : `${fmt(band.min)}–${fmt(band.max)}`;
+};
+const pct = (n: number) => `${Math.round(n * 100)}%`;
 
 interface EstimatorProps {
   /** Lets the schedule page re-pitch the same model against booking, rather
@@ -27,25 +52,17 @@ export function Estimator({
   heading = ESTIMATOR.heading,
   body = ESTIMATOR.body,
 }: EstimatorProps = {}) {
-  const [setupKey, setSetupKey] = useState<EstimatorSetupKey>(setups[0].key);
-  const [sectorKey, setSectorKey] = useState(sectors[0].key);
-  const [leads, setLeads] = useState(volume.default);
-  const sliderId = useId();
+  const [marketKey, setMarketKey] = useState<MarketKey>(markets[0].key);
+  const [owned, setOwned] = useState<OwnedAssetKey[]>([]);
+  const groupId = useId();
 
-  const outcome = useMemo(
-    () => estimateOutcome(leads, sectorKey, setupKey),
-    [leads, sectorKey, setupKey]
+  const columns = useMemo(
+    () => infra.map((profile) => estimateOutcome(profile.key, marketKey, owned)),
+    [marketKey, owned]
   );
 
-  const results = useMemo(
-    () => [
-      { label: "Meetings & MQL leads at steady state", value: `~${outcome.meetings} a month` },
-      { label: "Initial research cycle", value: ESTIMATOR.researchCycle },
-      { label: "Timeline to steady state", value: outcome.rampLabel },
-      { label: "Flat monthly tool stack cost", value: `$${outcome.toolsCost.toLocaleString()} / mo` },
-    ],
-    [outcome]
-  );
+  const toggleOwned = (key: OwnedAssetKey) =>
+    setOwned((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   return (
     <section
@@ -62,166 +79,235 @@ export function Estimator({
         <p className={styles.standfirst}>{body}</p>
       </div>
 
-      <div className={styles.panel} data-reveal>
-        <div className={styles.controls}>
-          <div className={styles.group}>
-            <p className={`mono ${styles.label}`} id={`${sliderId}-setup`}>
-              Domain &amp; inbox infrastructure
-            </p>
-            <div className={styles.sectors} role="group" aria-labelledby={`${sliderId}-setup`}>
-              {setups.map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  className={styles.pill}
-                  aria-pressed={s.key === setupKey}
-                  onClick={() => setSetupKey(s.key)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className={styles.marketBar} data-reveal>
+        <p className={`mono ${styles.label}`} id={`${groupId}-market`}>
+          Market you sell into
+        </p>
+        <div className={styles.pills} role="group" aria-labelledby={`${groupId}-market`}>
+          {markets.map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              className={styles.pill}
+              aria-pressed={m.key === marketKey}
+              onClick={() => setMarketKey(m.key)}
+            >
+              {m.label}
+              <span className={styles.pillTag}>{m.tag}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-          <div className={styles.group}>
-            <p className={`mono ${styles.label}`} id={`${sliderId}-sector`}>
-              Target market focus
-            </p>
-            <div className={styles.sectors} role="group" aria-labelledby={`${sliderId}-sector`}>
-              {sectors.map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  className={styles.pill}
-                  aria-pressed={s.key === sectorKey}
-                  onClick={() => setSectorKey(s.key)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className={styles.compare} data-reveal>
+        {columns.map((c) => (
+          <article
+            key={c.infra.key}
+            className={styles.column}
+            data-warm={c.infra.warmup ? "cold" : "warm"}
+            aria-label={c.infra.label}
+          >
+            <header className={styles.columnHead}>
+              <h3 className={styles.columnTitle}>{c.infra.label}</h3>
+              <p className={`mono ${styles.columnTag}`}>{c.infra.tag}</p>
+              <p className={styles.columnBody}>{c.infra.description}</p>
+            </header>
 
-          <div className={styles.group}>
-            <div className={styles.sliderHead}>
-              <label className={`mono ${styles.label}`} htmlFor={sliderId}>
-                Target lead &amp; prospect volume
-              </label>
-              <output className={`mono ${styles.badge}`} htmlFor={sliderId}>
-                {leads.toLocaleString()} {volume.unit}
-              </output>
+            <div className={styles.channel}>
+              <h4 className={`mono ${styles.channelTitle}`}>Email channel</h4>
+              <dl className={styles.funnel}>
+                <Row label="Domain" value={c.infra.email.domains} />
+                <Row label="Inboxes" value={`${c.email.inboxes}`} />
+                <Row label="Emails / inbox / day" value={formatBand(c.email.perInboxPerDay)} />
+                <Row
+                  label="Emails / day"
+                  value={formatBand(c.email.perDay)}
+                  calc={`${c.email.inboxes} × ${formatBand(c.email.perInboxPerDay)}`}
+                />
+                <Row label="Working days" value={`${c.email.workingDays}`} />
+                <Row
+                  label="Emails / month"
+                  value={`~${c.email.perMonth.toLocaleString()}`}
+                  calc={formatBand(c.email.perMonthRaw)}
+                />
+                <Row label="MQL conversion" value={formatRateBand(c.email.mqlRate)} />
+              </dl>
+              <p className={styles.channelOut}>
+                <span className={`tabular ${styles.channelOutValue}`}>
+                  {formatBand(c.email.meetings)}
+                </span>
+                <span className={`mono ${styles.channelOutLabel}`}>meetings / month</span>
+              </p>
             </div>
-            <input
-              id={sliderId}
-              type="range"
-              className={styles.slider}
-              min={volume.min}
-              max={volume.max}
-              step={volume.step}
-              value={leads}
-              onChange={(e) => setLeads(Number(e.target.value))}
-            />
-          </div>
 
-          <a className={styles.toolsLink} href={ESTIMATOR.toolsLink.href} data-magnet="0.3">
-            {ESTIMATOR.toolsLink.label} <span className={styles.toolsArrow} aria-hidden="true">↓</span>
-          </a>
+            <div className={styles.channel}>
+              <h4 className={`mono ${styles.channelTitle}`}>LinkedIn channel</h4>
+              <dl className={styles.funnel}>
+                <Row label="Account" value={c.infra.linkedin.accounts} />
+                <Row label="Connections / month" value={c.linkedin.connections.toLocaleString()} />
+                <Row
+                  label={`Accepted (${pct(c.linkedin.acceptanceRate)})`}
+                  value={`~${c.linkedin.accepted}`}
+                />
+                <Row
+                  label={`Replies (${pct(c.linkedin.replyRate)})`}
+                  value={`~${c.linkedin.replies}`}
+                />
+                <Row
+                  label="MQL conversion"
+                  value={formatRateBand(c.linkedin.mqlRate, 1)}
+                  calc="of repliers"
+                />
+              </dl>
+              <p className={styles.channelOut}>
+                <span className={`tabular ${styles.channelOutValue}`}>
+                  {formatBand(c.linkedin.meetings)}
+                </span>
+                <span className={`mono ${styles.channelOutLabel}`}>meetings / month</span>
+              </p>
+            </div>
+
+            <footer className={styles.combined}>
+              <p className={`mono ${styles.combinedLabel}`}>Combined projection</p>
+              <p className={`tabular ${styles.combinedValue}`}>{formatBand(c.combined)}</p>
+              <p className={`mono ${styles.combinedUnit}`}>meetings / month</p>
+              <p className={`mono ${styles.verdict}`} data-met={c.meetsTarget}>
+                {c.meetsTarget ? "Clears" : "Below"} the {formatBand(c.market.target)} / month{" "}
+                {c.market.label} target
+              </p>
+              <p className={`mono ${styles.warmupNote}`}>
+                {c.infra.warmup
+                  ? `Warm-up ${c.infra.warmup.label} before this rate is reached`
+                  : "No warm-up — sending starts at full rate"}
+              </p>
+            </footer>
+          </article>
+        ))}
+      </div>
+
+      <div className={styles.timeline} data-reveal aria-label="Campaign timeline">
+        <div className={styles.stage} data-stage="warmup">
+          <p className={`mono ${styles.stageLabel}`}>Warm-up</p>
+          <p className={styles.stageValue}>30–45 days</p>
+          <p className={styles.stageNote}>Type 1 only. Mature infrastructure skips it.</p>
+        </div>
+        <span className={styles.stageArrow} aria-hidden="true">→</span>
+        <div className={styles.stage} data-stage="campaign">
+          <p className={`mono ${styles.stageLabel}`}>Campaign</p>
+          <p className={styles.stageValue}>{campaign.duration}</p>
+          <p className={styles.stageNote}>
+            {campaign.cadence}, {campaign.followUps} strategic follow-ups.
+          </p>
+        </div>
+        <span className={styles.stageArrow} aria-hidden="true">→</span>
+        <div className={styles.stage} data-stage="steady">
+          <p className={`mono ${styles.stageLabel}`}>Steady state</p>
+          <p className={styles.stageValue}>Full rate</p>
+          <p className={styles.stageNote}>Meeting counts above hold from here.</p>
+        </div>
+      </div>
+
+      <div className={styles.costBlock} data-reveal>
+        <div className={styles.costHead}>
+          <h3 className={styles.costTitle}>Monthly tool stack</h3>
+          <p className={styles.costBody}>
+            Mid-tier plans at working volume, not entry tiers. Already own a line? Tick it — it
+            drops out of the Type 2 total.
+          </p>
         </div>
 
-        <dl className={styles.results} aria-live="polite" data-tilt="5">
-          {results.map((row) => (
-            <div className={styles.result} key={row.label}>
-              <dt className={`mono ${styles.resultLabel}`}>{row.label}</dt>
-              <dd className={`tabular ${styles.resultValue}`}>{row.value}</dd>
-            </div>
+        <fieldset className={styles.checklist}>
+          <legend className={`mono ${styles.label}`}>Already in place (Type 2)</legend>
+          {OWNABLE.map((asset) => (
+            <label key={asset.key} className={styles.check}>
+              <input
+                type="checkbox"
+                checked={owned.includes(asset.key)}
+                onChange={() => toggleOwned(asset.key)}
+              />
+              <span>{asset.label}</span>
+            </label>
           ))}
-          <p className={`mono ${styles.note}`}>{ESTIMATOR.note}</p>
-          <p className={styles.freeCall}>
-            {ESTIMATOR.freeCallNote.text}{" "}
-            <a className={styles.freeCallLink} href={ESTIMATOR.freeCallNote.cta.href}>
-              {ESTIMATOR.freeCallNote.cta.label}
-            </a>
-          </p>
-        </dl>
+        </fieldset>
+
+        <div className={styles.tableScroll}>
+          <table className={styles.costTable}>
+            <thead>
+              <tr>
+                <th className={`mono ${styles.th}`}>Tool</th>
+                <th className={`mono ${styles.th}`}>Monthly</th>
+                <th className={`mono ${styles.th}`}>Yearly</th>
+                <th className={`mono ${styles.th}`}>Type 2 net</th>
+              </tr>
+            </thead>
+            <tbody>
+              {columns[1].cost.lines.map((line) => (
+                <tr key={line.key} className={line.included ? undefined : styles.droppedRow}>
+                  <td className={styles.td}>
+                    <span className={styles.costItem}>{line.item}</span>
+                    <span className={`mono ${styles.costCategory}`}>{line.category}</span>
+                  </td>
+                  <td className={`tabular ${styles.td}`}>{money(line.monthly, line.currency)}</td>
+                  <td className={`tabular ${styles.td}`}>
+                    {money({ min: line.monthly.min * 12, max: line.monthly.max * 12 }, line.currency)}
+                  </td>
+                  <td className={`tabular ${styles.td}`}>
+                    {line.included ? money(line.monthly, line.currency) : "0 — owned"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th className={styles.tf} scope="row">
+                  USD total
+                </th>
+                <td className={`tabular ${styles.tf}`}>{money(columns[0].cost.usdMonthly, "usd")}</td>
+                <td className={`tabular ${styles.tf}`}>{money(columns[0].cost.usdYearly, "usd")}</td>
+                <td className={`tabular ${styles.tf}`}>{money(columns[1].cost.usdMonthly, "usd")}</td>
+              </tr>
+              <tr>
+                <th className={styles.tf} scope="row">
+                  INR total
+                </th>
+                <td className={`tabular ${styles.tf}`}>{money(columns[0].cost.inrMonthly, "inr")}</td>
+                <td className={`tabular ${styles.tf}`}>{money(columns[0].cost.inrYearly, "inr")}</td>
+                <td className={`tabular ${styles.tf}`}>{money(columns[1].cost.inrMonthly, "inr")}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <a className={styles.toolsLink} href={ESTIMATOR.toolsLink.href} data-magnet="0.3">
+          {ESTIMATOR.toolsLink.label}{" "}
+          <span className={styles.toolsArrow} aria-hidden="true">
+            ↓
+          </span>
+        </a>
       </div>
 
-      {/* Month-by-month projection table */}
-      <div className={styles.projectionWrap} data-reveal>
-        <details className={styles.projectionDetails}>
-          <summary className={`mono ${styles.projectionSummary}`}>Month-by-month projection</summary>
-          <div className={styles.tableScroll}>
-            <table className={styles.projectionTable} aria-live="polite">
-              <thead>
-                <tr>
-                  <th className={`mono ${styles.th}`}>Month</th>
-                  <th className={`mono ${styles.th}`}>Leads</th>
-                  <th className={`mono ${styles.th}`}>Meetings</th>
-                  <th className={`mono ${styles.th}`}>Tool cost</th>
-                  <th className={`mono ${styles.th}`}>Cumulative cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {outcome.projection.map((row) => (
-                  <tr
-                    key={row.month}
-                    className={
-                      row.phase === "research"
-                        ? styles.researchRow
-                        : row.phase === "ramp"
-                        ? styles.rampRow
-                        : styles.steadyRow
-                    }
-                  >
-                    <td className={`tabular ${styles.td}`}>
-                      {row.month}
-                      {row.phase === "research" && (
-                        <span className={`mono ${styles.researchBadge}`}>research</span>
-                      )}
-                      {row.phase === "ramp" && (
-                        <span className={`mono ${styles.rampBadge}`}>ramp</span>
-                      )}
-                    </td>
-                    <td className={`tabular ${styles.td}`}>
-                      {row.phase === "research" ? "—" : row.leads.toLocaleString()}
-                    </td>
-                    <td className={`tabular ${styles.td}`}>
-                      {row.phase === "research" ? "—" : `~${row.meetings}`}
-                    </td>
-                    <td className={`tabular ${styles.td}`}>${row.toolCost.toLocaleString()}</td>
-                    <td className={`tabular ${styles.td}`}>${row.cumulativeCost.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </details>
-
-        <details className={styles.explainerDetails}>
-          <summary className={`mono ${styles.explainerSummary}`}>
-            How the math works
-          </summary>
-          <div className={styles.explainerGrid}>
-            <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>Flat Tool Spend</h4>
-              <p className={styles.explainerText}>
-                Tool cost is a <strong>flat monthly subscription</strong> (${outcome.toolsCost}/mo for domains, inboxes, Sales Navigator, and sending infrastructure) with <strong>zero per-lead markups</strong>.
-              </p>
-            </div>
-            <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>Month 1 Research Phase</h4>
-              <p className={styles.explainerText}>
-                Every campaign dedicates the first <strong>30–45 days</strong> to deep market research, ICP mapping, account list validation, and copy calibration before active outreach begins.
-              </p>
-            </div>
-            <div className={styles.explainerCol}>
-              <h4 className={`mono ${styles.explainerTitle}`}>Ramp vs Steady State</h4>
-              <p className={styles.explainerText}>
-                <strong>Existing setups</strong> launch at 100% capacity in Month 2. <strong>New setups</strong> follow a gradual deliverability warmup curve across subsequent months to protect mailbox health and inbox placement.
-              </p>
-            </div>
-          </div>
-        </details>
+      <div className={styles.foot} data-reveal>
+        <p className={styles.note}>{ESTIMATOR.note}</p>
+        <p className={styles.freeCall}>
+          {ESTIMATOR.freeCallNote.text}{" "}
+          <a className={styles.freeCallLink} href={ESTIMATOR.freeCallNote.cta.href}>
+            {ESTIMATOR.freeCallNote.cta.label}
+          </a>
+        </p>
       </div>
     </section>
+  );
+}
+
+/** One funnel line: label, value, and the arithmetic behind it when it helps. */
+function Row({ label, value, calc }: { label: string; value: string; calc?: string }) {
+  return (
+    <div className={styles.row}>
+      <dt className={styles.rowLabel}>
+        {label}
+        {calc && <span className={`mono ${styles.rowCalc}`}>{calc}</span>}
+      </dt>
+      <dd className={`tabular ${styles.rowValue}`}>{value}</dd>
+    </div>
   );
 }

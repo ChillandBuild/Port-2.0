@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ESTIMATOR, estimateOutcome } from "@/lib/content";
+import { ESTIMATOR, estimateOutcome, formatBand, formatRateBand } from "@/lib/content";
 import { getIdentity, getSchedulePricing, getChatbotContent, type ChatbotAnswer } from "@/lib/backend/site-content-loaders";
 import { interpolate } from "@/lib/backend/template";
 
@@ -40,21 +40,32 @@ export async function POST(req: NextRequest) {
 
   let data: Reply;
 
-  // The one intent that runs real computation (estimateOutcome on numbers
-  // parsed from the message) rather than returning stored text — checked
-  // before the data-driven answers below so its keywords can't be shadowed
-  // by an admin-edited answer that happens to share a trigger word.
-  if (q.includes("estimate") || q.includes("leads/mo") || q.includes("leads / mo") || q.match(/\d+\s*leads/)) {
-    const raw = Number((q.match(/(\d+)\s*leads/) ?? [])[1] ?? ESTIMATOR.volume.default);
-    const volume = Math.min(ESTIMATOR.volume.max, Math.max(ESTIMATOR.volume.min, raw));
-    const sectorKey = q.includes("service") ? "services" : q.includes("mid-market") ? "midmarket" : "saas";
-    const isExisting = q.includes("existing") || q.includes("mature") || q.includes("already");
-    const setupKey = isExisting ? "existing" : "new";
-    const { sector, setup, meetings, toolsCost, rampLabel } = estimateOutcome(volume, sectorKey, setupKey);
+  // The one intent that runs real computation (estimateOutcome on the
+  // infrastructure and market named in the message) rather than returning
+  // stored text — checked before the data-driven answers below so its keywords
+  // can't be shadowed by an admin-edited answer sharing a trigger word.
+  if (
+    q.includes("estimate") ||
+    q.includes("meetings") ||
+    q.includes("how many leads") ||
+    q.includes("capacity") ||
+    q.match(/\d+\s*leads/)
+  ) {
+    const isMature =
+      q.includes("mature") || q.includes("existing") || q.includes("already") || q.includes("warmed");
+    const infraKey = isMature ? "mature" : "new";
+    const marketKey = q.includes("saas") ? "saas" : "product";
+    const { infra, market, email, linkedin, combined, cost } = estimateOutcome(infraKey, marketKey);
     data = {
       text:
-        `Model, not a quote — for ${volume} leads/mo in ${sector.label} (${setup.label}):\n\n• ~${meetings} meetings/mo at steady state (${Math.round(sector.meetingRate * 100)}% rate)\n• Timeline: ${rampLabel}\n• Flat tool stack: $${toolsCost.toLocaleString()}/mo\n• Research cycle: ${ESTIMATOR.researchCycle}\n\nReal number comes from a scoping call.`,
-      chips: ["Try 50/mo", "Try 200/mo", "Service sector"],
+        `Model, not a quote — ${infra.label}, ${market.label}:\n\n` +
+        `• Email: ${email.inboxes} inboxes × ${formatBand(email.perInboxPerDay)}/day × ${email.workingDays} days = ~${email.perMonth.toLocaleString()} emails/mo at ${formatRateBand(email.mqlRate)} → ${formatBand(email.meetings)} meetings\n` +
+        `• LinkedIn: ${linkedin.connections} connections → ~${linkedin.accepted} accepted → ~${linkedin.replies} replies at ${formatRateBand(linkedin.mqlRate, 1)} → ${formatBand(linkedin.meetings)} meetings\n` +
+        `• Combined: ${formatBand(combined)} meetings/mo (target ${formatBand(market.target)})\n` +
+        `• Tool stack: $${cost.usdMonthly.min.toLocaleString()}–${cost.usdMonthly.max.toLocaleString()}/mo plus ₹${cost.inrMonthly.min.toLocaleString("en-IN")} Sales Navigator\n` +
+        `• ${infra.warmup ? `Warm-up ${infra.warmup.label}` : "No warm-up"} · research cycle ${ESTIMATOR.researchCycle}\n\n` +
+        `Real number comes from a scoping call.`,
+      chips: ["Mature infrastructure", "SaaS market", "Tool stack cost"],
       ctas: [
         { label: "Open estimator → /schedule#estimator", href: "/schedule#estimator" },
         { label: "Schedule scoping call", href: "/schedule", solid: true },
