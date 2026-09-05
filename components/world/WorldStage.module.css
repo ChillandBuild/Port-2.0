@@ -139,7 +139,7 @@
      half of whatever's added here above the eyebrow actually shows. Scaled
      by vh too: full amount where the viewport has room to spare, less of it
      on a short window. */
-  top: calc(var(--nav-h) + clamp(1rem, 5.5vh, 3.5rem));
+  top: calc(var(--nav-clearance) + clamp(9rem, 24vh, 15rem));
   bottom: clamp(1.5rem, 4vh, 3rem);
   width: min(34rem, 88vw);
   display: flex;
@@ -203,7 +203,7 @@
    day they were written and it is invisible in any single screenshot. */
 .trail {
   right: var(--space-shell);
-  top: var(--nav-h);
+  top: var(--nav-clearance);
   bottom: clamp(1.5rem, 4vh, 3rem);
   width: min(38ch, 84vw);
   display: flex;
@@ -705,7 +705,7 @@
   .heroAnchor {
     right: var(--space-shell);
     left: var(--space-shell);
-    top: calc(var(--nav-h) + 1.75rem);
+    top: calc(var(--nav-clearance) + 1.75rem);
     bottom: clamp(1.25rem, 4vh, 2.5rem);
     width: auto;
     align-items: flex-start;
@@ -767,7 +767,7 @@
 
   /* Away from the hero copy, which shares the leading edge down here. */
   .photoNote {
-    top: calc(var(--nav-h) + 1rem);
+    top: calc(var(--nav-clearance) + 1rem);
     bottom: auto;
   }
 
@@ -795,31 +795,42 @@
   }
 }
 
-/* Before the canvas has a frame on it, and if the script never arrives at all,
-   the world renders as an ordinary stacked document. Nothing is hidden behind a
-   progress value that will never be written. */
-.world:not([data-ready]) {
+/* If script never arrives at all, the world renders as an ordinary stacked
+   document. Nothing is hidden behind a progress value that will never be
+   written.
+
+   Gated on `data-js` — set by a blocking head script (lib/frontend/boot.ts),
+   so it is already resolved at first paint — and NOT on `data-ready`, which the
+   effect below only sets once the canvas has a frame on it. That distinction is
+   the whole point: keying this off `data-ready` meant every load painted the
+   stacked fallback first and swapped to the pinned layout a second or two later
+   (measured at 1-2s under `next dev`, ~3.8s under CPU throttle), which reads as
+   the page loading broken and then repairing itself. An opacity fade was tried
+   as a mask and cannot work: its clock is unrelated to hydration, so it expires
+   while the fallback is still on screen, and it can only cover this subtree —
+   not the fixed chat dock, which is also keyed off the hero's state. */
+:root:not([data-js]) .world {
   height: auto;
 }
 
-.world:not([data-ready]) .stage {
+:root:not([data-js]) .stage {
   position: static;
   height: auto;
   padding-block: var(--space-section);
 }
 
-.world:not([data-ready]) .canvas {
+:root:not([data-js]) .canvas {
   position: relative;
   height: 52svh;
 }
 
-.world:not([data-ready]) .scrim,
-.world:not([data-ready]) .grain,
-.world:not([data-ready]) .heroScrim {
+:root:not([data-js]) .scrim,
+:root:not([data-js]) .grain,
+:root:not([data-js]) .heroScrim {
   display: none;
 }
 
-.world:not([data-ready]) .copy {
+:root:not([data-js]) .copy {
   position: static;
   display: flex;
   flex-direction: column;
@@ -827,8 +838,8 @@
   padding: var(--space-section) var(--space-shell) 0;
 }
 
-.world:not([data-ready]) .block,
-.world:not([data-ready]) .gate {
+:root:not([data-js]) .block,
+:root:not([data-js]) .gate {
   position: static;
   display: block;
   transform: none;
@@ -837,9 +848,22 @@
   text-align: left;
 }
 
-.world:not([data-ready]) .gates {
+:root:not([data-js]) .gates {
   display: grid;
   gap: var(--space-gap);
+}
+
+/* Script is running but the first frame has not been painted yet, so the cue
+   loop has not written an opacity onto anything. Every block is absolutely
+   positioned on the same frame, so their CSS default of 1 would superimpose all
+   twelve of them. This is the state paint(0) is about to write: hero up,
+   everything else out. Skipped under reduced motion, where the held frame shows
+   every waypoint at once and there is no travel to reveal them. */
+@media not (prefers-reduced-motion: reduce) {
+  :root[data-js] .world:not([data-ready]) [data-cue]:not([data-cue="hero"]) {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 /* Reduced motion: fewer and gentler, not zero. The travel goes; the world stays

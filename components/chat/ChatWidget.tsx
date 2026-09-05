@@ -30,6 +30,11 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [footerInView, setFooterInView] = useState(false);
+  // Starts cleared, not visible. Every load begins at the top of the page with
+  // the hero up, so "cleared" is the correct first frame — and this renders on
+  // the server, where the observer below has not run yet. Defaulting to false
+  // put the dock on screen over the hero for the whole hydration window.
+  const [heroActionsInView, setHeroActionsInView] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,6 +49,30 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
     if (!footer || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(([entry]) => setFooterInView(entry.isIntersecting));
     observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
+  // The dock's fixed bottom-right slot also crowds the hero's Hire me / Work
+  // with me / Skip to the numbers row on shorter viewports, so it steps aside
+  // there too until the user scrolls past it. The hero block is pinned and
+  // cross-fades in place (WorldStage.tsx drives its opacity/visibility every
+  // frame during scroll), so its bounding rect never actually leaves the
+  // viewport — an IntersectionObserver would see it as "in view" forever.
+  // Reading the same visibility WorldStage writes onto the node is the only
+  // signal that tracks its real on/off state.
+  useEffect(() => {
+    const heroBlock = document.querySelector<HTMLElement>("[data-hero-actions]");
+    // No hero on this route (or no observer to watch it with): the default
+    // above is a hero-specific one, so release it rather than leave the dock
+    // hidden for good on a page that never had a hero to step aside for. Both
+    // the first read and every observed change run through the same updater,
+    // so there is one path that writes this state instead of two.
+    const update = () =>
+      setHeroActionsInView(heroBlock ? heroBlock.style.visibility !== "hidden" : false);
+    update();
+    if (!heroBlock || typeof MutationObserver === "undefined") return;
+    const observer = new MutationObserver(update);
+    observer.observe(heroBlock, { attributes: true, attributeFilter: ["style"] });
     return () => observer.disconnect();
   }, []);
 
@@ -71,7 +100,7 @@ export function ChatWidget({ inline }: { inline?: boolean } = {}) {
 
   return (
     <div
-      className={`${styles.dock} ${inline ? styles.dockInline : ""} ${footerInView && !open ? styles.dockClear : ""}`}
+      className={`${styles.dock} ${inline ? styles.dockInline : ""} ${(footerInView || heroActionsInView) && !open ? styles.dockClear : ""}`}
       aria-live="polite"
     >
       {open && (

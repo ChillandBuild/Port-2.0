@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getSectors } from "@/lib/backend/site-content-loaders";
+import { FloatingPathsBackground } from "@/components/ui/floating-paths";
 
 const ICON_BY_TAG: Record<string, LucideIcon> = {
   SaaS: Zap,
@@ -33,7 +34,12 @@ export async function Features() {
       id="range"
       aria-labelledby="range-heading"
     >
-      <div className="mx-auto max-w-5xl space-y-6 px-6 md:space-y-8">
+      <FloatingPathsBackground
+        position={-1}
+        count={20}
+        color="var(--accent-soft)"
+      >
+      <div className="relative mx-auto max-w-5xl space-y-6 px-6 md:space-y-8">
         <div className="relative z-10 mx-auto max-w-xl space-y-3 text-center md:space-y-4">
           <h2
             id="range-heading"
@@ -46,7 +52,7 @@ export async function Features() {
           </p>
         </div>
 
-        <div className="relative mx-auto grid max-w-2xl lg:max-w-4xl divide-x divide-y divide-[var(--rule)] border border-[var(--rule)] *:p-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative mx-auto grid max-w-2xl lg:max-w-4xl bg-[var(--surface-world)]/85 divide-x divide-y divide-[var(--rule)] border border-[var(--rule)] *:p-6 sm:grid-cols-2 lg:grid-cols-3">
           {SECTORS.map((sector) => {
             const Icon = ICON_BY_TAG[sector.tag] ?? Zap;
             return (
@@ -73,6 +79,7 @@ export async function Features() {
           })}
         </div>
       </div>
+      </FloatingPathsBackground>
     </section>
   );
 }

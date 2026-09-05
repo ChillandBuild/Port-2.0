@@ -285,6 +285,36 @@ export function ScrollFX() {
             }
           });
 
+          // History's picture rail: the sticky panel opposite the spine
+          // crossfades to whichever role's <li> is crossing viewport
+          // center. Per-role triggers (not a percentage split of total
+          // scroll) so it stays correct however long each role's bullets
+          // run. Skipped below 900px — the CSS hides the rail there.
+          gsap.utils.toArray<HTMLElement>("[data-history]").forEach((section) => {
+            if (window.innerWidth < 900) return;
+            const roleEls = gsap.utils.toArray<HTMLElement>("[data-history-role]", section);
+            const imageEls = gsap.utils.toArray<HTMLElement>("[data-history-image]", section);
+            if (!roleEls.length || !imageEls.length) return;
+
+            gsap.set(imageEls, { opacity: 0 });
+            gsap.set(imageEls[0], { opacity: 1 });
+
+            roleEls.forEach((roleEl, i) => {
+              const image = imageEls[i];
+              if (!image) return;
+              ScrollTrigger.create({
+                trigger: roleEl,
+                start: "top center",
+                end: "bottom center",
+                onToggle: (self) => {
+                  if (!self.isActive) return;
+                  gsap.to(imageEls, { opacity: 0, duration: 0.4, overwrite: "auto" });
+                  gsap.to(image, { opacity: 1, duration: 0.4, overwrite: "auto" });
+                },
+              });
+            });
+          });
+
           // The footer's wordmark is set wider than the viewport; the scroll
           // through the footer carries it across the gap. Falls back to static
           // when there is nothing to travel.

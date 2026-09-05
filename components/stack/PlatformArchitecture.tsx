@@ -3,10 +3,11 @@ import { getToolGroups } from "@/lib/backend/site-content-loaders";
 import styles from "./PlatformArchitecture.module.css";
 
 /**
- * Bento cards, one per tool group. Three surface roles (tint / dark / solid)
- * cycle across the 8 groups so the grid doesn't read as one repeated card
- * stamped eight times; Prospecting (the largest group) gets the big slot
- * since it's already first in the data and already the most tools.
+ * Bento cards, one per tool group — all eight are equal size (4×2 on
+ * desktop). Three surface roles (tint / dark / solid) cycle across the 8
+ * groups so the grid doesn't read as one repeated card stamped eight times.
+ * Every group renders ALL of its tool icons at all times — no "+N more"
+ * collapsing, so taller groups simply make their row taller.
  *
  * Icons are each tool's real favicon, fetched from Google's public favicon
  * endpoint by hostname — same "hotlink, don't run through next/image"
@@ -19,7 +20,7 @@ import styles from "./PlatformArchitecture.module.css";
  *    can't get stuck at opacity 0 if this section's DOM shows up after
  *    ScrollFX's own once-per-mount scan.
  *  - .bento uses ScrollFX's shared [data-reveal] system instead of a new
- *    animation dependency — the blur/-20px/0.4s-stagger drop-in is a
+ *    animation dependency — the blur/-20px/0.5s-stagger drop-in is a
  *    per-instance override on that shared mechanism (see ScrollFX.tsx),
  *    the same system every other section's scroll-triggered reveal uses.
  */
@@ -82,11 +83,8 @@ export async function PlatformArchitecture() {
       >
         {TOOL_GROUPS.map((group, i) => {
           const role = ROLE_BY_INDEX[i % ROLE_BY_INDEX.length];
-          const iconCap = i === 0 ? 8 : 5;
-          const shown = group.tools.slice(0, iconCap);
-          const rest = group.tools.length - shown.length;
           return (
-            <article className={`${styles.card} ${styles[role]}${i === 0 ? ` ${styles.big}` : ""}`} key={group.name}>
+            <article className={`${styles.card} ${styles[role]}`} key={group.name}>
               {role === "tint" && <div className={styles.grid} aria-hidden="true" />}
               <div className={styles.cardTop}>
                 <h3 className={styles.name}>{group.name}</h3>
@@ -94,22 +92,9 @@ export async function PlatformArchitecture() {
                 <p className={styles.description}>{group.description}</p>
               </div>
               <div className={styles.iconRow}>
-                {shown.map((tool) => (
+                {group.tools.map((tool) => (
                   <ToolIcon key={tool.name} tool={tool} />
                 ))}
-                {rest > 0 && (
-                  <details className={styles.more}>
-                    <summary className={`mono ${styles.moreLabel}`}>
-                      <span className={styles.moreClosedText}>+{rest} more</span>
-                      <span className={styles.moreOpenText}>Show less</span>
-                    </summary>
-                    <div className={styles.moreIcons}>
-                      {group.tools.slice(iconCap).map((tool) => (
-                        <ToolIcon key={tool.name} tool={tool} />
-                      ))}
-                    </div>
-                  </details>
-                )}
               </div>
             </article>
           );

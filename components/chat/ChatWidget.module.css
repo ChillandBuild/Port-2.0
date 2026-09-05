@@ -34,6 +34,17 @@
   pointer-events: none;
 }
 
+/* Clearing is a scroll-driven behaviour, and the dock now renders cleared by
+   default so it is not sitting on the hero for the whole hydration window. With
+   scripting off there is nothing to ever un-clear it, and the WhatsApp and
+   Telegram links in here are plain anchors that still work — so release it.
+   Same `data-js` flag the world's fallback uses (lib/frontend/boot.ts). */
+:root:not([data-js]) .dockClear {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
 .dock:not(.dockInline) {
   transition:
     opacity 240ms var(--ease-out-expo),

@@ -292,7 +292,7 @@ export function WorldStage({ hero, pipeline }: WorldStageProps) {
         <div className={styles.scrim} aria-hidden="true" />
 
         <div className={styles.copy} ref={copyRef} data-world-copy>
-          <section className={`${styles.block} ${styles.heroAnchor}`} data-cue="hero" aria-labelledby="hero-heading">
+          <section className={`${styles.block} ${styles.heroAnchor}`} data-cue="hero" data-hero-actions aria-labelledby="hero-heading">
             <p className={`mono ${styles.eyebrow}`}>Pre Sales Head · Lead Generation</p>
             <h1
               className={styles.headline}

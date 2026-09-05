@@ -26,11 +26,82 @@
   text-wrap: pretty;
 }
 
+.stage {
+  display: grid;
+  gap: clamp(2rem, 6vh, 3.5rem);
+}
+
+@media (min-width: 900px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+}
+
 .list {
   position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Sticky picture rail beside the spine — hidden below 900px (no room for a
+   second column) and under reduced motion (nothing there would ever move,
+   so a static abstract panel is decoration with no payoff). JS drives which
+   panel is opaque; see ScrollFX's [data-history] block. */
+.stageImages {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .stageImages {
+    display: block;
+    position: sticky;
+    top: clamp(1.5rem, 6vh, 3rem);
+    height: min(32rem, 70vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stageImages {
+    display: none;
+  }
+}
+
+.graphic {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  opacity: 0;
+  filter: hue-rotate(var(--role-hue, 0deg));
+  background:
+    radial-gradient(120% 100% at 15% 0%, color-mix(in oklch, var(--accent) 55%, transparent), transparent 60%),
+    radial-gradient(100% 120% at 100% 100%, color-mix(in oklch, var(--accent) 32%, transparent), transparent 65%),
+    var(--surface-page-alt);
+}
+
+.graphic:first-child {
+  opacity: 1;
+}
+
+.graphicIndex {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--on-page);
+  opacity: 0.35;
+}
+
+.graphicCompany {
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-page-soft);
 }
 
 .spine {

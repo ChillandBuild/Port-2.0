@@ -44,7 +44,7 @@
 
 .line {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--accent-graphic);
   stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -53,7 +53,7 @@
 
 .dot {
   fill: var(--surface-page-alt);
-  stroke: var(--accent);
+  stroke: var(--accent-graphic);
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }

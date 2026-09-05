@@ -1,0 +1,15 @@
+.mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.glyph {
+  fill: var(--wordmark-ink);
+  transition: fill 320ms var(--ease-out-expo);
+}
+
+.dot {
+  fill: var(--wordmark-sweep);
+  transition: fill 320ms var(--ease-out-expo);
+}

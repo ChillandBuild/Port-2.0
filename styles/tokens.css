@@ -284,6 +284,12 @@
 
   /* The top bar is fixed chrome; jump targets and the world's readout clear it. */
   --nav-h: 64px;
+  /* The pill floats this far off the viewport top (TopNav.module.css's own
+     padding-top, kept in sync here) — content clearing the nav has to clear
+     the gap too, not just the pill's own height, or it crowds the pill's
+     underside. */
+  --nav-pill-gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  --nav-clearance: calc(var(--nav-h) + var(--nav-pill-gap));
 }
 
 @media (max-width: 900px) {

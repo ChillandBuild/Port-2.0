@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { BackToTop } from "@/components/chrome/BackToTop";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { Bricolage_Grotesque, DM_Mono, Great_Vibes, Inter_Tight, Newsreader } from "next/font/google";
+import { JS_BOOT_SCRIPT } from "@/lib/frontend/boot";
 import { THEME_BOOT_SCRIPT } from "@/lib/frontend/theme";
 import "@/styles/global.css";
 import "@/styles/tailwind.css";
@@ -77,6 +78,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             doing it in React instead would paint one frame of the wrong ground,
             which on a single-polarity page is a full-screen flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        {/* Same reasoning, same window: the world's no-JS fallback is a whole
+            different layout, so resolving "is script running" after hydration
+            paints a broken-looking page for as long as hydration takes. See
+            lib/frontend/boot.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: JS_BOOT_SCRIPT }} />
       </head>
       <body>
         <a className="skip-link" href="#main">
